@@ -96,7 +96,6 @@ describe('submitIssueDraft', () => {
   it('uses non-crypto id fallbacks when randomUUID is unavailable', async () => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     ;(globalThis as any).crypto = undefined
-    const before = performance.now()
     await submitIssueDraft({
       category: 'PEST',
       photoJpeg: new Blob(['x'], { type: 'image/jpeg' }),

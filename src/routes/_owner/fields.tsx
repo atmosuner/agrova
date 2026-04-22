@@ -402,7 +402,6 @@ function FieldsPage() {
                   fieldAsideTab === 'info' ? 'bg-orchard-100 text-fg' : 'text-fg-secondary hover:bg-orchard-50/80',
                 )}
                 onClick={() => {
-                  // eslint-disable-next-line lingui/no-unlocalized-strings
                   setFieldAsideTab('info')
                 }}
               >
@@ -415,7 +414,6 @@ function FieldsPage() {
                   fieldAsideTab === 'chemical' ? 'bg-orchard-100 text-fg' : 'text-fg-secondary hover:bg-orchard-50/80',
                 )}
                 onClick={() => {
-                  // eslint-disable-next-line lingui/no-unlocalized-strings
                   setFieldAsideTab('chemical')
                 }}
               >
