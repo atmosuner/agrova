@@ -1399,18 +1399,32 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
 
 ## Progress tracking
 
-| Milestone | Tasks | Done | In Progress | Pending |
-|---|---|---|---|---|
-| M0 Foundations | 17 | 1 (M0-01) | 0 | 16 |
-| M1 Catalogs | 12 | 0 | 0 | 12 |
-| M2 Tasks | 9 | 0 | 0 | 9 |
-| M3 Worker mobile | 15 | 0 | 0 | 15 |
-| M4 Issues | 8 | 8 | 0 | 0 |
-| M5 Equipment | 5 | 5 | 0 | 0 (ω only) |
-| M6 Notifications | 8 | 7 | 0 | 1 (M6-08 E2E / ω) |
-| M7 Dashboard | 9 | 8 | 0 | 1 (M7-ω perf file) |
-| M8 Launch | 12 | 9 | 0 | 3 (i18n review, E2E×7, deploy/retro) |
-| **Total** | **95** | **+see above** | **0** | **human+ops** |
+**Convention:** *Done* = task met as written in this plan. *In progress* = implemented with documented gaps (partial), or tests/CI not fully closed. *Pending* = not started, deferred, or still open (includes human/ops only where that is the task’s remaining work). Per-milestone `Done + In progress + Pending` = **Tasks**.
+
+| Milestone | Tasks | Done | In progress | Pending |
+|-----------|------:|-----:|------------:|--------:|
+| M0 Foundations | 17 | 17 | 0 | 0 |
+| M1 Catalogs | 12 | 11 | 1 | 0 |
+| M2 Tasks | 9 | 8 | 1 | 0 |
+| M3 Worker mobile | 15 | 7 | 7 | 1 |
+| M4 Issues & photos | 8 | 7 | 1 | 0 |
+| M5 Equipment + chemicals | 5 | 5 | 0 | 0 |
+| M6 Notifications | 8 | 7 | 1 | 0 |
+| M7 Owner dashboard | 9 | 8 | 0 | 1 |
+| M8 Polish + launch | 12 | 9 | 0 | 3 |
+| **Total** | **95** | **80** | **12** | **3** |
+
+**Footnotes (ids → meaning)**
+
+- **M1-12** → *in progress* (catalog coverage + integration in CI; `supabase/seed` optional; M1-ω).
+- **M2-09** → *in progress* (unit tests; full tasks coverage + pgTAP in default CI: M2-ω).
+- **M3-01** → *pending* (⏸️ deferred, v1.1+). **M3-05..15** (except full-done ids) → *in progress* (see M3 slice tracker: pull-to-refresh, Dexie-first, E2E depth, M3-ω).
+- **M4-08** → *in progress* (E2E dual-session deferred; M4-ω).
+- **M6-08** → *in progress* (unit tests present; E2E push / full M6-ω).
+- **M7-09 / M7-ω** → *pending* (Lighthouse/perf report to `docs/lighthouse/`, etc.).
+- **M8** *pending* = 3: **(1)** i18n — Turkish catalog completion + owner tone review, **(2)** M8-10 — seven critical E2E flows in CI, **(3)** M8-11 / M8-12 — production domain + launch retro (human/ops); partial M8 items are counted under *Done* if the code path exists (e.g. a11y axe, export edge, off-line route).
+
+**Checkpoints (ω)** are not separate rows; they close when the milestone’s *Done* + agreed *In progress* matches exit criteria in each **Checkpoint Mx-ω** section (often **human**).
 
 Update this table at each checkpoint.
 
