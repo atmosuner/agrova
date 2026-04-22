@@ -41,6 +41,11 @@ See [`specs/farm-operations-app.md §16`](./specs/farm-operations-app.md#16-deli
 - **Extract / compile:** `pnpm i18n:extract` → `pnpm i18n:compile` (or rely on `pnpm build`, which compiles catalogs first). Commit both `.po` and generated `src/locales/*/messages.ts`.
 - **Vite:** `@lingui/vite-plugin` + Babel — `@vitejs/plugin-react` is **pinned to v5** (v6 no longer exposes `babel` options; Lingui still needs the macro transform).
 
+## Environment (M0-08)
+
+- Copy `.env.example` to `.env` and set `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` (Dashboard → **Project Settings** → **API**).
+- `src/lib/supabase.ts` and `src/lib/db.ts` (Dexie) — see `docs/dev-smoke-tests.md` for quick console checks.
+
 ## PWA (M0-07)
 
 - **Manifest** at `/manifest.webmanifest` after `vite build` / `vite preview`; **`start_url` `/`**, **`scope` `/`**, `theme_color` / `background_color` from **DESIGN.md** (`#3F8B4E` / `#FAFAF7`).

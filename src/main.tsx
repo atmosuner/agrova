@@ -5,9 +5,15 @@ import { createRouter, RouterProvider } from '@tanstack/react-router'
 import { registerSW } from 'virtual:pwa-register'
 import { routeTree } from '@/routeTree.gen'
 import '@/index.css'
+import { db } from '@/lib/db'
 import { i18n } from '@/lib/i18n'
+import { supabase } from '@/lib/supabase'
 
 void registerSW({ immediate: true })
+
+if (import.meta.env.DEV) {
+  Object.assign(window, { __agrova: { supabase, db } })
+}
 
 const router = createRouter({ routeTree })
 

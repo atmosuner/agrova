@@ -5,6 +5,8 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
+> **Progress (M0):** M0-01..M0-08 are ✅ **implemented** on `main` (bump this line when later M0 tasks land).
+>
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
 ---
@@ -124,6 +126,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Dependencies:** M0-01
 **Files likely touched:** `package.json`, `pnpm-lock.yaml`, `vite.config.ts`, `tsconfig.json`, `index.html`, `src/main.tsx`, `src/App.tsx`, `src/vite-env.d.ts`
 **Estimated scope:** S
+**Status:** ✅ **DONE** (commit `c600fb8` — router replaced standalone `App.tsx`)
 
 ### Task M0-03: Wire Tailwind v4 + design tokens from DESIGN.md
 **Description:** Install Tailwind v4, configure the custom color/typography tokens from `DESIGN.md §2–3`. Inter Variable + JetBrains Mono Variable via `@fontsource-variable`. Enable `cv11, ss01, calt` OpenType features globally.
@@ -136,6 +139,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Dependencies:** M0-02
 **Files likely touched:** `tailwind.config.ts`, `postcss.config.mjs`, `src/styles/globals.css`, `src/App.tsx`, `package.json`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (commit `c177e2c` — v4 + CSS tokens; smoke copy evolved in later tasks)
 
 ### Task M0-04: Install shadcn/ui and re-skin primitives to tokens
 **Description:** Initialize shadcn CLI; install the primitives we'll need first (`button`, `card`, `input`, `dialog`, `badge`, `tabs`, `sheet`, `dropdown-menu`). Override `components.json` so generated components use our DESIGN.md tokens instead of default shadcn palette.
@@ -147,6 +151,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Dependencies:** M0-03
 **Files likely touched:** `components.json`, `src/components/ui/*.tsx`, `src/routes/ui-test.tsx`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (commit `e2c68d1` — no `/ui-test` route yet; primitives + token map)
 
 ### Task M0-05: TanStack Router (file-based) skeleton
 **Description:** Install `@tanstack/react-router` + `@tanstack/router-plugin` for Vite. Set up file-based routes per spec §9. Create empty routes for `_owner/today`, `_mobile/tasks`, `setup.$token`, `login`. Root route redirects to `/today` for owners and `/tasks` for mobile viewports.
@@ -159,6 +164,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Dependencies:** M0-04
 **Files likely touched:** `vite.config.ts`, `src/main.tsx`, `src/routes/*`, `src/components/layout/*`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (commit `638fe32` — file routes; owner `/` shell + worker `/m/…`; 404 not added yet)
 
 ### Task M0-06: Lingui i18n (tr primary, en catalog skeleton)
 **Description:** Install `@lingui/cli`, `@lingui/react`, `@lingui/macro`, Babel macro. Configure `lingui.config.js` with locales `tr, en`; `tr` is default and active. Extract one string from M0-03's smoke test through `t\`...\``. Commit the compiled catalog.
@@ -171,6 +177,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Dependencies:** M0-05
 **Files likely touched:** `lingui.config.js`, `babel.config.cjs`, `src/lib/i18n.ts`, `src/locales/tr/messages.po`, `package.json`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (commit `0827161` — `messages.ts` not `.mjs`)
 
 ### Task M0-07: vite-plugin-pwa manifest + service worker baseline
 **Description:** Install `vite-plugin-pwa`. Configure `manifest.webmanifest` (name, short_name, theme_color from DESIGN.md, icons 192/512/maskable), service worker strategy `generateSW` with Workbox. No offline data caching yet (that's M3).
@@ -182,18 +189,20 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Dependencies:** M0-05 (needs routing to define `start_url`)
 **Files likely touched:** `vite.config.ts`, `public/manifest.webmanifest`, `public/icons/*`, `src/main.tsx`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (commit `0ec5ee7` — manifest generated; icons under `public/icons/`)
 
 ### Task M0-08: Supabase client + Dexie database stub + env wiring
 **Description:** Install `@supabase/supabase-js` and `dexie`. Create `src/lib/supabase.ts` reading `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` from `.env` (Vercel env in prod). Create `src/lib/db.ts` declaring empty Dexie database (tables added in later slices).
 **Acceptance criteria:**
-- [ ] `.env.example` committed with placeholder values + comment; real `.env` gitignored
-- [ ] `supabase` export is typed; first-class usage: `supabase.from('people').select('*')` type-errors today (until M0-13 generates types)
-- [ ] `src/lib/db.ts` exports a `db: Dexie` singleton
-- [ ] In the dev console, `await supabase.from('pg_stat_user_tables').select('relname')` returns without error (validates connectivity)
+- [x] `.env.example` committed with placeholder values + comment; real `.env` gitignored
+- [x] `supabase` export is typed; `supabase.from('people')` is a **type error** until **M0-16** (`AppDatabase` stub + `src/lib/supabase.pre-m0-16.typecheck.ts`)
+- [x] `src/lib/db.ts` exports a `db` **Dexie** singleton
+- [x] Dev console: use `window.__agrova` (dev only) — `auth.getSession()` validates client wiring; `pg_stat_user_tables` is **not** on `public` via PostgREST by default (see `docs/dev-smoke-tests.md`)
 **Verification:** smoke console check documented in `docs/dev-smoke-tests.md`
 **Dependencies:** M0-02
 **Files likely touched:** `src/lib/supabase.ts`, `src/lib/db.ts`, `.env.example`, `package.json`
 **Estimated scope:** S
+**Status:** ✅ **DONE** (feat: `M0-08`)
 
 ### Task M0-09: GitHub Actions CI — typecheck + lint + test + build on PR
 **Description:** Write `.github/workflows/ci.yml` that runs on every push to `main` and every PR to `main`. Matrix: Node 20, pnpm 9. Jobs: install (cached), `pnpm lint`, `pnpm typecheck`, `pnpm test --run`, `pnpm build`. E2E is a separate nightly workflow (M8-10).
