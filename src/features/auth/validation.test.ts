@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { signUpPasswordSchema } from './validation'
+import { newPasswordPairValuesSchema, signUpPasswordSchema } from './validation'
 
 describe('signUp password rules', () => {
   it('accepts 8+ chars with a digit', () => {
@@ -12,5 +12,23 @@ describe('signUp password rules', () => {
 
   it('rejects password without digit', () => {
     expect(signUpPasswordSchema.safeParse('abcdefgh').success).toBe(false)
+  })
+})
+
+describe('newPasswordPairValuesSchema', () => {
+  it('rejects mismatch', () => {
+    const r = newPasswordPairValuesSchema.safeParse({
+      newPassword: 'abcdefgh',
+      newPasswordConfirm: 'abcdefgi',
+    })
+    expect(r.success).toBe(false)
+  })
+
+  it('accepts match', () => {
+    const r = newPasswordPairValuesSchema.safeParse({
+      newPassword: 'abcdefgh',
+      newPasswordConfirm: 'abcdefgh',
+    })
+    expect(r.success).toBe(true)
   })
 })

@@ -38,4 +38,34 @@ export const teamPersonFormSchema = z.object({
 
 export type TeamPersonFormValues = z.infer<typeof teamPersonFormSchema>
 
+/** Supabase Auth sign-in e-mail for a crew member (device or a real address set by the owner). */
+export const teamPersonLoginEmailSchema = z
+  .string()
+  .trim()
+  .min(3, { message: 'E-posta gerekli.' })
+  .max(320, { message: 'E-posta çok uzun.' })
+  .email({ message: 'Geçerli bir e-posta girin.' })
+
+export const teamPersonEditFormSchema = teamPersonFormSchema.extend({
+  loginEmail: teamPersonLoginEmailSchema,
+})
+
+export type TeamPersonEditFormValues = z.infer<typeof teamPersonEditFormSchema>
+
+const passwordForNewCrew = z
+  .string()
+  .min(8, { message: 'Şifre en az 8 karakter olsun.' })
+  .max(72, { message: 'Şifre en fazla 72 karakter olabilir.' })
+
+/** New person: owner-chosen password; worker signs in with `loginEmail` + this password. */
+export const teamPersonAddSchema = teamPersonFormSchema.extend({
+  password: passwordForNewCrew,
+  passwordConfirm: z.string().min(1, { message: 'Şifre tekrarı gerekli.' }),
+}).refine((d) => d.password === d.passwordConfirm, {
+  path: ['passwordConfirm'],
+  message: 'Şifreler eşleşmiyor.',
+})
+
+export type TeamPersonAddFormValues = z.infer<typeof teamPersonAddSchema>
+
 export type PersonRoleCrew = (typeof crewRoles)[number]

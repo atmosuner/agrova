@@ -2,11 +2,20 @@ import { msg, t } from '@lingui/macro'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { newPasswordPairValuesSchema } from '@/features/auth/validation'
 import { createTeamPersonWithAuth } from '@/features/people/create-team-person'
-import { buildSetupPageUrl, generateUrlSafeToken32 } from '@/features/people/generate-setup-token'
 import { mapPeopleMutationError } from '@/features/people/map-people-mutation-error'
+import { deviceLoginEmailFromPersonId } from '@/features/people/device-login-email'
+import { setWorkerPasswordByOwner } from '@/features/people/set-worker-password'
+import { getTeamPersonLoginEmail, setTeamPersonLoginEmailByOwner } from '@/features/people/team-person-email'
 import { downloadPeopleCsv } from '@/features/people/csv'
-import { teamPersonFormSchema, type TeamPersonFormValues } from '@/features/people/validation'
+import {
+  teamPersonAddSchema,
+  teamPersonEditFormSchema,
+  teamPersonFormSchema,
+  type TeamPersonAddFormValues,
+  type TeamPersonFormValues,
+} from '@/features/people/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
 import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
@@ -14,10 +23,15 @@ import type { Tables } from '@/types/db'
 
 type Person = Tables<'people'>
 
-const emptyCrewForm: TeamPersonFormValues = {
+type CrewFormState = TeamPersonAddFormValues & { loginEmail: string }
+
+const emptyCrewForm: CrewFormState = {
   fullName: '',
   phone: '',
   role: 'WORKER',
+  password: '',
+  passwordConfirm: '',
+  loginEmail: '',
 }
 
 function roleLabel(role: Person['role']): string {
@@ -49,13 +63,22 @@ function PeoplePage() {
   const [loadError, setLoadError] = useState<string | null>(null)
   const [showArchived, setShowArchived] = useState(false)
   const [modalMode, setModalMode] = useState<null | { type: 'add' } | { type: 'edit'; person: Person }>(null)
-  const [form, setForm] = useState<TeamPersonFormValues>(emptyCrewForm)
+  const [form, setForm] = useState<CrewFormState>(emptyCrewForm)
+  const [editEmailLoading, setEditEmailLoading] = useState(false)
+  const editInitialLoginEmail = useRef('')
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [setupCopyMsg, setSetupCopyMsg] = useState<string | null>(null)
+  const [resetPwdFor, setResetPwdFor] = useState<Person | null>(null)
+  const [crewNewPw, setCrewNewPw] = useState('')
+  const [crewNewPw2, setCrewNewPw2] = useState('')
+  const [crewPwdErr, setCrewPwdErr] = useState<string | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const resetPwdRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const descId = useId()
+  const resetPwdTitleId = useId()
+  const resetPwdDescId = useId()
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -80,6 +103,31 @@ function PeoplePage() {
     return () => window.clearTimeout(id)
   }, [load])
 
+  useEffect(() => {
+    if (modalMode?.type !== 'edit') {
+      return
+    }
+    const person = modalMode.person
+    if (!person.auth_user_id) {
+      return
+    }
+    let cancelled = false
+    void (async () => {
+      setEditEmailLoading(true)
+      const r = await getTeamPersonLoginEmail({ personId: person.id })
+      if (cancelled) {
+        return
+      }
+      const email = r.ok ? r.value.email : deviceLoginEmailFromPersonId(person.id)
+      editInitialLoginEmail.current = email
+      setForm((f) => ({ ...f, loginEmail: email }))
+      setEditEmailLoading(false)
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [modalMode])
+
   function openAdd() {
     setForm(emptyCrewForm)
     setFormError(null)
@@ -95,8 +143,17 @@ function PeoplePage() {
       fullName: p.full_name,
       phone: p.phone,
       role: p.role as TeamPersonFormValues['role'],
+      password: '',
+      passwordConfirm: '',
+      loginEmail: '',
     })
     setFormError(null)
+    editInitialLoginEmail.current = ''
+    if (p.auth_user_id) {
+      setEditEmailLoading(true)
+    } else {
+      setEditEmailLoading(false)
+    }
     setModalMode({ type: 'edit', person: p })
     requestAnimationFrame(() => dialogRef.current?.showModal())
   }
@@ -106,32 +163,136 @@ function PeoplePage() {
     setModalMode(null)
   }
 
-  async function onSubmitCrew(e: React.FormEvent) {
+  function openResetPassword(p: Person) {
+    if (p.role === 'OWNER' || !p.auth_user_id) {
+      return
+    }
+    setResetPwdFor(p)
+    setCrewNewPw('')
+    setCrewNewPw2('')
+    setCrewPwdErr(null)
+    requestAnimationFrame(() => resetPwdRef.current?.showModal())
+  }
+
+  function closeResetPwd() {
+    resetPwdRef.current?.close()
+    setResetPwdFor(null)
+  }
+
+  async function onSubmitCrewReset(e: React.FormEvent) {
     e.preventDefault()
-    setFormError(null)
-    const parsed = teamPersonFormSchema.safeParse(form)
+    setCrewPwdErr(null)
+    if (!resetPwdFor) {
+      return
+    }
+    const parsed = newPasswordPairValuesSchema.safeParse({
+      newPassword: crewNewPw,
+      newPasswordConfirm: crewNewPw2,
+    })
     if (!parsed.success) {
-      setFormError(parsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
+      setCrewPwdErr(parsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
       return
     }
     setSaving(true)
+    const r = await setWorkerPasswordByOwner({ personId: resetPwdFor.id, newPassword: parsed.data.newPassword })
+    setSaving(false)
+    if (!r.ok) {
+      setCrewPwdErr(r.message)
+      return
+    }
+    closeResetPwd()
+    setSetupCopyMsg(
+      t`Worker password was updated. They sign in with the same device e-mail and the new password.`,
+    )
+  }
+
+  async function onSubmitCrew(e: React.FormEvent) {
+    e.preventDefault()
+    setFormError(null)
     if (modalMode?.type === 'add') {
-      const created = await createTeamPersonWithAuth(parsed.data)
+      const addParsed = teamPersonAddSchema.safeParse(form)
+      if (!addParsed.success) {
+        setFormError(addParsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
+        return
+      }
+      setSaving(true)
+      const created = await createTeamPersonWithAuth(addParsed.data)
       setSaving(false)
       if (!created.ok) {
         setFormError(created.message)
         return
       }
       try {
-        await navigator.clipboard.writeText(created.value.setupUrl)
-        setSetupCopyMsg(t`Cihaz kurulum linki panoya kopyalandı. Çalışan telefonda açın.`)
+        await navigator.clipboard.writeText(created.value.loginEmail)
+        setSetupCopyMsg(
+          t`Giriş e-postası (cihaz hesabı) panoya kopyalandı. Çalışan bu adres ve sizin belirlediğiniz şifre ile uygulamaya girer; şifre sunucuda saklanmaz, tekrar gösterilmez.`,
+        )
       } catch {
-        setLoadError(created.value.setupUrl)
+        setLoadError(created.value.loginEmail)
       }
       closeModal()
       await load()
       return
-    } else if (modalMode?.type === 'edit') {
+    }
+    if (modalMode?.type === 'edit') {
+      const person = modalMode.person
+      const withAuth = Boolean(person.auth_user_id)
+      if (withAuth) {
+        if (editEmailLoading) {
+          return
+        }
+        const parsed = teamPersonEditFormSchema.safeParse({
+          fullName: form.fullName,
+          phone: form.phone,
+          role: form.role,
+          loginEmail: form.loginEmail,
+        })
+        if (!parsed.success) {
+          setFormError(parsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
+          return
+        }
+        setSaving(true)
+        const e0 = editInitialLoginEmail.current.trim().toLowerCase()
+        const e1 = parsed.data.loginEmail.trim().toLowerCase()
+        if (e0 !== e1) {
+          const em = await setTeamPersonLoginEmailByOwner({
+            personId: person.id,
+            email: parsed.data.loginEmail,
+          })
+          if (!em.ok) {
+            setSaving(false)
+            setFormError(em.message)
+            return
+          }
+          editInitialLoginEmail.current = em.value.email
+        }
+        const { error } = await supabase
+          .from('people')
+          .update({
+            full_name: parsed.data.fullName,
+            phone: parsed.data.phone,
+            role: parsed.data.role,
+          })
+          .eq('id', person.id)
+        setSaving(false)
+        if (error) {
+          setFormError(mapPeopleMutationError(error.message, error.code))
+          return
+        }
+        closeModal()
+        await load()
+        return
+      }
+      const parsed = teamPersonFormSchema.safeParse({
+        fullName: form.fullName,
+        phone: form.phone,
+        role: form.role,
+      })
+      if (!parsed.success) {
+        setFormError(parsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
+        return
+      }
+      setSaving(true)
       const { error } = await supabase
         .from('people')
         .update({
@@ -139,18 +300,15 @@ function PeoplePage() {
           phone: parsed.data.phone,
           role: parsed.data.role,
         })
-        .eq('id', modalMode.person.id)
+        .eq('id', person.id)
       setSaving(false)
       if (error) {
         setFormError(mapPeopleMutationError(error.message, error.code))
         return
       }
-    } else {
-      setSaving(false)
-      return
+      closeModal()
+      await load()
     }
-    closeModal()
-    await load()
   }
 
   async function archive(p: Person) {
@@ -170,34 +328,6 @@ function PeoplePage() {
     await load()
   }
 
-  async function createSetupLink(p: Person) {
-    if (p.role === 'OWNER' || !p.active) {
-      return
-    }
-    setSaving(true)
-    setSetupCopyMsg(null)
-    const token = generateUrlSafeToken32()
-    const t0 = new Date()
-    const expires = new Date(t0.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
-    const { error } = await supabase
-      .from('people')
-      .update({ setup_token: token, setup_token_expires_at: expires })
-      .eq('id', p.id)
-    setSaving(false)
-    if (error) {
-      setLoadError(error.message)
-      return
-    }
-    const url = buildSetupPageUrl(token)
-    try {
-      await navigator.clipboard.writeText(url)
-      setSetupCopyMsg(t`Setup link copied to clipboard.`)
-    } catch {
-      setLoadError(url)
-    }
-    await load()
-  }
-
   const isModalOpen = modalMode !== null
 
   return (
@@ -206,7 +336,7 @@ function PeoplePage() {
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Team`}</h1>
           <p className="mt-2 text-fg-secondary">
-            {t`Crew and roles. Adding someone creates their PWA sign-in and copies a one-time setup link; no e‑mail or password reset. Turkish mobile +90; no SMS in MVP.`}
+            {t`Crew and roles. New people get a device login e-mail (@device) and a password you set; the e-mail is copied when saved. Turkish mobile +90; no SMS in MVP.`}
           </p>
         </div>
         <span className="inline-flex flex-wrap gap-2">
@@ -271,15 +401,17 @@ function PeoplePage() {
                       <td className="px-3 py-2 text-right">
                         {!isOwner && p.active ? (
                           <span className="inline-flex flex-wrap justify-end gap-2">
-                            <Button
-                              type="button"
-                              size="sm"
-                              variant="outline"
-                              onClick={() => void createSetupLink(p)}
-                              disabled={saving}
-                            >
-                              {t`Create setup link`}
-                            </Button>
+                            {p.auth_user_id ? (
+                              <Button
+                                type="button"
+                                size="sm"
+                                variant="outline"
+                                onClick={() => openResetPassword(p)}
+                                disabled={saving}
+                              >
+                                {t`Set password`}
+                              </Button>
+                            ) : null}
                             <Button
                               type="button"
                               size="sm"
@@ -322,7 +454,11 @@ function PeoplePage() {
               {modalMode.type === 'add' ? t`New person` : t`Edit person`}
             </h2>
             <p id={descId} className="text-sm text-fg-secondary">
-              {t`E.164 mobile (+90 5…). Yeni ekip üyesi: hesap anında açılır, kurulum linki panoya kopyalanır. Roller: foreman, agronomist, worker.`}
+              {modalMode.type === 'add'
+                ? t`E.164 mobile (+90 5…). Set a sign-in password for the worker; device login e-mail is copied after save. Roles: foreman, agronomist, worker.`
+                : modalMode.person.auth_user_id
+                  ? t`E.164 mobile (+90 5…). Update name, phone, role, and sign-in e-mail. Use a real address if the worker should receive password reset links.`
+                  : t`E.164 mobile (+90 5…). Update name, phone, or role (no sign-in e-mail on file yet).`}
             </p>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-fg" htmlFor="p-name">
@@ -359,7 +495,7 @@ function PeoplePage() {
                 onChange={(e) =>
                   setForm((f) => ({
                     ...f,
-                    role: e.target.value as TeamPersonFormValues['role'],
+                    role: e.target.value as TeamPersonAddFormValues['role'],
                   }))
                 }
               >
@@ -370,9 +506,126 @@ function PeoplePage() {
                 ))}
               </select>
             </div>
+            {modalMode.type === 'edit' && modalMode.person.auth_user_id ? (
+              <div className="flex flex-col gap-1">
+                <label className="text-sm font-medium text-fg" htmlFor="p-signin-email">
+                  {t`Sign-in e-mail (login)`}
+                </label>
+                <input
+                  id="p-signin-email"
+                  type="email"
+                  className={formFieldClassName}
+                  autoComplete="off"
+                  value={form.loginEmail}
+                  onChange={(e) => setForm((f) => ({ ...f, loginEmail: e.target.value }))}
+                  disabled={editEmailLoading}
+                  placeholder={i18n._(msg`e.g. name@mail.com`)}
+                  required
+                />
+                {editEmailLoading ? (
+                  <p className="text-xs text-fg-secondary">{t`Loading sign-in e-mail…`}</p>
+                ) : null}
+              </div>
+            ) : null}
+            {modalMode.type === 'add' ? (
+              <>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium text-fg" htmlFor="p-password">
+                    {t`Sign-in password`}
+                  </label>
+                  <input
+                    id="p-password"
+                    type="password"
+                    autoComplete="new-password"
+                    className={formFieldClassName}
+                    value={form.password}
+                    onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                    required
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-sm font-medium text-fg" htmlFor="p-password-2">
+                    {t`Confirm password`}
+                  </label>
+                  <input
+                    id="p-password-2"
+                    type="password"
+                    autoComplete="new-password"
+                    className={formFieldClassName}
+                    value={form.passwordConfirm}
+                    onChange={(e) => setForm((f) => ({ ...f, passwordConfirm: e.target.value }))}
+                    required
+                  />
+                </div>
+              </>
+            ) : null}
             {formError ? <p className="text-sm text-harvest-500">{formError}</p> : null}
             <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-2">
               <Button type="button" variant="outline" onClick={closeModal} disabled={saving}>
+                {t`Cancel`}
+              </Button>
+              <Button
+                type="submit"
+                disabled={
+                  saving ||
+                  (modalMode.type === 'edit' && Boolean(modalMode.person.auth_user_id) && editEmailLoading)
+                }
+              >
+                {saving ? t`Saving…` : t`Save`}
+              </Button>
+            </div>
+          </form>
+        ) : null}
+      </dialog>
+      <dialog
+        ref={resetPwdRef}
+        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface-0 p-0 shadow-lg backdrop:bg-black/50"
+        aria-labelledby={resetPwdTitleId}
+        aria-describedby={resetPwdDescId}
+        onClose={() => {
+          setResetPwdFor(null)
+        }}
+      >
+        {resetPwdFor ? (
+          <form onSubmit={onSubmitCrewReset} className="flex flex-col gap-4 p-4">
+            <h2 id={resetPwdTitleId} className="text-lg font-semibold text-fg">
+              {t`Set password`}
+            </h2>
+            <p id={resetPwdDescId} className="text-sm text-fg-secondary">
+              {t`Set a new sign-in password. They keep the same device e-mail; tell them the new password in person or by phone.`}
+            </p>
+            <p className="text-sm font-medium text-fg">{resetPwdFor.full_name}</p>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-fg" htmlFor="cpw1">
+                {t`New password`}
+              </label>
+              <input
+                id="cpw1"
+                type="password"
+                autoComplete="new-password"
+                className={formFieldClassName}
+                value={crewNewPw}
+                onChange={(e) => setCrewNewPw(e.target.value)}
+                required
+              />
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-sm font-medium text-fg" htmlFor="cpw2">
+                {t`Confirm new password`}
+              </label>
+              <input
+                id="cpw2"
+                type="password"
+                autoComplete="new-password"
+                className={formFieldClassName}
+                value={crewNewPw2}
+                onChange={(e) => setCrewNewPw2(e.target.value)}
+                required
+              />
+            </div>
+            {crewPwdErr ? <p className="text-sm text-harvest-500">{crewPwdErr}</p> : null}
+            <div className="flex flex-wrap justify-end gap-2 border-t border-border pt-2">
+              <Button type="button" variant="outline" onClick={closeResetPwd} disabled={saving}>
                 {t`Cancel`}
               </Button>
               <Button type="submit" disabled={saving}>

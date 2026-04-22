@@ -1,11 +1,30 @@
 /* eslint-disable lingui/no-unlocalized-strings -- TR user copy + HTTP header literals */
-import { buildSetupPageUrl } from '@/features/people/generate-setup-token'
-import type { TeamPersonFormValues } from '@/features/people/validation'
+import { FunctionsHttpError } from '@supabase/supabase-js'
+import type { TeamPersonAddFormValues } from '@/features/people/validation'
 import { supabase } from '@/lib/supabase'
 
-export type CreateTeamPersonResult = { personId: string; setupUrl: string }
+export type CreateTeamPersonResult = { personId: string; loginEmail: string }
 
-export function mapCreateTeamPersonError(status: number, body: { error?: string; message?: string } | null): string {
+type CreateFnBody = {
+  error?: string
+  message?: string
+  field?: string
+  personId?: string
+  loginEmail?: string
+}
+
+const LOG = '[agrova/create-team-person]'
+
+function devLog(phase: string, detail: Record<string, unknown> = {}) {
+  if (import.meta.env.DEV) {
+    console.info(LOG, phase, detail)
+  }
+}
+
+export function mapCreateTeamPersonError(
+  status: number,
+  body: { error?: string; message?: string; field?: string } | null,
+): string {
   if (status === 401) {
     return 'Oturum gerekli. Yeniden giriş yapın.'
   }
@@ -14,6 +33,9 @@ export function mapCreateTeamPersonError(status: number, body: { error?: string;
   }
   if (status === 409) {
     return 'Bu telefon numarası zaten kayıtlı.'
+  }
+  if (body?.error === 'validation_failed' && body?.field === 'password') {
+    return 'Şifre en az 8, en fazla 72 karakter olmalı.'
   }
   if (body?.error === 'validation_failed') {
     return 'Formdaki alanları kontrol edin (telefon +90 5xx…).'
@@ -25,52 +47,78 @@ export function mapCreateTeamPersonError(status: number, body: { error?: string;
 }
 
 /**
- * Create people row, Supabase Auth (device account), and a one-time /setup/… link (owner: Team).
+ * Create `people` row, Supabase Auth (device e-mail), and apply owner-chosen password.
  */
 export async function createTeamPersonWithAuth(
-  input: TeamPersonFormValues,
+  input: TeamPersonAddFormValues,
 ): Promise<{ ok: true; value: CreateTeamPersonResult } | { ok: false; message: string }> {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession()
-  if (!session?.access_token) {
+  const { data: afterRefresh, error: refreshErr } = await supabase.auth.refreshSession()
+  devLog('refreshSession', {
+    ok: !refreshErr,
+    error: refreshErr?.message,
+    hasSession: Boolean(afterRefresh.session?.access_token),
+  })
+
+  const { data: { user }, error: userError } = await supabase.auth.getUser()
+  if (userError || !user) {
+    devLog('getUser failed', {
+      error: userError?.message,
+      name: userError?.name,
+      code: (userError as { code?: string } | undefined)?.code,
+    })
+    console.warn(LOG, 'Create aborted: not authenticated (getUser)')
     return { ok: false, message: mapCreateTeamPersonError(401, null) }
   }
-  const base = (import.meta.env.VITE_SUPABASE_URL as string | undefined)?.trim().replace(/\/$/, '') ?? ''
-  const anon = (import.meta.env.VITE_SUPABASE_ANON_KEY as string | undefined)?.trim() ?? ''
-  if (!base || !anon) {
-    return { ok: false, message: mapCreateTeamPersonError(500, { error: 'server_misconfigured' }) }
-  }
-  const res = await fetch(`${base}/functions/v1/create-team-person`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${session.access_token}`,
-      apikey: anon,
-    },
-    body: JSON.stringify({
+  devLog('getUser ok', { userId: user.id })
+
+  const { data, error: fnError } = await supabase.functions.invoke<CreateFnBody>('create-team-person', {
+    body: {
       fullName: input.fullName,
       phone: input.phone,
       role: input.role,
-    }),
+      password: input.password,
+    },
   })
-  const body = (await res.json().catch(() => null)) as {
-    error?: string
-    message?: string
-    personId?: string
-    setupToken?: string
-  } | null
-  if (!res.ok || !body?.setupToken) {
-    return {
-      ok: false,
-      message: mapCreateTeamPersonError(res.status, body),
+
+  if (fnError) {
+    if (fnError instanceof FunctionsHttpError) {
+      const res = fnError.context as Response
+      const errBody = (await res.json().catch(() => null)) as
+        | { error?: string; message?: string; reason?: string; field?: string }
+        | null
+      devLog('functions.invoke http error', {
+        status: res.status,
+        statusText: res.statusText,
+        error: errBody?.error,
+        reason: errBody?.reason,
+        field: errBody?.field,
+        message: errBody?.message,
+        fnMessage: fnError.message,
+      })
+      if (res.status === 401) {
+        console.warn(
+          LOG,
+          'Edge returned 401. If `reason` is missing, the failure is often the API gateway (JWT) before the function runs. Check VITE_ env matches the project you signed into.',
+          { reason: errBody?.reason, error: errBody?.error },
+        )
+      }
+      return { ok: false, message: mapCreateTeamPersonError(res.status, errBody) }
     }
+    devLog('functions.invoke other error', { name: fnError.name, message: fnError.message })
+    console.warn(LOG, 'functions.invoke failed (non-HTTP)', fnError)
+    return { ok: false, message: mapCreateTeamPersonError(500, null) }
   }
+
+  if (!data?.personId || !data?.loginEmail) {
+    devLog('success response missing personId/loginEmail', { data })
+    return { ok: false, message: mapCreateTeamPersonError(500, data ?? null) }
+  }
+  devLog('ok', { personId: data.personId ? `${String(data.personId).slice(0, 8)}…` : undefined })
   return {
     ok: true,
     value: {
-      personId: body.personId as string,
-      setupUrl: buildSetupPageUrl(body.setupToken),
+      personId: data.personId,
+      loginEmail: data.loginEmail,
     },
   }
 }

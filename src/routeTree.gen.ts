@@ -10,10 +10,12 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as OfflineRouteImport } from './routes/offline'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as HowToInstallRouteImport } from './routes/how-to-install'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as MRouteRouteImport } from './routes/m/route'
 import { Route as OwnerRouteRouteImport } from './routes/_owner/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -38,6 +40,11 @@ const SignupRoute = SignupRouteImport.update({
   path: '/signup',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
@@ -56,6 +63,11 @@ const LoginRoute = LoginRouteImport.update({
 const HowToInstallRoute = HowToInstallRouteImport.update({
   id: '/how-to-install',
   path: '/how-to-install',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MRouteRoute = MRouteRouteImport.update({
@@ -151,10 +163,12 @@ const MTaskIdRoute = MTaskIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/m': typeof MRouteRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-to-install': typeof HowToInstallRoute
   '/login': typeof LoginRoute
   '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
   '/fields': typeof OwnerFieldsRoute
@@ -174,10 +188,12 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-to-install': typeof HowToInstallRoute
   '/login': typeof LoginRoute
   '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
   '/fields': typeof OwnerFieldsRoute
@@ -200,10 +216,12 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_owner': typeof OwnerRouteRouteWithChildren
   '/m': typeof MRouteRouteWithChildren
+  '/forgot-password': typeof ForgotPasswordRoute
   '/how-to-install': typeof HowToInstallRoute
   '/login': typeof LoginRoute
   '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/signup': typeof SignupRoute
   '/_owner/equipment': typeof OwnerEquipmentRoute
   '/_owner/fields': typeof OwnerFieldsRoute
@@ -226,10 +244,12 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/m'
+    | '/forgot-password'
     | '/how-to-install'
     | '/login'
     | '/offline'
     | '/privacy'
+    | '/reset-password'
     | '/signup'
     | '/equipment'
     | '/fields'
@@ -249,10 +269,12 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/forgot-password'
     | '/how-to-install'
     | '/login'
     | '/offline'
     | '/privacy'
+    | '/reset-password'
     | '/signup'
     | '/equipment'
     | '/fields'
@@ -274,10 +296,12 @@ export interface FileRouteTypes {
     | '/'
     | '/_owner'
     | '/m'
+    | '/forgot-password'
     | '/how-to-install'
     | '/login'
     | '/offline'
     | '/privacy'
+    | '/reset-password'
     | '/signup'
     | '/_owner/equipment'
     | '/_owner/fields'
@@ -300,10 +324,12 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OwnerRouteRoute: typeof OwnerRouteRouteWithChildren
   MRouteRoute: typeof MRouteRouteWithChildren
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   HowToInstallRoute: typeof HowToInstallRoute
   LoginRoute: typeof LoginRoute
   OfflineRoute: typeof OfflineRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   SignupRoute: typeof SignupRoute
   SetupTokenRoute: typeof SetupTokenRoute
 }
@@ -315,6 +341,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -343,6 +376,13 @@ declare module '@tanstack/react-router' {
       path: '/how-to-install'
       fullPath: '/how-to-install'
       preLoaderRoute: typeof HowToInstallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/m': {
@@ -525,10 +565,12 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OwnerRouteRoute: OwnerRouteRouteWithChildren,
   MRouteRoute: MRouteRouteWithChildren,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   HowToInstallRoute: HowToInstallRoute,
   LoginRoute: LoginRoute,
   OfflineRoute: OfflineRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   SignupRoute: SignupRoute,
   SetupTokenRoute: SetupTokenRoute,
 }

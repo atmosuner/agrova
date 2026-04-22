@@ -137,6 +137,14 @@ function LoginPage() {
       </form>
       <p className="text-center text-sm text-fg-secondary">
         <Link
+          to="/forgot-password"
+          className="font-medium text-orchard-500 underline-offset-2 hover:underline"
+        >
+          {t`Forgot password?`}
+        </Link>
+      </p>
+      <p className="text-center text-sm text-fg-secondary">
+        <Link
           to="/signup"
           search={{ redirect: redirectTo }}
           className="font-medium text-orchard-500 underline-offset-2 hover:underline"

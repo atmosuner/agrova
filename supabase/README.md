@@ -8,19 +8,22 @@
 
 M0-14 RLS is split across five timestamped files (`20260422000402`–`20260422000406`) so each `apply_migration` payload stays small. **M0-15:** private bucket `issue-photos` + `storage.objects` policies in `20260422000500_storage_issue_photos_bucket.sql` (first path segment = `auth.uid()`). **M0-16:** `src/types/db.ts` is generated; refresh with **`pnpm supabase:gen-types`**, which reads `supabase/mcp_gentypes.json` (from Cursor `generate_typescript_types` MCP) or, if that file is missing, `npx supabase gen types` when `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` are set (see root `.env.example`). **M0-17:** Edge function stubs — `web-push-fanout` (notifications) and `setup-link` (no SMS in MVP; owner shares URLs manually). Run locally: `pnpm supabase:functions:serve` (needs [Supabase CLI](https://supabase.com/docs/guides/cli) + linked project). See `farm-operations-app.plan.md`.
 
-### Provisioning: `create-team-person` + `claim-setup-token`
+### Provisioning: `create-team-person`, `team-person-email`, `claim-setup-token`
 
-- **`create-team-person`** (JWT on; owner only) — creates `people` + Auth user (`@device.agrova.app`) + 7d setup token. The owner **Team** form calls it from the browser.
-- **`claim-setup-token`** (JWT off; one-time `setup_token` in body) — legacy path: create Auth if missing; or **pairing** if auth already exists (after owner added via the function above). Deploy with **`--no-verify-jwt`**.
+- **`create-team-person`** (deploy with **`--no-verify-jwt`**) — creates `people` + Auth user (`w{personId}@device.agrova.app`) with an **owner-set password** (8–72 chars); clears `setup_token` / `setup_token_expires_at` so workers use e-mail + password on `/login`. The owner **Team** form calls it from the browser. The function still requires `Authorization: Bearer <user JWT>` and checks `getUser()` + `people.role === OWNER`. **Why disable gateway JWT verify:** many projects issue **ES256** user access tokens; the Edge **API gateway** `verify_jwt` path can respond with `401` and `Unsupported JWT algorithm ES256`, while `auth.getUser()` inside the function validates those tokens correctly.
+- **`team-person-email`** (deploy with **`--no-verify-jwt`**) — owner **Edit person** loads and updates a crew member’s **Supabase Auth** sign-in e-mail (`getUserById` / `updateUserById`, with `email_confirm: true` on set). `POST` JSON: `{ "op": "get" | "set", "personId", "email"? }` (same `Authorization` + OWNER checks as `set-worker-password`).
+- **`claim-setup-token`** (JWT off; one-time `setup_token` in body) — legacy path: create Auth if missing; or **pairing** if auth already exists (after owner added via the function above).
 
 With [Supabase CLI](https://supabase.com/docs/guides/cli) linked (`supabase login` / `link`) and the project ref from your Dashboard (or `VITE_SUPABASE_URL`):
 
 ```bash
-npx -y supabase@2 functions deploy create-team-person --project-ref <PROJECT_REF>
+npx -y supabase@2 functions deploy create-team-person --no-verify-jwt --project-ref <PROJECT_REF>
+npx -y supabase@2 functions deploy set-worker-password --no-verify-jwt --project-ref <PROJECT_REF>
+npx -y supabase@2 functions deploy team-person-email --no-verify-jwt --project-ref <PROJECT_REF>
 npx -y supabase@2 functions deploy claim-setup-token --no-verify-jwt --project-ref <PROJECT_REF>
 ```
 
-Or use **Supabase Dashboard → Edge Functions** and paste from `supabase/functions/<name>/index.ts` after a push to your repo. Redeploy both whenever the TypeScript in this repo changes.
+Or use **Supabase Dashboard → Edge Functions** and paste from `supabase/functions/<name>/index.ts` after a push to your repo. Redeploy these functions whenever the TypeScript in this repo changes.
 
 ### Policy / schema checks (`db test`)
 

@@ -55,6 +55,11 @@ export default defineConfig(() => {
         '**/types/**',
         /** Hook-only module; covered indirectly via UI / integration. */
         'src/features/people/useMyPersonQuery.ts',
+        /** Supabase `functions.invoke` + `auth` session; error mappers covered in `*.test.ts` imports. */
+        'src/features/people/create-team-person.ts',
+        'src/features/people/set-worker-password.ts',
+        'src/features/people/team-person-email.ts',
+        'src/features/people/device-login-email.ts',
         'src/features/equipment/useActiveEquipmentQuery.ts',
         'src/features/equipment/useEquipmentUsage.ts',
         'src/features/fields/useFieldChemicalApplicationsQuery.ts',

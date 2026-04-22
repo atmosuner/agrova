@@ -1,3 +1,6 @@
+// Deploy with `--no-verify-jwt` (or MCP verify_jwt: false): the hosted Edge **gateway**
+// JWT check returns 401 "Unsupported JWT algorithm ES256" for modern user access tokens,
+// while auth.getUser() below validates ES256 correctly. Authorization: Bearer + getUser() + OWNER row.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1?target=deno&no-check"
 
@@ -12,20 +15,6 @@ function json(body: unknown, status = 200) {
     status,
     headers: { "Content-Type": "application/json; charset=utf-8", ...cors },
   })
-}
-
-function randomPassword(): string {
-  const a = new Uint8Array(32)
-  globalThis.crypto.getRandomValues(a)
-  const s = btoa(String.fromCharCode(...a))
-  return s.replaceAll("+", "X").replaceAll("/", "y") + "Aa1"
-}
-
-function generateUrlSafeToken32(): string {
-  const bytes = new Uint8Array(24)
-  globalThis.crypto.getRandomValues(bytes)
-  const s = btoa(String.fromCharCode(...bytes))
-  return s.replaceAll("+", "-").replaceAll("/", "_").replaceAll("=", "")
 }
 
 function isCrewRole(r: string): r is "FOREMAN" | "AGRONOMIST" | "WORKER" {
@@ -47,9 +36,19 @@ Deno.serve(async (req) => {
     return json({ error: "server_misconfigured" }, 500)
   }
 
+  const hasApikey = Boolean(req.headers.get("apikey")?.length)
   const authHeader = req.headers.get("Authorization")
+  const authPreview = authHeader?.startsWith("Bearer ") ? "bearer_present" : "missing_or_invalid"
+
+  console.info("[create-team-person]", "request", {
+    method: req.method,
+    hasApikey,
+    authorization: authPreview,
+  })
+
   if (!authHeader?.startsWith("Bearer ")) {
-    return json({ error: "unauthorized" }, 401)
+    console.warn("[create-team-person] 401 no_bearer")
+    return json({ error: "unauthorized", reason: "no_bearer" }, 401)
   }
 
   const userClient = createClient(supabaseUrl, anonKey, {
@@ -61,8 +60,15 @@ Deno.serve(async (req) => {
     error: authErr,
   } = await userClient.auth.getUser()
   if (authErr || !user) {
-    return json({ error: "unauthorized" }, 401)
+    console.warn("[create-team-person] 401 get_user_failed", {
+      message: authErr?.message,
+      name: authErr?.name,
+      status: authErr?.status,
+    })
+    return json({ error: "unauthorized", reason: "get_user_failed" }, 401)
   }
+
+  console.info("[create-team-person] auth ok", { userId: user.id })
 
   const admin = createClient(supabaseUrl, serviceKey, {
     auth: { autoRefreshToken: false, persistSession: false },
@@ -73,12 +79,16 @@ Deno.serve(async (req) => {
     .eq("auth_user_id", user.id)
     .maybeSingle()
   if (actorErr || !actor || actor.role !== "OWNER") {
+    console.warn("[create-team-person] 403 not_owner", {
+      actorErr: actorErr?.message,
+      role: actor?.role,
+    })
     return json({ error: "forbidden" }, 403)
   }
 
-  let body: { fullName?: unknown; phone?: unknown; role?: unknown }
+  let body: { fullName?: unknown; phone?: unknown; role?: unknown; password?: unknown }
   try {
-    body = (await req.json()) as { fullName?: unknown; phone?: unknown; role?: unknown }
+    body = (await req.json()) as { fullName?: unknown; phone?: unknown; role?: unknown; password?: unknown }
   } catch {
     return json({ error: "invalid_json" }, 400)
   }
@@ -86,6 +96,7 @@ Deno.serve(async (req) => {
   const fullName = typeof body.fullName === "string" ? body.fullName.trim() : ""
   const phone = typeof body.phone === "string" ? body.phone.trim() : ""
   const roleRaw = typeof body.role === "string" ? body.role : ""
+  const password = typeof body.password === "string" ? body.password : ""
   if (!fullName) {
     return json({ error: "validation_failed", field: "fullName" }, 400)
   }
@@ -94,6 +105,9 @@ Deno.serve(async (req) => {
   }
   if (!isCrewRole(roleRaw)) {
     return json({ error: "validation_failed", field: "role" }, 400)
+  }
+  if (password.length < 8 || password.length > 72) {
+    return json({ error: "validation_failed", field: "password" }, 400)
   }
 
   const { data: inserted, error: insErr } = await admin
@@ -118,7 +132,6 @@ Deno.serve(async (req) => {
 
   const personId = inserted.id as string
   const email = `w${personId.replace(/-/g, "")}@device.agrova.app`
-  const password = randomPassword()
 
   const { data: created, error: cErr } = await admin.auth.admin.createUser({
     email,
@@ -133,15 +146,12 @@ Deno.serve(async (req) => {
     return json({ error: "create_user_failed", message: cErr?.message }, 500)
   }
 
-  const token = generateUrlSafeToken32()
-  const expires = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-
   const { error: linkErr } = await admin
     .from("people")
     .update({
       auth_user_id: created.user.id,
-      setup_token: token,
-      setup_token_expires_at: expires,
+      setup_token: null,
+      setup_token_expires_at: null,
     })
     .eq("id", personId)
 
@@ -156,5 +166,6 @@ Deno.serve(async (req) => {
     return json({ error: "link_person_failed" }, 500)
   }
 
-  return json({ personId, setupToken: token })
+  console.info("[create-team-person] success", { personId })
+  return json({ personId, loginEmail: email })
 })

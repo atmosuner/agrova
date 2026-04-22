@@ -7,6 +7,8 @@ import { LOCKED_APP_TIMEZONE } from '@/features/settings/constants'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
 import { downloadAgrovaDataExport } from '@/features/settings/download-export'
 import { NotificationMuteSettings } from '@/features/settings/notification-mute-settings'
+import { changeAccountPassword } from '@/features/auth/change-account-password'
+import { changePasswordFormValuesSchema } from '@/features/auth/validation'
 import { operationSettingsFormSchema, type OperationSettingsFormValues } from '@/features/settings/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
 import { i18n } from '@/lib/i18n'
@@ -34,6 +36,12 @@ function SettingsPage() {
   const [ok, setOk] = useState(false)
   const [loggingOut, setLoggingOut] = useState(false)
   const [logoutError, setLogoutError] = useState<string | null>(null)
+  const [pwCurrent, setPwCurrent] = useState('')
+  const [pwNew, setPwNew] = useState('')
+  const [pwNew2, setPwNew2] = useState('')
+  const [pwErr, setPwErr] = useState<string | null>(null)
+  const [pwOk, setPwOk] = useState(false)
+  const [pwSaving, setPwSaving] = useState(false)
 
   function setField(name: keyof OperationSettingsFormValues, value: string) {
     setDraft((d) => ({ ...(d ?? fromDb), [name]: value }))
@@ -75,6 +83,32 @@ function SettingsPage() {
     setOk(true)
     setDraft(null)
     await refresh()
+  }
+
+  async function onChangePassword(e: React.FormEvent) {
+    e.preventDefault()
+    setPwErr(null)
+    setPwOk(false)
+    const parsed = changePasswordFormValuesSchema.safeParse({
+      currentPassword: pwCurrent,
+      newPassword: pwNew,
+      newPasswordConfirm: pwNew2,
+    })
+    if (!parsed.success) {
+      setPwErr(parsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
+      return
+    }
+    setPwSaving(true)
+    const r = await changeAccountPassword(parsed.data.currentPassword, parsed.data.newPassword)
+    setPwSaving(false)
+    if (!r.ok) {
+      setPwErr(r.message)
+      return
+    }
+    setPwOk(true)
+    setPwCurrent('')
+    setPwNew('')
+    setPwNew2('')
   }
 
   async function onLogout() {
@@ -152,6 +186,58 @@ function SettingsPage() {
           {saving ? t`Saving…` : t`Save`}
         </Button>
       </form>
+      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Password`)}>
+        <h2 className="text-lg font-medium text-fg">{t`Change password`}</h2>
+        <p className="mt-1 text-sm text-fg-secondary">
+          {t`Use your current password, then a new one (8–72 characters).`}
+        </p>
+        <form onSubmit={onChangePassword} className="mt-4 space-y-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-fg" htmlFor="st-pw0">
+              {t`Current password`}
+            </label>
+            <input
+              id="st-pw0"
+              type="password"
+              autoComplete="current-password"
+              className={formFieldClassName}
+              value={pwCurrent}
+              onChange={(e) => setPwCurrent(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-fg" htmlFor="st-pw1">
+              {t`New password`}
+            </label>
+            <input
+              id="st-pw1"
+              type="password"
+              autoComplete="new-password"
+              className={formFieldClassName}
+              value={pwNew}
+              onChange={(e) => setPwNew(e.target.value)}
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-fg" htmlFor="st-pw2">
+              {t`Confirm new password`}
+            </label>
+            <input
+              id="st-pw2"
+              type="password"
+              autoComplete="new-password"
+              className={formFieldClassName}
+              value={pwNew2}
+              onChange={(e) => setPwNew2(e.target.value)}
+            />
+          </div>
+          {pwErr ? <p className="text-sm text-harvest-500">{pwErr}</p> : null}
+          {pwOk ? <p className="text-sm text-orchard-700">{t`Password updated.`}</p> : null}
+          <Button type="submit" disabled={pwSaving}>
+            {pwSaving ? t`Saving…` : t`Update password`}
+          </Button>
+        </form>
+      </section>
       <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Data export`)}>
         <h2 className="text-lg font-medium text-fg">{t`Tüm verilerimi indir`}</h2>
         <p className="mt-1 text-sm text-fg-secondary">

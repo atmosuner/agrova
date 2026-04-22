@@ -34,3 +34,27 @@ export const loginFormSchema = z.object({
 })
 
 export type LoginFormValues = z.infer<typeof loginFormSchema>
+
+/** Shared with crew creation / edge functions (8–72). */
+const appPasswordSchema = z
+  .string()
+  .min(8, { message: 'Şifre en az 8 karakter olmalı.' })
+  .max(72, { message: 'Şifre en fazla 72 karakter olabilir.' })
+
+export const newPasswordPairValuesSchema = z
+  .object({
+    newPassword: appPasswordSchema,
+    newPasswordConfirm: z.string().min(1, { message: 'Şifre tekrarı gerekli.' }),
+  })
+  .refine((d) => d.newPassword === d.newPasswordConfirm, {
+    path: ['newPasswordConfirm'],
+    message: 'Yeni şifreler eşleşmiyor.',
+  })
+
+export type NewPasswordPairValues = z.infer<typeof newPasswordPairValuesSchema>
+
+export const changePasswordFormValuesSchema = newPasswordPairValuesSchema.extend({
+  currentPassword: z.string().min(1, { message: 'Mevcut şifre gerekli.' }),
+})
+
+export type ChangePasswordFormValues = z.infer<typeof changePasswordFormValuesSchema>

@@ -3,6 +3,8 @@ import { t } from '@lingui/macro'
 import { useEffect, useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { changeAccountPassword } from '@/features/auth/change-account-password'
+import { changePasswordFormValuesSchema } from '@/features/auth/validation'
 import { signOutAndClearLocalData } from '@/features/auth/logout'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import {
@@ -14,6 +16,7 @@ import {
   setStoredAgrovaTheme,
   readMutePush,
 } from '@/lib/theme'
+import { formFieldClassName } from '@/lib/form-field-class'
 import { supabase } from '@/lib/supabase'
 import type { Json } from '@/types/db'
 
@@ -25,6 +28,12 @@ function ProfilePage() {
   const { data: me, isLoading, refetch } = useMyPersonQuery()
   const [saving, setSaving] = useState(false)
   const [err, setErr] = useState<string | null>(null)
+  const [pwCurrent, setPwCurrent] = useState('')
+  const [pwNew, setPwNew] = useState('')
+  const [pwNew2, setPwNew2] = useState('')
+  const [pwErr, setPwErr] = useState<string | null>(null)
+  const [pwOk, setPwOk] = useState(false)
+  const [pwSaving, setPwSaving] = useState(false)
   const navigate = useNavigate()
 
   const pushMuted = me ? readMutePush(me.notification_prefs as Json) : false
@@ -67,6 +76,32 @@ function ProfilePage() {
     } finally {
       setSaving(false)
     }
+  }
+
+  async function onChangePassword(e: React.FormEvent) {
+    e.preventDefault()
+    setPwErr(null)
+    setPwOk(false)
+    const parsed = changePasswordFormValuesSchema.safeParse({
+      currentPassword: pwCurrent,
+      newPassword: pwNew,
+      newPasswordConfirm: pwNew2,
+    })
+    if (!parsed.success) {
+      setPwErr(parsed.error.issues[0]?.message ?? t`Formu kontrol edin.`)
+      return
+    }
+    setPwSaving(true)
+    const r = await changeAccountPassword(parsed.data.currentPassword, parsed.data.newPassword)
+    setPwSaving(false)
+    if (!r.ok) {
+      setPwErr(r.message)
+      return
+    }
+    setPwOk(true)
+    setPwCurrent('')
+    setPwNew('')
+    setPwNew2('')
   }
 
   async function onLogout() {
@@ -146,7 +181,58 @@ function ProfilePage() {
         </div>
       </div>
 
-      <div className="mt-8">
+      <form onSubmit={onChangePassword} className="mt-6 rounded-xl border border-border bg-surface-0 p-4">
+        <p className="text-sm font-medium text-fg">{t`Change password`}</p>
+        <p className="mt-1 text-xs text-fg-secondary">
+          {t`Cihaz e-postanız ve mevcut şifreniz. E-posta ile sıfırlama cihaz hesaplarında yok.`}
+        </p>
+        <div className="mt-3 flex flex-col gap-1">
+          <label className="text-xs text-fg-secondary" htmlFor="mp0">
+            {t`Current password`}
+          </label>
+          <input
+            id="mp0"
+            type="password"
+            autoComplete="current-password"
+            className={formFieldClassName}
+            value={pwCurrent}
+            onChange={(e) => setPwCurrent(e.target.value)}
+          />
+        </div>
+        <div className="mt-2 flex flex-col gap-1">
+          <label className="text-xs text-fg-secondary" htmlFor="mp1">
+            {t`New password`}
+          </label>
+          <input
+            id="mp1"
+            type="password"
+            autoComplete="new-password"
+            className={formFieldClassName}
+            value={pwNew}
+            onChange={(e) => setPwNew(e.target.value)}
+          />
+        </div>
+        <div className="mt-2 flex flex-col gap-1">
+          <label className="text-xs text-fg-secondary" htmlFor="mp2">
+            {t`Confirm new password`}
+          </label>
+          <input
+            id="mp2"
+            type="password"
+            autoComplete="new-password"
+            className={formFieldClassName}
+            value={pwNew2}
+            onChange={(e) => setPwNew2(e.target.value)}
+          />
+        </div>
+        {pwErr ? <p className="mt-2 text-sm text-harvest-500">{pwErr}</p> : null}
+        {pwOk ? <p className="mt-2 text-sm text-orchard-700">{t`Password updated.`}</p> : null}
+        <Button type="submit" className="mt-3 w-full" disabled={pwSaving}>
+          {pwSaving ? t`Saving…` : t`Update password`}
+        </Button>
+      </form>
+
+      <div className="mt-6">
         <Button
           type="button"
           variant="destructive"
@@ -156,7 +242,7 @@ function ProfilePage() {
           {t`Çıkış yap`}
         </Button>
         <p className="mt-2 text-center text-sm text-fg-faint">
-          {t`Yeni kurulum linki için işletme sahibiyle iletişime geçin.`}
+          {t`Şifrenizi unuttuysanız işletme sahibinden (Ekip) yeni şifre isteyin.`}
         </p>
       </div>
     </div>
