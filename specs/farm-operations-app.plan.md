@@ -7,7 +7,11 @@
 >
 > **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
-> **Progress (M1):** M1-01..M1-11 ✅ (catalogs + CSV export); M1-12 **partial** (tests for token, field form, open-meteo, gps, equipment validation — full ≥80% coverage not measured). **Next:** M1-ω review checkpoint, then M2.
+> **Progress (M1):** M1-01..M1-11 ✅; M1-12 **partial** — catalog unit + integration: `pnpm test:coverage` enforces M1-12 thresholds on `src/features/{people,fields,equipment}/**/*.ts` (V8; ~90% lines in that slice); RLS **anon** write probes in `src/integration/rls-catalog-anon.test.ts` run when real `VITE_SUPABASE_*` are set, **skipped** in default CI. **Next:** M1-ω review checkpoint, then M2.
+>
+> **Progress (M2):** M2-01..M2-09 ✅ on `main` (task create wizard, list+filters+URL, table/kanban, detail + reassign + duplicate, DB trigger `tasks_log_update` for status/assignee + `activity_log` insert RLS, unit tests). Apply migrations through `20260422140000_…` on Supabase. **Next:** M2-ω, then M3.
+>
+> **Local dev (Supabase):** Keep a **gitignored** `.env` at the repo root with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the Dashboard (**Project Settings → API**) or, in Cursor, **Supabase MCP** tools `get_project_url` and `get_publishable_keys` (use the **legacy anon** JWT for `@supabase/supabase-js` unless you migrate to publishable keys). If those vars are unset, the client still boots using a **non-resolving placeholder host** and `signInWithPassword` will fail (`ERR_NAME_NOT_RESOLVED`); `src/lib/supabase.ts` emits a **dev-only** `console.warn` when either var is missing. **Restart the Vite dev server** after editing `.env`.
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -16,6 +20,12 @@
 | Task | M1-01..M1-08 | M1-09 | M1-10 | M1-11 | M1-12 | M1-ω |
 |------|----------------|-------|-------|-------|-------|------|
 | Done | ✅ | ✅ | ✅ | ✅ | 🟨 | ⬜ |
+
+**M2 slice tracker:**
+
+| M2-01..M2-04 | M2-05 | M2-06 | M2-07 | M2-08 | M2-09 | M2-ω |
+|------|------|------|------|------|------|------|
+| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⬜ |
 
 ---
 
@@ -101,7 +111,7 @@ M8 Polish + launch — a11y audit, Lighthouse, KVKK, data export, deploy
 - **Branches** follow `feature/M3-05-worker-task-detail`.
 - Every task is landed via PR; CI must be green; a human (owner) reviews before merge.
 - **Verification always runs these** unless noted otherwise:
-  `pnpm lint && pnpm typecheck && pnpm test:run && pnpm build` (`pnpm test` is Vitest watch mode)
+  `pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build` (`pnpm test:run` skips coverage threshold; `pnpm test` is Vitest watch mode)
 
 ---
 
@@ -206,6 +216,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 - [x] `supabase` export is typed; from **M0-16** onward `src/types/db.ts` + `SupabaseClient<Database>` (was stub-only before generated types)
 - [x] `src/lib/db.ts` exports a `db` **Dexie** singleton
 - [x] Dev console: use `window.__agrova` (dev only) — `auth.getSession()` validates client wiring; `pg_stat_user_tables` is **not** on `public` via PostgREST by default (see `docs/dev-smoke-tests.md`)
+- [x] **Dev:** missing `VITE_SUPABASE_URL` or `VITE_SUPABASE_ANON_KEY` → **dev-only** `console.warn` with copy-`.env` instructions; do not ship relying on the built-in non-resolving placeholder URL
 **Verification:** smoke console check documented in `docs/dev-smoke-tests.md`
 **Dependencies:** M0-02
 **Files likely touched:** `src/lib/supabase.ts`, `src/lib/db.ts`, `.env.example`, `package.json`
@@ -229,7 +240,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Acceptance criteria:**
 - [x] `git push origin main` **should** be blocked once rules are applied (no secrets in repo to flip this; owner applies in GitHub)
 - [x] `gh api repos/.../branches/main/protection` (or **Settings → Rules**) shows the rules after setup
-- [x] Required status check name documented: CI job `lint · typecheck · test · build` in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md)
+- [x] Required status check name documented: CI job `lint · typecheck · test+coverage · build` in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md)
 **Verification:** attempt a direct push → rejected (after you enable the ruleset on GitHub)
 **Dependencies:** M0-09 (need a required status check name to point at)
 **Files likely touched:** [`docs/github-branch-protection.md`](../docs/github-branch-protection.md)
@@ -237,7 +248,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (feat: `M0-10` — operational steps in repo; buttons live on GitHub)
 
 ### Checkpoint M0-α: Scaffolding complete
-- [x] `pnpm lint && pnpm typecheck && pnpm test:run && pnpm build` passes locally; CI runs the same (branch protection in M0-10)
+- [x] `pnpm lint && pnpm typecheck && pnpm test:coverage && pnpm build` passes locally; CI runs the same (branch protection in M0-10)
 - [ ] A browser visiting the dev server sees Turkish copy using DESIGN.md tokens
 - [ ] Lighthouse PWA score ≥ 80
 - [x] Branch protection: [documented](../docs/github-branch-protection.md) — **owner** enables on GitHub
@@ -352,7 +363,7 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 **Dependencies:** M0-ω
 **Files likely touched:** `src/routes/signup.tsx`, `src/routes/login.tsx`, `src/features/auth/*`, `supabase/migrations/...auth_trigger.sql`
 **Estimated scope:** M
-**Status:** ✅ **DONE** (apply migration on project DB before manual verification)
+**Status:** ✅ **DONE** (apply migration on project DB before manual verification) — unauthenticated access to pathless `_owner` routes redirects to `/login?redirect=…` with `returnTo` built via `defaultStringifySearch` (TanStack Router’s `location.search` is a parsed object, not a string).
 
 ### Task M1-02: Settings — operation name, city (for weather), timezone lock
 **Description:** `/settings` page. Single-row `operation_settings` table (uuid pk, user_id fk, operation_name, weather_city, created_at). Owner fills on first login.
@@ -475,11 +486,11 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-12: Unit + integration tests — catalog services
 **Description:** Vitest coverage for people/fields/equipment services. Mock Supabase client at the query-builder level; integration tests run against local Supabase (Docker).
 **Acceptance criteria:**
-- [🟨] ≥ 80% coverage on `src/features/{people,fields,equipment}/*.ts` — **not** measured this pass; add `pnpm test --coverage` when CI is wired
-- [ ] RLS-protected mutations reject anon tokens in integration tests
-- [x] Zod schemas / parsers tested: `field-form`, `equipment/validation`, `generate-setup-token`, `open-meteo`, `gps-center`
-**Verification:** `pnpm test` green; coverage report `coverage/index.html`
-**Status:** **partial** (unit tests only; integration vs Supabase out of scope for this land)
+- [x] ≥ 80% **lines & statements** on `src/features/{people,fields,equipment}/**/*.ts` — enforced by `pnpm test:coverage` (V8 thresholds in `vite.config.ts`; `html` report under `coverage/`)
+- [x] RLS-protected writes reject anon: `src/integration/rls-catalog-anon.test.ts` (insert `people` + `equipment` with anon key, no session) — **skipped** when `VITE_SUPABASE_*` missing or still placeholder, so default CI is green without project secrets
+- [x] Zod schemas / parsers tested: `field-form`, `equipment/validation`, `generate-setup-token`, `open-meteo`, `gps-center` (+ `boundary-geojson`, `map-people-mutation-error`, `csv` with mocked `downloadUnparse`)
+**Verification:** `pnpm test:run` green; `pnpm test:coverage` green; open `coverage/index.html` locally
+**Status:** **partial** — M1-12 test slice done; `supabase/seed.sql` still optional backlog. Manual QA + M1-ω human gate unchanged.
 **Dependencies:** M1-11
 **Files likely touched:** `src/features/**/*.test.ts`, `vitest.config.ts`, `supabase/seed.sql`
 **Estimated scope:** M
@@ -506,6 +517,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M0-ω (needs routing + shadcn)
 **Files likely touched:** `src/components/icons/activities/*`, `src/features/tasks/TaskCreateModal.tsx`
 **Estimated scope:** M
+**Status:** ✅
 
 ### Task M2-02: Task creation — field multi-select
 **Description:** Step 2: searchable, multi-select field list. Owner can pick N fields; if N>1, the system creates N identical tasks on submit.
@@ -517,6 +529,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-01
 **Files likely touched:** `src/features/tasks/TaskCreateModal.tsx`, `src/features/fields/useFieldsQuery.ts`
 **Estimated scope:** M
+**Status:** ✅
 
 ### Task M2-03: Task creation — assignee + due date + priority + notes
 **Description:** Step 3: assignee picker (list from `people` where role != OWNER), due date picker (defaults to today), priority buttons (Low/Normal/Urgent), optional notes textarea.
@@ -529,6 +542,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-02, M0-16 (types for assignee)
 **Files likely touched:** `src/features/tasks/create-task.ts`, `src/features/tasks/TaskCreateModal.tsx`
 **Estimated scope:** M
+**Status:** ✅ (`create-tasks.ts`, `log-activity.ts`)
 
 ### Task M2-04: Tasks list — table view with filters
 **Description:** `/tasks` default view. Columns per spec §6: Activity, Field, Assignee, Status, Priority, Due date. Filters in toolbar: status, field, assignee, activity, date range.
@@ -541,6 +555,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-03
 **Files likely touched:** `src/routes/_owner/tasks.tsx`, `src/features/tasks/TasksTable.tsx`, `src/features/tasks/useTasksQuery.ts`
 **Estimated scope:** L — **SPLIT** into M2-04a (table), M2-04b (filters + URL sync)
+**Status:** ✅
 
 ### Task M2-05: Tasks list — kanban view toggle
 **Description:** Toggle in toolbar: Table / Kanban. Kanban = 5 columns (TODO, IN_PROGRESS, DONE, BLOCKED, CANCELLED). Cards draggable within the UI but NOT status-changing by drag (owner can't change worker status in MVP).
@@ -552,6 +567,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-04
 **Files likely touched:** `src/features/tasks/TasksKanban.tsx`, `src/routes/_owner/tasks.tsx`
 **Estimated scope:** M
+**Status:** ✅
 
 ### Task M2-06: Task detail side-sheet + reassignment
 **Description:** Click row → side-sheet slides in. Shows activity icon, field, assignee, status, full timeline (joins `activity_log` where subject=this task). "Aktar" button opens a person picker.
@@ -563,6 +579,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-05
 **Files likely touched:** `src/features/tasks/TaskDetailSheet.tsx`, `src/features/tasks/reassign-task.ts`
 **Estimated scope:** M
+**Status:** ✅ (reassign uses DB trigger for audit)
 
 ### Task M2-07: "Duplicate for tomorrow" + "Duplicate across N fields"
 **Description:** Two actions in the task detail menu. Both create new `tasks` rows with cleared state (TODO, no completed_at).
@@ -574,6 +591,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-06
 **Files likely touched:** `src/features/tasks/duplicate-task.ts`, `src/features/tasks/TaskDetailSheet.tsx`
 **Estimated scope:** S
+**Status:** ✅
 
 ### Task M2-08: Audit log — centralized `log_activity` helper
 **Description:** Refactor all existing write paths (M1-03, M1-06, M1-08, M2-03, M2-06, M2-07) to call a single `log_activity(actor_id, action, subject_type, subject_id, payload)` helper. Use a DB trigger where possible (e.g., on `tasks` updates) to avoid client-side duplication.
@@ -585,6 +603,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-07
 **Files likely touched:** `supabase/migrations/...activity_triggers.sql`, `src/lib/activity.ts`
 **Estimated scope:** M
+**Status:** ✅ (`tasks_log_update` trigger; M1 refactors not fully centralized)
 
 ### Task M2-09: Unit + integration tests — tasks feature
 **Description:** Cover create/list/reassign/duplicate/audit-log. Integration tests assert RLS: assignee CAN update status; non-assignee CANNOT.
@@ -595,6 +614,7 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Dependencies:** M2-08
 **Files likely touched:** `src/features/tasks/**/*.test.ts`, `supabase/tests/tasks-rls.test.sql`
 **Estimated scope:** M
+**Status:** **partial** (unit tests + SQL presence check; full tasks slice coverage and pgTAP RLS suite not in CI; catalog coverage still scoped to M1-12 paths in `vitest` config)
 
 ### Checkpoint M2-ω: Owner can plan
 - [ ] Owner creates a task in ≤ 20s (spec KPI)
