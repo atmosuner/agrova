@@ -17,8 +17,12 @@ msgstr ""
 msgid "—"
 msgstr "—"
 
-#: src/features/tasks/TaskCreateModal.tsx:102
+#: src/features/tasks/TaskCreateModal.tsx:131
 msgid "1. Aktivite seçin"
+msgstr ""
+
+#: src/features/tasks/TaskCreateModal.tsx:159
+msgid "2. Tarlaları seçin (birden çok olabilir)"
 msgstr ""
 
 #: src/features/equipment/csv.ts:24
@@ -47,13 +51,17 @@ msgstr "Ziraat mühendisi"
 msgid "Agrova"
 msgstr "Agrova"
 
-#: src/features/tasks/TaskCreateModal.tsx:103
+#: src/features/tasks/TaskCreateModal.tsx:132
 msgid "Aktiviteler"
 msgstr ""
 
 #: src/routes/signup.tsx:185
 msgid "Already have an account? Sign in"
 msgstr "Zaten hesabınız var mı? Giriş yapın"
+
+#: src/features/tasks/TaskCreateModal.tsx:161
+msgid "Ara"
+msgstr ""
 
 #: src/routes/_owner/equipment.tsx:267
 #: src/routes/_owner/people.tsx:293
@@ -86,7 +94,7 @@ msgstr "Alan"
 msgid "Area (ha)"
 msgstr "Alan (ha)"
 
-#: src/features/tasks/activities.ts:33
+#: src/features/tasks/activities.ts:34
 msgid "Aşılama"
 msgstr ""
 
@@ -94,19 +102,23 @@ msgstr ""
 msgid "At least 8 characters, including one number."
 msgstr "En az 8 karakter, en az bir rakam."
 
-#: src/features/tasks/TaskCreateModal.tsx:135
-msgid "Atanan kişi ve tarih — M2-03"
+#: src/features/tasks/TaskCreateModal.tsx:228
+msgid "Atama ve tarih (son adım)…"
 msgstr ""
+
+#: src/features/tasks/TaskCreateModal.tsx:135
+#~ msgid "Atanan kişi ve tarih — M2-03"
+#~ msgstr ""
 
 #: src/routes/login.tsx:13
 #~ msgid "Authentication form ships in a later milestone."
 #~ msgstr "Kimlik doğrulama formu sonraki kilometre taşlarında eklenecek."
 
-#: src/features/tasks/activities.ts:36
+#: src/features/tasks/activities.ts:37
 msgid "Biçme"
 msgstr ""
 
-#: src/features/tasks/activities.ts:25
+#: src/features/tasks/activities.ts:26
 msgid "Budama"
 msgstr ""
 
@@ -116,7 +128,7 @@ msgstr ""
 msgid "Cancel"
 msgstr "İptal"
 
-#: src/features/tasks/activities.ts:31
+#: src/features/tasks/activities.ts:32
 msgid "Çapalama"
 msgstr ""
 
@@ -175,15 +187,15 @@ msgstr "Tarlayı sil"
 msgid "Device setup"
 msgstr "Cihaz kurulumu"
 
-#: src/features/tasks/activities.ts:38
+#: src/features/tasks/activities.ts:39
 msgid "Diğer"
 msgstr ""
 
-#: src/features/tasks/activities.ts:32
+#: src/features/tasks/activities.ts:33
 msgid "Dikim"
 msgstr ""
 
-#: src/features/tasks/activities.ts:35
+#: src/features/tasks/activities.ts:36
 msgid "Don koruma"
 msgstr ""
 
@@ -237,6 +249,10 @@ msgstr "İş e-postanızı ve telefonu uluslararası (E.164) formatta girin."
 msgid "Equipment"
 msgstr "Ekipman"
 
+#: src/features/tasks/TaskCreateModal.tsx:200
+msgid "Eşleşen tarla yok."
+msgstr ""
+
 #: src/routes/_owner/fields.tsx:248
 #: src/routes/_owner/route.tsx:35
 msgid "Fields"
@@ -262,15 +278,19 @@ msgstr "Formu kontrol edin."
 msgid "Full name"
 msgstr "Ad soyad"
 
-#: src/features/tasks/TaskCreateModal.tsx:151
+#: src/features/tasks/TaskCreateModal.tsx:250
 msgid "Geri"
 msgstr ""
 
-#: src/features/tasks/activities.ts:34
+#: src/features/tasks/TaskCreateModal.tsx:234
+msgid "görev oluşturulacak"
+msgstr ""
+
+#: src/features/tasks/activities.ts:35
 msgid "Gözlem"
 msgstr ""
 
-#: src/features/tasks/activities.ts:28
+#: src/features/tasks/activities.ts:29
 msgid "Gübreleme"
 msgstr ""
 
@@ -279,7 +299,7 @@ msgstr ""
 msgid "ha"
 msgstr "ha"
 
-#: src/features/tasks/activities.ts:30
+#: src/features/tasks/activities.ts:31
 msgid "Hasat"
 msgstr ""
 
@@ -288,11 +308,11 @@ msgstr ""
 msgid "History"
 msgstr "Geçmiş"
 
-#: src/features/tasks/activities.ts:26
+#: src/features/tasks/activities.ts:27
 msgid "İlaçlama"
 msgstr ""
 
-#: src/features/tasks/TaskCreateModal.tsx:168
+#: src/features/tasks/TaskCreateModal.tsx:269
 msgid "İleri"
 msgstr ""
 
@@ -301,11 +321,15 @@ msgstr ""
 msgid "Issues"
 msgstr "Sorunlar"
 
-#: src/features/tasks/TaskCreateModal.tsx:97
+#: src/features/tasks/TaskCreateModal.tsx:183
+msgid "Kaldır"
+msgstr ""
+
+#: src/features/tasks/TaskCreateModal.tsx:126
 msgid "Kapat"
 msgstr ""
 
-#: src/features/tasks/TaskCreateModal.tsx:28
+#: src/features/tasks/TaskCreateModal.tsx:47
 msgid "Kaydedilmemiş değişiklikler var. Pencereyi kapatılsın mı?"
 msgstr ""
 
@@ -336,7 +360,7 @@ msgstr "Boylam"
 msgid "Map of fields"
 msgstr "Tarla haritası"
 
-#: src/features/tasks/activities.ts:37
+#: src/features/tasks/activities.ts:38
 msgid "Nakliye"
 msgstr ""
 
@@ -500,7 +524,7 @@ msgstr "Ayarlar"
 msgid "Setup link copied to clipboard."
 msgstr "Kurulum linki panoya kopyalandı."
 
-#: src/features/tasks/activities.ts:29
+#: src/features/tasks/activities.ts:30
 msgid "Seyreltme"
 msgstr ""
 
@@ -530,12 +554,20 @@ msgstr "Kayıt yapılıyor…"
 msgid "Status"
 msgstr "Durum"
 
-#: src/features/tasks/activities.ts:27
+#: src/features/tasks/activities.ts:28
 msgid "Sulama"
 msgstr ""
 
+#: src/features/tasks/TaskCreateModal.tsx:167
+msgid "Tarla veya ürün…"
+msgstr ""
+
 #: src/features/tasks/TaskCreateModal.tsx:130
-msgid "Tarlalar — bir sonraki adımda (M2-02) yüklenecek."
+#~ msgid "Tarlalar — bir sonraki adımda (M2-02) yüklenecek."
+#~ msgstr ""
+
+#: src/features/tasks/TaskCreateModal.tsx:192
+msgid "Tarlalar yükleniyor…"
 msgstr ""
 
 #: src/routes/m/task.$id.tsx:12
@@ -616,7 +648,7 @@ msgstr "İşçi"
 msgid "Worker PWA task list — /m URL prefix until role-based routing."
 msgstr "İşçi PWA görev listesi — rol tabanlı yönlendirmeye kadar /m URL öneki."
 
-#: src/features/tasks/TaskCreateModal.tsx:90
+#: src/features/tasks/TaskCreateModal.tsx:119
 #: src/routes/_owner/tasks.tsx:24
 msgid "Yeni görev"
 msgstr ""

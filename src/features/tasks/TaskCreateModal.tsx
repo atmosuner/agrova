@@ -1,6 +1,6 @@
 /* eslint-disable lingui/no-unlocalized-strings -- layout Tailwind on native dialog */
 import { msg, t } from '@lingui/macro'
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { ActivityIcon } from '@/components/icons/activities/ActivityIcon'
 import { Button } from '@/components/ui/button'
 import {
@@ -8,6 +8,8 @@ import {
   ACTIVITY_LABEL,
   type ActivityId,
 } from '@/features/tasks/activities'
+import { fieldMatchesQuery } from '@/features/tasks/field-filter'
+import { useFieldsQuery } from '@/features/tasks/useFieldsQuery'
 import { i18n } from '@/lib/i18n'
 
 type TaskCreateModalProps = {
@@ -20,8 +22,24 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
   const titleId = useId()
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [activity, setActivity] = useState<ActivityId | null>(null)
+  const [fieldIds, setFieldIds] = useState<string[]>([])
+  const [fieldSearch, setFieldSearch] = useState('')
 
-  const isDirty = activity !== null || step > 1
+  const { data: fields = [], isLoading: fieldsLoading, error: fieldsError } = useFieldsQuery()
+
+  const filteredFields = useMemo(() => {
+    return fields.filter((f) => fieldMatchesQuery(f.name, f.crop, fieldSearch))
+  }, [fields, fieldSearch])
+
+  const fieldNameById = useMemo(() => {
+    const m = new Map<string, string>()
+    for (const f of fields) {
+      m.set(f.id, f.name)
+    }
+    return m
+  }, [fields])
+
+  const isDirty = activity !== null || fieldIds.length > 0 || step > 1
 
   const tryClose = useCallback(() => {
     if (isDirty) {
@@ -34,8 +52,18 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
     }
     setStep(1)
     setActivity(null)
+    setFieldIds([])
+    setFieldSearch('')
     onClose()
   }, [isDirty, onClose])
+
+  function toggleField(id: string) {
+    setFieldIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
+  }
+
+  function removeFieldChip(id: string) {
+    setFieldIds((prev) => prev.filter((x) => x !== id))
+  }
 
   useEffect(() => {
     const el = dialogRef.current
@@ -127,8 +155,72 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
           </div>
         ) : null}
         {step === 2 ? (
-          <div className="flex-1 overflow-y-auto px-4 py-6 text-center text-sm text-fg-secondary">
-            {t`Tarlalar yükleniyor…`}
+          <div className="flex min-h-0 flex-1 flex-col gap-3 px-4 py-3">
+            <p className="text-sm text-fg-secondary">{t`2. Tarlaları seçin (birden çok olabilir)`}</p>
+            <label className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-fg-secondary">{t`Ara`}</span>
+              <input
+                type="search"
+                className="rounded-md border border-border bg-surface-1 px-2 py-1.5 text-sm text-fg"
+                value={fieldSearch}
+                onChange={(e) => setFieldSearch(e.target.value)}
+                placeholder={i18n._(msg`Tarla veya ürün…`)}
+                autoComplete="off"
+              />
+            </label>
+            {fieldIds.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {fieldIds.map((id) => (
+                  <span
+                    key={id}
+                    className="inline-flex items-center gap-1 rounded-full bg-orchard-100 px-2 py-0.5 text-xs text-orchard-900 dark:bg-orchard-900/30 dark:text-orchard-100"
+                  >
+                    {fieldNameById.get(id) ?? id.slice(0, 8)}
+                    <button
+                      type="button"
+                      className="rounded p-0.5 hover:bg-orchard-200/60 dark:hover:bg-orchard-800/60"
+                      onClick={() => removeFieldChip(id)}
+                      aria-label={i18n._(msg`Kaldır`)}
+                    >
+                      ×
+                    </button>
+                  </span>
+                ))}
+              </div>
+            ) : null}
+            {fieldsLoading ? (
+              <p className="text-sm text-fg-secondary">{t`Tarlalar yükleniyor…`}</p>
+            ) : null}
+            {fieldsError ? (
+              <p className="text-sm text-destructive">{fieldsError.message}</p>
+            ) : null}
+            {!fieldsLoading && !fieldsError ? (
+              <ul className="max-h-60 overflow-y-auto rounded-md border border-border bg-surface-1 p-1">
+                {filteredFields.length === 0 ? (
+                  <li className="list-none px-2 py-3 text-sm text-fg-secondary">{t`Eşleşen tarla yok.`}</li>
+                ) : (
+                  filteredFields.map((f) => {
+                    const on = fieldIds.includes(f.id)
+                    return (
+                      <li key={f.id} className="list-none">
+                        <button
+                          type="button"
+                          className={
+                            on
+                              ? 'flex w-full items-center justify-between gap-2 rounded-md bg-orchard-100 px-2 py-2 text-left text-sm text-orchard-900 dark:bg-orchard-900/30 dark:text-orchard-100'
+                              : 'flex w-full items-center justify-between gap-2 rounded-md px-2 py-2 text-left text-sm text-fg hover:bg-surface-2'
+                          }
+                          onClick={() => toggleField(f.id)}
+                        >
+                          <span className="font-medium">{f.name}</span>
+                          <span className="text-fg-secondary">{f.crop}</span>
+                        </button>
+                      </li>
+                    )
+                  })
+                )}
+              </ul>
+            ) : null}
           </div>
         ) : null}
         {step === 3 ? (
@@ -136,39 +228,48 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
             {t`Atama ve tarih (son adım)…`}
           </div>
         ) : null}
-        <footer className="mt-auto flex justify-end gap-2 border-t border-border px-4 py-3">
-          {step > 1 ? (
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => {
-                if (step === 2) {
-                  setStep(1)
-                } else {
-                  setStep(2)
-                }
-              }}
-            >
-              {t`Geri`}
-            </Button>
-          ) : null}
-          {step < 3 ? (
-            <Button
-              type="button"
-              disabled={step === 1 && !activity}
-              onClick={() => {
-                if (step === 1) {
-                  if (activity) {
+        <footer className="mt-auto flex flex-col gap-2 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="min-h-[1.25rem] text-sm text-orchard-800 dark:text-orchard-200">
+            {fieldIds.length > 0
+              ? `${fieldIds.length} ${i18n._(msg`görev oluşturulacak`)}`
+              : null}
+          </div>
+          <div className="flex justify-end gap-2">
+            {step > 1 ? (
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  if (step === 2) {
+                    setStep(1)
+                  } else {
                     setStep(2)
                   }
-                } else if (step === 2) {
-                  setStep(3)
-                }
-              }}
-            >
-              {t`İleri`}
-            </Button>
-          ) : null}
+                }}
+              >
+                {t`Geri`}
+              </Button>
+            ) : null}
+            {step < 3 ? (
+              <Button
+                type="button"
+                disabled={(step === 1 && !activity) || (step === 2 && fieldIds.length === 0)}
+                onClick={() => {
+                  if (step === 1) {
+                    if (activity) {
+                      setStep(2)
+                    }
+                  } else if (step === 2) {
+                    if (fieldIds.length > 0) {
+                      setStep(3)
+                    }
+                  }
+                }}
+              >
+                {t`İleri`}
+              </Button>
+            ) : null}
+          </div>
         </footer>
       </div>
     </dialog>
