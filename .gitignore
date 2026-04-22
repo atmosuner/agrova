@@ -28,6 +28,7 @@ supabase/.branches
 supabase/.temp
 supabase/.env
 supabase/config.local.toml
+supabase/.mcp_m*.json
 
 # ---------- Logs ----------
 *.log

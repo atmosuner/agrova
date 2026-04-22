@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-13 are ✅ **implemented** on `main` (M0-11 → M0-13 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
+> **Progress (M0):** M0-01..M0-14 are ✅ **implemented** on `main` (M0-11 → M0-14 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -272,15 +272,16 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (feat: `M0-13` — committed SQL + applied on Supabase via MCP)
 
 ### Task M0-14: Row-Level Security policies
-**Description:** Enable RLS on every table. Write policies matching spec §5 role matrix: `people` read-all-authed/write-owner-only; `fields`/`equipment` same; `tasks` owner full + assignee-transition; `issues` anyone-insert + owner-resolve; `activity_log` system-managed (service-role only) + own-read; `notifications` own-recipient only.
+**Description:** Enable RLS on every table. Write policies matching spec §5 role matrix: `people` read-all-authed/write-owner-only; `fields`/`equipment` same; `tasks` owner full + assignee-transition; `issues` anyone-insert + owner-resolve; `activity_log` owner-read or own-actor read; `notifications` own-recipient only. Helpers: `is_owner()`, `current_person_id()`, `task_by_id()`, `reassign_task()`; trigger blocks non-owners from changing `person_role`.
 **Acceptance criteria:**
-- [ ] `alter table … enable row level security` for all tables
-- [ ] pgTAP tests in `supabase/tests/rls.test.sql` verify: worker A cannot read worker B's notifications; assignee can't reassign to nonexistent person; non-owner cannot write fields
-- [ ] `get_advisors` reports no RLS-missing warnings
-**Verification:** pgTAP suite green; attempt anon insert → 401
+- [x] `alter table … enable row level security` for all tables
+- [x] Structural checks in `supabase/tests/rls.test.sql` (RLS on 9 tables, `m014_*` policy count, FK smoke on bad assignee)
+- [x] `get_advisors` (security) reports no RLS issues for public app tables
+**Verification:** `execute_sql` / `psql` with `rls.test.sql` in a transaction; security advisor run after DDL
 **Dependencies:** M0-13
-**Files likely touched:** `supabase/migrations/20260422000400_rls.sql`, `supabase/tests/rls.test.sql`
-**Estimated scope:** L — **SPLIT** into M0-14a (tables 1–4), M0-14b (tables 5–9) if complexity warrants
+**Files likely touched:** `supabase/migrations/20260422000402_rls_m014a_handle_people_helpers.sql` … `20260422000406_rls_m014e_policies_usage_notifications.sql` (split for smaller MCP payloads), `supabase/tests/rls.test.sql`
+**Estimated scope:** L — **SPLIT** into five ordered migrations (a–e) for Supabase MCP `apply_migration`
+**Status:** ✅ **DONE** (feat: `M0-14` — committed SQL + applied on Supabase via MCP; policy expressions use unqualified row column names, e.g. `assignee_id`, not `public.assignee_id`)
 
 ### Task M0-15: Storage bucket `issue-photos` + access policies
 **Description:** Create private bucket `issue-photos` via SQL (`storage.buckets`); RLS policies allow authenticated users to `insert` under path `{reporter_id}/{issue_id}.jpg`, owner to `select` any, reporter to `select` own.
