@@ -6,26 +6,41 @@ import { Button } from '@/components/ui/button'
 import {
   ACTIVITY_IDS,
   ACTIVITY_LABEL,
+  activityDbValue,
   type ActivityId,
 } from '@/features/tasks/activities'
+import { createTasksFromFields } from '@/features/tasks/create-tasks'
 import { fieldMatchesQuery } from '@/features/tasks/field-filter'
+import { createTaskStep3Schema } from '@/features/tasks/task-form'
+import { useAssignablePeopleQuery } from '@/features/tasks/useAssignablePeopleQuery'
 import { useFieldsQuery } from '@/features/tasks/useFieldsQuery'
 import { i18n } from '@/lib/i18n'
+import { istanbulDateString } from '@/lib/istanbul-date'
+import { supabase } from '@/lib/supabase'
+import type { Enums } from '@/types/db'
 
 type TaskCreateModalProps = {
   open: boolean
   onClose: () => void
+  onCreated?: (taskIds: string[]) => void
 }
 
-export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
+export function TaskCreateModal({ open, onClose, onCreated }: TaskCreateModalProps) {
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const [step, setStep] = useState<1 | 2 | 3>(1)
   const [activity, setActivity] = useState<ActivityId | null>(null)
   const [fieldIds, setFieldIds] = useState<string[]>([])
   const [fieldSearch, setFieldSearch] = useState('')
+  const [assigneeId, setAssigneeId] = useState<string | null>(null)
+  const [dueDate, setDueDate] = useState(() => istanbulDateString())
+  const [priority, setPriority] = useState<Enums<'task_priority'>>('NORMAL')
+  const [notes, setNotes] = useState('')
+  const [submitError, setSubmitError] = useState<string | null>(null)
+  const [submitting, setSubmitting] = useState(false)
 
   const { data: fields = [], isLoading: fieldsLoading, error: fieldsError } = useFieldsQuery()
+  const { data: crew = [], isLoading: peopleLoading, error: peopleError } = useAssignablePeopleQuery()
 
   const filteredFields = useMemo(() => {
     return fields.filter((f) => fieldMatchesQuery(f.name, f.crop, fieldSearch))
@@ -39,7 +54,30 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
     return m
   }, [fields])
 
-  const isDirty = activity !== null || fieldIds.length > 0 || step > 1
+  const roleShort = (r: Enums<'person_role'>) => {
+    const k = {
+      FOREMAN: msg`Ekipbaşı`,
+      AGRONOMIST: msg`Ziraat mühendisi`,
+      WORKER: msg`İşçi`,
+      OWNER: msg`Sahip`,
+    } as const
+    return i18n._(k[r])
+  }
+
+  const isDirty =
+    activity !== null || fieldIds.length > 0 || step > 1 || assigneeId !== null || notes.length > 0
+
+  const resetWizard = useCallback(() => {
+    setStep(1)
+    setActivity(null)
+    setFieldIds([])
+    setFieldSearch('')
+    setAssigneeId(null)
+    setDueDate(istanbulDateString())
+    setPriority('NORMAL')
+    setNotes('')
+    setSubmitError(null)
+  }, [])
 
   const tryClose = useCallback(() => {
     if (isDirty) {
@@ -50,12 +88,53 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
         return
       }
     }
-    setStep(1)
-    setActivity(null)
-    setFieldIds([])
-    setFieldSearch('')
+    resetWizard()
     onClose()
-  }, [isDirty, onClose])
+  }, [isDirty, onClose, resetWizard])
+
+  const onSubmit = useCallback(async () => {
+    setSubmitError(null)
+    if (!activity || fieldIds.length === 0) {
+      return
+    }
+    const minDay = istanbulDateString()
+    if (dueDate < minDay) {
+      setSubmitError(i18n._(msg`Bitiş tarihi geçmişte olamaz.`))
+      return
+    }
+    if (!assigneeId) {
+      setSubmitError(i18n._(msg`Bir kişi seçin.`))
+      return
+    }
+    const parsed = createTaskStep3Schema.safeParse({
+      assigneeId,
+      dueDate,
+      priority,
+      notes: notes.trim(),
+    })
+    if (!parsed.success) {
+      setSubmitError(parsed.error.issues[0]?.message ?? i18n._(msg`Formu kontrol edin.`))
+      return
+    }
+    setSubmitting(true)
+    try {
+      const ids = await createTasksFromFields(supabase, {
+        fieldIds,
+        activityText: activityDbValue(activity),
+        assigneeId: parsed.data.assigneeId,
+        dueDate: parsed.data.dueDate,
+        priority: parsed.data.priority,
+        notes: parsed.data.notes ? parsed.data.notes : null,
+      })
+      onCreated?.(ids)
+      resetWizard()
+      onClose()
+    } catch (e: unknown) {
+      setSubmitError(e instanceof Error ? e.message : i18n._(msg`Kayıt başarısız.`))
+    } finally {
+      setSubmitting(false)
+    }
+  }, [activity, assigneeId, dueDate, fieldIds, notes, onClose, onCreated, priority, resetWizard])
 
   function toggleField(id: string) {
     setFieldIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]))
@@ -224,8 +303,79 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
           </div>
         ) : null}
         {step === 3 ? (
-          <div className="flex-1 overflow-y-auto px-4 py-6 text-center text-sm text-fg-secondary">
-            {t`Atama ve tarih (son adım)…`}
+          <div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto px-4 py-3">
+            <p className="text-sm text-fg-secondary">{t`3. Kişi, son tarih ve not`}</p>
+            {submitError ? (
+              <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+                {submitError}
+              </p>
+            ) : null}
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-fg-secondary">{t`Kime`}</span>
+              {peopleLoading ? (
+                <p className="text-sm text-fg-secondary">{t`Ekip yükleniyor…`}</p>
+              ) : null}
+              {peopleError ? (
+                <p className="text-sm text-red-600 dark:text-red-400">{peopleError.message}</p>
+              ) : null}
+              {!peopleLoading && !peopleError ? (
+                <select
+                  className="rounded-md border border-border bg-surface-1 px-2 py-2 text-sm text-fg"
+                  value={assigneeId ?? ''}
+                  onChange={(e) => setAssigneeId(e.target.value || null)}
+                >
+                  <option value="">{i18n._(msg`Seçin…`)}</option>
+                  {crew.map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.full_name} ({roleShort(p.role)})
+                    </option>
+                  ))}
+                </select>
+              ) : null}
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-fg-secondary">{t`Bitiş tarihi`}</span>
+              <input
+                type="date"
+                className="rounded-md border border-border bg-surface-1 px-2 py-2 text-sm text-fg"
+                min={istanbulDateString()}
+                value={dueDate}
+                onChange={(e) => setDueDate(e.target.value)}
+              />
+            </div>
+            <div className="flex flex-col gap-2">
+              <span className="text-xs font-medium text-fg-secondary">{t`Öncelik`}</span>
+              <div className="flex flex-wrap gap-2">
+                {(
+                  [
+                    ['LOW', msg`Düşük`],
+                    ['NORMAL', msg`Normal`],
+                    ['URGENT', msg`Acil`],
+                  ] as const
+                ).map(([k, m]) => (
+                  <Button
+                    key={k}
+                    type="button"
+                    size="sm"
+                    variant={priority === k ? 'default' : 'outline'}
+                    onClick={() => setPriority(k)}
+                  >
+                    {i18n._(m)}
+                  </Button>
+                ))}
+              </div>
+            </div>
+            <div className="flex flex-col gap-1">
+              <span className="text-xs font-medium text-fg-secondary">
+                {t`Not`} <span className="text-fg-muted">({notes.length}/500)</span>
+              </span>
+              <textarea
+                className="min-h-24 rounded-md border border-border bg-surface-1 px-2 py-2 text-sm text-fg"
+                value={notes}
+                maxLength={500}
+                onChange={(e) => setNotes(e.target.value)}
+              />
+            </div>
           </div>
         ) : null}
         <footer className="mt-auto flex flex-col gap-2 border-t border-border px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
@@ -268,7 +418,11 @@ export function TaskCreateModal({ open, onClose }: TaskCreateModalProps) {
               >
                 {t`İleri`}
               </Button>
-            ) : null}
+            ) : (
+              <Button type="button" disabled={submitting} onClick={() => void onSubmit()}>
+                {submitting ? t`Kaydediliyor…` : t`Oluştur`}
+              </Button>
+            )}
           </div>
         </footer>
       </div>

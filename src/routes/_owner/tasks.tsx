@@ -1,4 +1,6 @@
+/* eslint-disable lingui/no-unlocalized-strings -- TanStack Query cache key */
 import { t } from '@lingui/macro'
+import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { useId, useState } from 'react'
 import { Button } from '@/components/ui/button'
@@ -9,6 +11,7 @@ export const Route = createFileRoute('/_owner/tasks')({
 })
 
 function TasksPage() {
+  const queryClient = useQueryClient()
   const [createOpen, setCreateOpen] = useState(false)
   const headingId = useId()
   return (
@@ -24,7 +27,13 @@ function TasksPage() {
           {t`Yeni görev`}
         </Button>
       </div>
-      <TaskCreateModal open={createOpen} onClose={() => setCreateOpen(false)} />
+      <TaskCreateModal
+        open={createOpen}
+        onClose={() => setCreateOpen(false)}
+        onCreated={() => {
+          void queryClient.invalidateQueries({ queryKey: ['tasks'] })
+        }}
+      />
     </div>
   )
 }
