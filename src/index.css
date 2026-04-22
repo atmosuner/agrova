@@ -1,9 +1,61 @@
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
+@import "tailwindcss";
+@import "@fontsource-variable/inter/wght.css";
+@import "@fontsource-variable/jetbrains-mono/wght.css";
+@import "./styles/agrova-vars.css";
+
+@theme {
+  /* Typography — Inter + JetBrains per DESIGN.md §3 */
+  --font-sans:
+    "Inter Variable", "Inter", ui-sans-serif, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono:
+    "JetBrains Mono Variable", ui-monospace, Menlo, monospace;
+
+  /* Semantic colors → utilities: bg-canvas, text-fg, text-orchard-500, etc. */
+  --color-canvas: var(--agrova-canvas);
+  --color-surface-0: var(--agrova-surface-0);
+  --color-surface-1: var(--agrova-surface-1);
+  --color-surface-2: var(--agrova-surface-2);
+  --color-border-subtle: var(--agrova-border-subtle);
+  --color-border-strong: var(--agrova-border-strong);
+  --color-fg: var(--agrova-fg);
+  --color-fg-secondary: var(--agrova-fg-secondary);
+  --color-fg-muted: var(--agrova-fg-muted);
+  --color-fg-faint: var(--agrova-fg-faint);
+  --color-orchard-50: var(--agrova-orchard-50);
+  --color-orchard-500: var(--agrova-orchard-500);
+  --color-orchard-700: var(--agrova-orchard-700);
+  --color-orchard-900: var(--agrova-orchard-900);
+  --color-harvest-500: var(--agrova-harvest-500);
+  --color-status-todo: var(--agrova-status-todo);
+  --color-status-progress: var(--agrova-status-progress);
+  --color-status-done: var(--agrova-status-done);
+  --color-status-blocked: var(--agrova-status-blocked);
+  --color-status-cancelled: var(--agrova-status-cancelled);
 }
 
-body {
-  margin: 0;
+@layer base {
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  :root {
+    color-scheme: light dark;
+  }
+
+  body {
+    @apply min-h-dvh bg-canvas font-sans text-fg text-base antialiased;
+    font-weight: 400;
+    /* DESIGN.md: cv11, ss01, calt (Turkish + Inter) */
+    font-feature-settings: "cv11" 1, "ss01" 1, "calt" 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+  }
 }

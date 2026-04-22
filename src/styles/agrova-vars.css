@@ -1,0 +1,48 @@
+/* DESIGN.md tokens — :root + prefers-color-scheme. Consumed by @theme in index.css */
+
+:root {
+  /* Surfaces (light) */
+  --agrova-canvas: #fafaf7;
+  --agrova-surface-0: #ffffff;
+  --agrova-surface-1: #f5f5f0;
+  --agrova-surface-2: #edede6;
+  --agrova-border-subtle: #e5e5de;
+  --agrova-border-strong: #d1d1c7;
+  /* Text */
+  --agrova-fg: #0c1210;
+  --agrova-fg-secondary: #4f5b54;
+  --agrova-fg-muted: #7c897f;
+  --agrova-fg-faint: #a8b0a3;
+  /* Brand */
+  --agrova-orchard-50: #f2fbf4;
+  --agrova-orchard-500: #3f8b4e;
+  --agrova-orchard-700: #2d6a3a;
+  --agrova-orchard-900: #1a4023;
+  --agrova-harvest-500: #e8a84a;
+  /* Status */
+  --agrova-status-todo: #64748b;
+  --agrova-status-progress: #d97706;
+  --agrova-status-done: #16a34a;
+  --agrova-status-blocked: #dc2626;
+  --agrova-status-cancelled: #94a3b8;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --agrova-canvas: #0c1210;
+    --agrova-surface-0: #141b18;
+    --agrova-surface-1: #1b2420;
+    --agrova-surface-2: #232d28;
+    --agrova-border-subtle: rgb(255 255 255 / 0.06);
+    --agrova-border-strong: rgb(255 255 255 / 0.1);
+    --agrova-fg: #f0f3f0;
+    --agrova-fg-secondary: #c5cec8;
+    --agrova-fg-muted: #8fa094;
+    --agrova-fg-faint: #5e6e63;
+    --agrova-orchard-50: #0f1a12;
+    --agrova-orchard-500: #5fb871;
+    --agrova-orchard-700: #3f8b4e;
+    --agrova-orchard-900: #b8d8bf;
+    --agrova-harvest-500: #f2ba63;
+  }
+}

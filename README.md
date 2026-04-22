@@ -19,7 +19,7 @@
 
 ## Tech stack (per spec §4)
 
-- **Client:** React 19 + Vite + TypeScript, Tailwind + shadcn/ui re-skinned to DESIGN.md, Lingui (tr primary, en second), Leaflet + ESRI World Imagery, Dexie (IndexedDB) for offline cache
+- **Client:** React 19 + Vite + TypeScript, **Tailwind v4** (`@tailwindcss/vite`) with **DESIGN.md** color tokens in CSS, **shadcn/ui** (next) re-skinned to the same tokens, Lingui (tr primary, en second), Leaflet + ESRI World Imagery, Dexie (IndexedDB) for offline cache
 - **Backend:** Supabase Cloud (Seoul / `ap-northeast-2`) — Postgres + PostGIS, Auth, Storage, Realtime, Edge Functions, RLS
 - **Delivery:** PWA (single codebase serves owner web + worker mobile), GitHub Actions CI, branch-protected `main`
 
