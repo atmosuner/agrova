@@ -4,6 +4,8 @@ import { useCallback, useRef, useState } from 'react'
 import { CategoryGrid } from '@/features/issues/CategoryGrid'
 import type { IssueCategory } from '@/features/issues/categories'
 import { IssueConfirm } from '@/features/issues/IssueConfirm'
+import type { VoiceAttachment } from '@/features/issues/VoiceRecorder'
+import { VoiceRecorder } from '@/features/issues/VoiceRecorder'
 import { submitIssueDraft } from '@/features/issues/submit-issue'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 
@@ -28,6 +30,7 @@ function ReportIssuePage() {
   const inputRef = useRef<HTMLInputElement>(null)
   const [busyCategory, setBusyCategory] = useState<IssueCategory | null>(null)
   const [draft, setDraft] = useState<{ category: IssueCategory; file: File } | null>(null)
+  const [voice, setVoice] = useState<VoiceAttachment | null>(null)
 
   const openCameraForCategory = useCallback((category: IssueCategory) => {
     setBusyCategory(category)
@@ -66,6 +69,7 @@ function ReportIssuePage() {
           e.target.value = ''
           setBusyCategory(null)
           if (file && cat) {
+            setVoice(null)
             setDraft({ category: cat, file })
           }
         }}
@@ -76,7 +80,11 @@ function ReportIssuePage() {
           <IssueConfirm
             category={draft.category}
             file={draft.file}
-            onRetake={() => setDraft(null)}
+            voiceSlot={<VoiceRecorder value={voice} onChange={setVoice} />}
+            onRetake={() => {
+              setVoice(null)
+              setDraft(null)
+            }}
             onSubmit={async (jpeg) => {
               await submitIssueDraft({
                 category: draft.category,
@@ -84,8 +92,11 @@ function ReportIssuePage() {
                 reporterId: me.id,
                 taskId: taskId ?? null,
                 fieldId: fieldId ?? null,
+                voiceBlob: voice?.blob ?? null,
+                voiceContentType: voice?.mime ?? null,
               })
               setDraft(null)
+              setVoice(null)
               void navigate({ to: '/m/tasks' })
             }}
           />
