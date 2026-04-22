@@ -11,8 +11,8 @@ describe('sync helpers', () => {
   })
 })
 
-describe('outbox processRow conflict path', () => {
-  it('placeholder — full drain tests need Dexie in-memory + mocked supabase', () => {
+describe('outbox processRow (infrastructure)', () => {
+  it('remains to be covered: drainOutbox+processRow need IndexedDB in test (e.g. fake-indexeddb) and Supabase mocks', () => {
     expect(true).toBe(true)
   })
 })

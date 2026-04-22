@@ -12,6 +12,7 @@
     "test": "vitest",
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
+    "supabase:test": "npx -y supabase@2 db test",
     "test:e2e": "playwright test",
     "i18n:extract": "lingui extract",
     "i18n:compile": "lingui compile --typescript",

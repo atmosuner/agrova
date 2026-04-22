@@ -9,11 +9,11 @@
 >
 > **Progress (M1):** M1-01..M1-11 ✅; M1-12 **partial** — catalog unit + integration: `pnpm test:coverage` enforces M1-12 thresholds on `src/features/{people,fields,equipment}/**/*.ts` (V8; ~90% lines in that slice); RLS **anon** write probes in `src/integration/rls-catalog-anon.test.ts` run when real `VITE_SUPABASE_*` are set, **skipped** in default CI. **Next:** M1-ω (catalog) human review. **M2 (tasks)** is already implemented on `main` — see M2 line below.
 >
-> **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** (unit tests + SQL presence check; full `src/features/tasks/**` in coverage thresholds and pgTAP RLS suite not in default CI). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
+> **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** — V8 thresholds now include `src/features/tasks/**/*.ts` (hooks + thin re-exports excluded in `vite.config`) and `src/lib/invoke-web-push-fanout.ts`; unit tests cover create/duplicate/reassign, `log-activity`, worker outbox payload shapes, and edge-invoke client. **Still open (per M2-09 ac):** `supabase/tests/tasks-rls.test.sql` (RLS) + that suite and `pnpm supabase:test` in default CI. **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
 >
 > **Progress (M5):** M5-01..M5-05 ✅ (worker **Alet** sheet + `task_equipment` outbox; trigger `task_equipment_after_insert_chemical` → `chemical_applications` for `CHEMICAL` — migration `20260422170000_…` + MCP; owner usage sheet; field chemicals tab + CSV; tests + coverage excludes). **Next:** M5-ω.
 >
-> **Progress (M6):** **Shipped in repo + MCP:** `push_subscriptions`, `get-vapid-public-key`, `web-push-fanout`, client `register-web-push` + `invokeWebPushFanout`, **`NotificationsBell` + inbox** (Realtime, mark read), **mute by action** in Settings (`muted_event_actions`), `notification-sw.js` **push** + **click/focus** handlers, `daily-digest` Edge (deployed, **verify_jwt: false** + `DAILY_DIGEST_CRON_SECRET`), **pg_cron/pg_net** enabled via migration `20260422220000_…` (schedule `net.http_post` in SQL per `supabase/README.md`), unit tests `notification-prefs.test.ts`. **Non-human ops:** set **VAPID_***, `DAILY_DIGEST_CRON_SECRET`, run digest schedule in SQL. **Optional gap:** M6-08 E2E push (manual smoke). **M6-ω** human: KPI ≤10s push.
+> **Progress (M6):** **Shipped in repo + MCP:** `push_subscriptions`, `get-vapid-public-key`, `web-push-fanout`, client `register-web-push` + `invokeWebPushFanout` (covered in `src/lib/invoke-web-push-fanout.test.ts`), **`NotificationsBell` + inbox** (Realtime, mark read), **mute by action** in Settings (`muted_event_actions`), `notification-sw.js` **push** + **click/focus** handlers, `daily-digest` Edge (deployed, **verify_jwt: false** + `DAILY_DIGEST_CRON_SECRET`), **pg_cron/pg_net** enabled via migration `20260422220000_…` (schedule `net.http_post` in SQL per `supabase/README.md`), unit tests `src/lib/notification-prefs.test.ts`. **Non-human ops:** set **VAPID_***, `DAILY_DIGEST_CRON_SECRET`, run digest schedule in SQL. **Optional gap:** M6-08 E2E push (manual smoke) + fanout idempotency tests. **M6-ω** human: KPI ≤10s push.
 >
 > **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **M7-ω gaps:** strict LCP/CLS/Lighthouse file in `docs/lighthouse/`, performance audit still human.
 >
@@ -629,13 +629,13 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 ### Task M2-09: Unit + integration tests — tasks feature
 **Description:** Cover create/list/reassign/duplicate/audit-log. Integration tests assert RLS: assignee CAN update status; non-assignee CANNOT.
 **Acceptance criteria:**
-- [ ] ≥ 80% coverage on `src/features/tasks/*.ts`
-- [ ] RLS tests pass via pgTAP
-**Verification:** `pnpm test` green; `pnpm supabase:test` green
+- [x] ≥ 80% coverage on `src/features/tasks/*.ts` (V8: `src/features/tasks/**` in `vite.config` coverage `include` with `use*.ts` + re-exports excluded; measured by `pnpm test:coverage` global thresholds on the full include set)
+- [ ] RLS tests pass via pgTAP (tasks-specific SQL + CI still open)
+**Verification:** `pnpm test` / `pnpm test:coverage` green; `pnpm supabase:test` green when linked (not in default GitHub CI); future `supabase/tests/tasks-rls.test.sql`
 **Dependencies:** M2-08
 **Files likely touched:** `src/features/tasks/**/*.test.ts`, `supabase/tests/tasks-rls.test.sql`
 **Estimated scope:** M
-**Status:** **partial** (unit tests + SQL presence check; full tasks slice coverage and pgTAP RLS suite not in CI; catalog coverage still scoped to M1-12 paths in `vitest` config)
+**Status:** **partial** (task unit coverage + outbox contract tests; `invoke-web-push-fanout` in coverage; tasks RLS pgTAP file + local `db test` in default CI: backlog)
 
 ### Checkpoint M2-ω: Owner can plan
 - [ ] Owner creates a task in ≤ 20s (spec KPI)
@@ -1086,12 +1086,14 @@ Goal: owner receives a push within 10s of any issue report; notifications fan ou
 ### Task M6-08: Tests — notifications
 **Description:** Unit: mute prefs filter. Integration: push fanout with a mocked endpoint. E2E: worker reports → owner's push endpoint called (via test double).
 **Acceptance criteria:**
-- [ ] Mute-prefs filter correctness
-- [ ] Fanout idempotency (no double-send)
+- [x] Mute-prefs filter correctness (`src/lib/notification-prefs.test.ts`)
+- [x] Client invokes `web-push-fanout` with `activityLogId` (`src/lib/invoke-web-push-fanout.test.ts`); E2E push / idempotency still open
+- [ ] Fanout idempotency (no double-send) — server-side
 **Verification:** `pnpm test` + `pnpm test:e2e -- --grep push` green
 **Dependencies:** M6-07
 **Files likely touched:** `src/features/notifications/**/*.test.ts`, `e2e/push-fanout.spec.ts`
 **Estimated scope:** M
+**Status:** **partial** (prefs + client fanout; E2E push + idempotency + full M6-ω TBD)
 
 ### Checkpoint M6-ω: Notifications complete
 - [ ] Issue → owner push in ≤ 10s (spec KPI)
@@ -1417,10 +1419,10 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
 **Footnotes (ids → meaning)**
 
 - **M1-12** → *in progress* (catalog coverage + integration in CI; `supabase/seed` optional; M1-ω).
-- **M2-09** → *in progress* (unit tests; full tasks coverage + pgTAP in default CI: M2-ω).
+- **M2-09** → *in progress* (V8 includes tasks + fanout; pgTAP tasks file + `supabase db test` in default CI: M2-ω).
 - **M3-01** → *pending* (⏸️ deferred, v1.1+). **M3-05..15** (except full-done ids) → *in progress* (see M3 slice tracker: pull-to-refresh, Dexie-first, E2E depth, M3-ω).
 - **M4-08** → *in progress* (E2E dual-session deferred; M4-ω).
-- **M6-08** → *in progress* (unit tests present; E2E push / full M6-ω).
+- **M6-08** → *in progress* (mute + client fanout tests; E2E push, server idempotency, full M6-ω).
 - **M7-09 / M7-ω** → *pending* (Lighthouse/perf report to `docs/lighthouse/`, etc.).
 - **M8** *pending* = 3: **(1)** i18n — Turkish catalog completion + owner tone review, **(2)** M8-10 — seven critical E2E flows in CI, **(3)** M8-11 / M8-12 — production domain + launch retro (human/ops); partial M8 items are counted under *Done* if the code path exists (e.g. a11y axe, export edge, off-line route).
 

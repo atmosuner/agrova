@@ -73,6 +73,8 @@ pnpm test:coverage
 pnpm build
 ```
 
+**Supabase (local):** after `supabase link` and a running stack, `pnpm supabase:test` runs `supabase db test` against `supabase/tests/*.sql` (structural RLS checks; M2-09 RLS is still tracked — not part of default GitHub CI). See `supabase/README.md`.
+
 Fast test run without coverage thresholds: `pnpm test:run`. Watch mode: `pnpm test` (Vitest).
 
 **E2E:** `pnpm dev` in one terminal, then `pnpm test:e2e` (or `PLAYWRIGHT_BASE_URL` if the dev server port differs). A **nightly** workflow (`.github/workflows/e2e-nightly.yml`) builds, runs `vite preview`, and executes Playwright — set `VITE_*` secrets in CI if tests need a real Supabase project.

@@ -8,6 +8,11 @@
 
 M0-14 RLS is split across five timestamped files (`20260422000402`–`20260422000406`) so each `apply_migration` payload stays small. **M0-15:** private bucket `issue-photos` + `storage.objects` policies in `20260422000500_storage_issue_photos_bucket.sql` (first path segment = `auth.uid()`). **M0-16:** `src/types/db.ts` is generated; refresh with **`pnpm supabase:gen-types`**, which reads `supabase/mcp_gentypes.json` (from Cursor `generate_typescript_types` MCP) or, if that file is missing, `npx supabase gen types` when `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` are set (see root `.env.example`). **M0-17:** Edge function stubs — `web-push-fanout` (notifications) and `setup-link` (no SMS in MVP; owner shares URLs manually). Run locally: `pnpm supabase:functions:serve` (needs [Supabase CLI](https://supabase.com/docs/guides/cli) + linked project). See `farm-operations-app.plan.md`.
 
+### Policy / schema checks (`db test`)
+
+- **SQL in** `supabase/tests/` (e.g. `rls.test.sql`) are intended for `pnpm supabase:test` (CLI `supabase db test` with a linked project / local database where migrations are applied). They are **not** in the default GitHub Actions quality job (requires a Supabase-linked environment).
+- **M2-09** also calls for a dedicated tasks RLS SQL suite (`supabase/tests/tasks-rls.test.sql` in the plan) — to be added; until then, catalog + structural RLS checks remain the main automated DB tests.
+
 ### M6 / M8 Edge functions & secrets
 
 - **`web-push-fanout`** — requires `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` in project secrets.

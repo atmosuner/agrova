@@ -26,6 +26,8 @@ export default defineConfig({
         'src/features/fields/**/*.ts',
         'src/features/equipment/**/*.ts',
         'src/features/issues/**/*.ts',
+        'src/features/tasks/**/*.ts',
+        'src/lib/invoke-web-push-fanout.ts',
       ],
       exclude: [
         '**/*.test.ts',
@@ -42,6 +44,10 @@ export default defineConfig({
         'src/features/dashboard/use-all-fields-for-map.ts',
         'src/features/weather/use-weather.ts',
         'src/features/notifications/use-notifications-inbox.ts',
+        'src/features/tasks/use*.ts',
+        /** Re-exports; covered via worker-mutations + tests. */
+        'src/features/tasks/complete-task.ts',
+        'src/features/tasks/transition-task.ts',
       ],
       thresholds: {
         lines: 80,
