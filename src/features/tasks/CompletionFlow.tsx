@@ -47,7 +47,7 @@ export function CompletionFlow({ taskId, fromStatus, onClose }: Props) {
       if (!prefersReduce) {
         await new Promise((r) => setTimeout(r, 300))
       }
-      await queryClient.invalidateQueries({ queryKey: ['my-today-tasks'] })
+      await queryClient.invalidateQueries({ queryKey: ['my-open-tasks'] })
       await queryClient.invalidateQueries({ queryKey: ['task', taskId] })
       await queryClient.invalidateQueries({ queryKey: ['my-task-history'] })
       onClose()

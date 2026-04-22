@@ -15,7 +15,7 @@ vi.mock('@/lib/db', () => ({
 
 vi.mock('@/lib/sync', () => ({
   enqueueOutbox: (...args: unknown[]) => mockEnqueue(...args),
-  drainOutbox: () => mockDrain(),
+  drainOutbox: (...args: unknown[]) => mockDrain(...args),
 }))
 
 describe('submitIssueDraft', () => {
@@ -45,6 +45,7 @@ describe('submitIssueDraft', () => {
     const t1 = mockEnqueue.mock.calls[1]?.[0]?.enqueued_at as number
     expect(t1).toBeGreaterThan(t0)
     expect(mockDrain).toHaveBeenCalledOnce()
+    expect(mockDrain).toHaveBeenCalledWith({ rethrowAfterFailure: true })
   })
 
   it('includes task, field, and gps keys in row payload when provided', async () => {

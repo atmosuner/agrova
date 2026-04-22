@@ -116,4 +116,23 @@ describe('outbox processRow: task_status (mocked supabase)', () => {
     expect(rows[0]?.attempts).toBe(1)
     expect(rows[0]?.last_error).toBeTruthy()
   })
+
+  it('rethrows the first processRow error when rethrowAfterFailure is set', async () => {
+    const err = new Error('network down')
+    mockFrom.mockImplementation((t: string) => {
+      if (t === 'tasks') {
+        return chainTasks({ data: null, error: err })
+      }
+      return { select: () => ({ eq: () => ({ maybeSingle: vi.fn() }) }) }
+    })
+    await enqueueOutbox({
+      kind: 'task_status',
+      payload: {
+        taskId: T1,
+        fromStatus: 'TODO',
+        toStatus: 'IN_PROGRESS',
+      } as unknown as Json,
+    })
+    await expect(drainOutbox({ rethrowAfterFailure: true })).rejects.toThrow('network down')
+  })
 })

@@ -61,5 +61,5 @@ export async function submitIssueDraft(input: SubmitIssueDraftInput): Promise<vo
       enqueued_at: base + 2,
     })
   }
-  await drainOutbox()
+  await drainOutbox({ rethrowAfterFailure: true })
 }

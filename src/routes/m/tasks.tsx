@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { useMyTodayTasksQuery } from '@/features/tasks/useMyTodayTasksQuery'
+import { useMyOpenTasksQuery } from '@/features/tasks/useMyOpenTasksQuery'
 import { TaskCardMobile } from '@/features/tasks/TaskCard.mobile'
 
 export const Route = createFileRoute('/m/tasks')({
@@ -12,14 +12,14 @@ export const Route = createFileRoute('/m/tasks')({
 })
 
 function MobileTasksPage() {
-  const { data, isLoading, isFetching, refetch } = useMyTodayTasksQuery()
+  const { data, isLoading, isFetching, refetch } = useMyOpenTasksQuery()
   const queryClient = useQueryClient()
   const rows = data?.rows ?? []
 
   return (
     <div className="px-4 pb-6 pt-4">
       <div className="mb-4 flex items-center justify-between gap-2">
-        <h1 className="text-xl font-semibold text-fg">{t`Bugün`}</h1>
+        <h1 className="text-xl font-semibold text-fg">{t`Yapılacak`}</h1>
         <Button
           type="button"
           variant="outline"
@@ -37,8 +37,8 @@ function MobileTasksPage() {
       {isLoading ? <p className="text-sm text-fg-secondary">{t`Yükleniyor…`}</p> : null}
       {!isLoading && rows.length === 0 ? (
         <div className="mt-8 flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border bg-surface-0 p-8 text-center">
-          <p className="text-lg text-fg-secondary">{t`Bugün için görev yok`}</p>
-          <p className="text-sm text-fg-faint">{t`Yeni atamalar burada listelenir.`}</p>
+          <p className="text-lg text-fg-secondary">{t`Açık görev yok`}</p>
+          <p className="text-sm text-fg-faint">{t`Size atanan veya üzerinizdeki işler burada listelenir.`}</p>
         </div>
       ) : null}
       <ul className="flex flex-col gap-3">

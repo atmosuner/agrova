@@ -64,7 +64,7 @@ function ResetPasswordPage() {
       return
     }
     await supabase.auth.signOut()
-    void navigate({ to: '/login', search: { redirect: undefined, worker: false }, replace: true })
+    void navigate({ to: '/login', search: { redirect: undefined }, replace: true })
   }
 
   if (!getSiteUrl()) {
@@ -98,7 +98,7 @@ function ResetPasswordPage() {
         <p className="text-sm">
           <Link
             to="/login"
-            search={{ redirect: undefined, worker: false }}
+            search={{ redirect: undefined }}
             className="text-orchard-500 underline-offset-2 hover:underline"
           >
             {t`Back to sign-in`}
@@ -151,7 +151,7 @@ function ResetPasswordPage() {
       <p className="text-center text-sm text-fg-secondary">
         <Link
           to="/login"
-          search={{ redirect: undefined, worker: false }}
+          search={{ redirect: undefined }}
           className="font-medium text-orchard-500 underline-offset-2 hover:underline"
         >
           {t`Back to sign-in`}

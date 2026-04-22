@@ -37,13 +37,12 @@ export const Route = createFileRoute('/login')({
   },
   validateSearch: (s: Record<string, unknown>) => ({
     redirect: typeof s.redirect === 'string' ? s.redirect : undefined,
-    worker: s.worker === '1' || s.worker === 1 || s.worker === true,
   }),
   component: LoginPage,
 })
 
 function LoginPage() {
-  const { redirect: redirectTo, worker: workerLanding } = Route.useSearch()
+  const { redirect: redirectTo } = Route.useSearch()
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -76,30 +75,11 @@ function LoginPage() {
     void navigate({ to: target, replace: true })
   }
 
-  if (workerLanding) {
-    return (
-      <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-8">
-        <div>
-          <h1 className="text-2xl font-semibold text-fg">{t`Worker device`}</h1>
-          <p className="mt-2 text-sm text-fg-secondary">
-            {t`Kurulum linki işletme sahibiniz veya ekip sorumlunuz tarafından paylaşılır. SMS veya e-posta ile şifre yok; linkle tek seferlik cihaz eşleştirmesi yapılır.`}
-          </p>
-        </div>
-        <p className="text-sm text-fg-secondary">
-          {t`Sahip hesabıyla giriş:`}{' '}
-          <a href="/login" className="font-medium text-orchard-500 underline-offset-2 hover:underline">
-            {t`Sign in (owner)`}
-          </a>
-        </p>
-      </div>
-    )
-  }
-
   return (
     <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-8">
       <div>
-        <h1 className="text-2xl font-semibold text-fg">{t`Owner sign-in`}</h1>
-        <p className="mt-1 text-sm text-fg-secondary">{t`Work email and password.`}</p>
+        <h1 className="text-2xl font-semibold text-fg">{t`Giriş`}</h1>
+        <p className="mt-1 text-sm text-fg-secondary">{t`İş e-postası ve şifre.`}</p>
       </div>
       <form onSubmit={onSubmit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-1">

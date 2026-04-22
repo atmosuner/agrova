@@ -48,7 +48,7 @@ function TaskDetailPage() {
     try {
       await transitionTask({ taskId: task.id, fromStatus: 'TODO', toStatus: 'IN_PROGRESS' })
       await refetch()
-      void queryClient.invalidateQueries({ queryKey: ['my-today-tasks'] })
+      void queryClient.invalidateQueries({ queryKey: ['my-open-tasks'] })
     } catch (e) {
       setErr(e instanceof Error ? e.message : String(e))
     } finally {

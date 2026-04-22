@@ -18,7 +18,7 @@ function PrivacyPage() {
         <li>{t`You can export field-level chemical logs as CSV; a full data export is planned in settings.`}</li>
       </ul>
       <p className="mt-6">
-        <Link to="/login" search={{ redirect: undefined, worker: false }} className="text-orchard-600 underline">
+        <Link to="/login" search={{ redirect: undefined }} className="text-orchard-600 underline">
           {t`Back to login`}
         </Link>
       </p>

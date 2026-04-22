@@ -107,7 +107,7 @@ function ProfilePage() {
   async function onLogout() {
     setErr(null)
     await signOutAndClearLocalData()
-    void navigate({ to: '/login', search: { redirect: undefined, worker: true } })
+    void navigate({ to: '/login', search: { redirect: undefined } })
   }
 
   if (isLoading) {

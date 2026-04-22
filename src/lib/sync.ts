@@ -317,16 +317,29 @@ async function processRow(row: OutboxRow): Promise<void> {
   }
 }
 
-export async function drainOutbox(): Promise<void> {
+export type DrainOutboxOptions = {
+  /**
+   * When the user just tapped "Send", surface the first network/DB error instead of
+   * only recording it on the outbox row (background drains keep the default).
+   * Also bypasses the post-failure backoff for this run so a retry is not silent-no-op.
+   */
+  rethrowAfterFailure?: boolean
+}
+
+export async function drainOutbox(opts?: DrainOutboxOptions): Promise<void> {
   if (typeof navigator !== 'undefined' && !navigator.onLine) {
     return
   }
   if (drainInFlight) {
     return drainInFlight
   }
+  const rethrow = opts?.rethrowAfterFailure === true
   drainInFlight = (async () => {
     const now = Date.now()
-    if (now - lastDrainErrorAt < (BACKOFF_MS[Math.min(backoffStep, BACKOFF_MS.length - 1)] ?? 5_000)) {
+    if (
+      !rethrow &&
+      now - lastDrainErrorAt < (BACKOFF_MS[Math.min(backoffStep, BACKOFF_MS.length - 1)] ?? 5_000)
+    ) {
       return
     }
     const rows = await db.outbox.orderBy('enqueued_at').toArray()
@@ -343,6 +356,9 @@ export async function drainOutbox(): Promise<void> {
           attempts: row.attempts + 1,
           last_error: msg,
         })
+        if (rethrow) {
+          throw e
+        }
         break
       }
     }

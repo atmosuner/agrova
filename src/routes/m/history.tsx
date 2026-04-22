@@ -2,29 +2,32 @@ import { t } from '@lingui/macro'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useMemo } from 'react'
 import { activityIdFromDbValue, ACTIVITY_LABEL } from '@/features/tasks/activities'
-import { useMyTaskHistoryQuery } from '@/features/tasks/useMyTaskHistoryQuery'
+import { useMyTaskHistoryQuery, type MyTaskHistoryRow } from '@/features/tasks/useMyTaskHistoryQuery'
 import { i18n } from '@/lib/i18n'
 import { formatDayMonthTr } from '@/lib/date-istanbul'
-import type { TaskListRow } from '@/features/tasks/useTasksQuery'
 import { Check } from 'lucide-react'
 
 export const Route = createFileRoute('/m/history')({
   component: HistoryPage,
 })
 
-function groupByDue(rows: TaskListRow[]): Map<string, TaskListRow[]> {
-  const m = new Map<string, TaskListRow[]>()
+function groupDayKey(r: MyTaskHistoryRow): string {
+  return r.completed_at ? r.completed_at.slice(0, 10) : r.updated_at.slice(0, 10)
+}
+
+function groupByHistoryDay(rows: MyTaskHistoryRow[]): Map<string, MyTaskHistoryRow[]> {
+  const m = new Map<string, MyTaskHistoryRow[]>()
   for (const r of rows) {
-    const k = r.due_date
+    const k = groupDayKey(r)
     m.set(k, [...(m.get(k) ?? []), r])
   }
   return m
 }
 
 function HistoryPage() {
-  const { data, isLoading, loadOlder, isFetching } = useMyTaskHistoryQuery()
+  const { data, isLoading, loadOlder, isFetching, limit } = useMyTaskHistoryQuery()
   const rows = useMemo(() => data?.rows ?? [], [data?.rows])
-  const grouped = useMemo(() => groupByDue(rows), [rows])
+  const grouped = useMemo(() => groupByHistoryDay(rows), [rows])
   const keys = useMemo(() => [...grouped.keys()].sort((a, b) => (a < b ? 1 : a > b ? -1 : 0)), [grouped])
 
   return (
@@ -65,17 +68,18 @@ function HistoryPage() {
           </section>
         ))}
       </div>
-      {rows.length > 0 ? (
+      {rows.length > 0 && rows.length >= limit ? (
         <button
           type="button"
           className="mt-6 w-full rounded-full border border-border py-2 text-sm text-orchard-600"
           onClick={loadOlder}
           disabled={isFetching}
         >
-          {t`Daha eski`} {isFetching ? '…' : null}
+          {t`Daha fazla`} {isFetching ? '…' : null}
         </button>
-      ) : !isLoading ? (
-        <p className="mt-4 text-sm text-fg-secondary">{t`Bu aralıkta görev yok.`}</p>
+      ) : null}
+      {rows.length === 0 && !isLoading ? (
+        <p className="mt-4 text-sm text-fg-secondary">{t`Tamamlanan veya kapanan görev yok.`}</p>
       ) : null}
     </div>
   )

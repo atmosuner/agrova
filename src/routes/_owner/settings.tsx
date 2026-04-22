@@ -116,7 +116,7 @@ function SettingsPage() {
     setLoggingOut(true)
     try {
       await signOutAndClearLocalData()
-      void navigate({ to: '/login', search: { redirect: undefined, worker: false } })
+      void navigate({ to: '/login', search: { redirect: undefined } })
     } catch (e) {
       setLogoutError(e instanceof Error ? e.message : String(e))
     } finally {

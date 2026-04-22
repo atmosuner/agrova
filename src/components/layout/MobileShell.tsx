@@ -12,7 +12,7 @@ import { i18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 
 const bottomTabs = [
-  { to: '/m/tasks', label: msg`Görevler`, icon: ClipboardList },
+  { to: '/m/tasks', label: msg`Yapılacak`, icon: ClipboardList },
   { to: '/m/history', label: msg`Geçmiş`, icon: CheckCircle2 },
   { to: '/m/profile', label: msg`Profil`, icon: User },
 ] as const

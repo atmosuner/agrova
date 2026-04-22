@@ -3,6 +3,7 @@ import { msg, t } from '@lingui/macro'
 import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { IssueCategoryIcon } from '@/components/icons/issues/IssueCategoryIcon'
 import type { IssueCategory } from '@/features/issues/categories'
+import { mapIssueSubmitError } from '@/features/issues/map-issue-submit-error'
 import { WorkerButton } from '@/components/ui/WorkerButton'
 import { Button } from '@/components/ui/button'
 import { compressImageToJpeg } from '@/lib/image-compress'
@@ -64,8 +65,14 @@ export function IssueConfirm({ category, file, onRetake, onSubmit, voiceSlot }: 
               const jpeg = await compressImageToJpeg(file)
               try {
                 await onSubmit(jpeg)
-              } catch {
-                setErr(t`Gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin.`)
+              } catch (err) {
+                console.error(err)
+                setErr(
+                  mapIssueSubmitError(
+                    err,
+                    i18n._(msg`Gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin.`),
+                  ),
+                )
               }
             } catch {
               setErr(t`Fotoğraf işlenemedi. Yeniden çekmeyi deneyin.`)

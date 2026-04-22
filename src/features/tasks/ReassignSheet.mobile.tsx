@@ -29,7 +29,7 @@ export function ReassignSheetMobile({ taskId, currentPersonId, onClose }: Props)
     setBusy(true)
     try {
       await queueTaskReassign({ taskId, newAssigneeId: id })
-      await queryClient.invalidateQueries({ queryKey: ['my-today-tasks'] })
+      await queryClient.invalidateQueries({ queryKey: ['my-open-tasks'] })
       await queryClient.invalidateQueries({ queryKey: ['task', taskId] })
       onClose()
       void navigate({ to: '/m/tasks', replace: true })

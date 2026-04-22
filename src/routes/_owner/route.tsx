@@ -17,7 +17,7 @@ export const Route = createFileRoute('/_owner')({
       const returnTo = `${location.pathname}${defaultStringifySearch(location.search)}`
       throw redirect({
         to: '/login',
-        search: { redirect: returnTo, worker: false },
+        search: { redirect: returnTo },
       })
     }
     const shell = await resolveAppShellForUser(session.user)

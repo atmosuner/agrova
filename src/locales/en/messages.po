@@ -48,6 +48,10 @@ msgstr "Acil"
 msgid "Açık"
 msgstr "Açık"
 
+#: src/routes/m/tasks.tsx:40
+msgid "Açık görev yok"
+msgstr "Açık görev yok"
+
 #: src/features/equipment/csv.ts:24
 #: src/features/equipment/csv.ts:31
 #: src/features/people/csv.ts:26
@@ -85,14 +89,14 @@ msgstr "Ağ yok. Bağlantı sağlandığında tekrar deneyin; Agrova çevrimdı�
 msgid "Agronomist"
 msgstr "Agronomist"
 
-#: src/routes/_owner/route.tsx:48
-#: src/routes/_owner/route.tsx:56
+#: src/routes/_owner/route.tsx:53
+#: src/routes/_owner/route.tsx:61
 msgid "Agrova"
 msgstr "Agrova"
 
 #: src/features/tasks/ReassignSheet.mobile.tsx:57
-#: src/features/tasks/TaskDetailSheet.tsx:205
-#: src/features/tasks/TaskDetailSheet.tsx:220
+#: src/features/tasks/TaskDetailSheet.tsx:209
+#: src/features/tasks/TaskDetailSheet.tsx:224
 #: src/routes/m/task.$id.tsx:143
 msgid "Aktar"
 msgstr "Aktar"
@@ -101,11 +105,11 @@ msgstr "Aktar"
 msgid "Aktarılabilir başka ekip yok."
 msgstr "Aktarılabilir başka ekip yok."
 
-#: src/features/tasks/TaskDetailSheet.tsx:38
+#: src/features/tasks/TaskDetailSheet.tsx:39
 msgid "Aktarıldı"
 msgstr "Aktarıldı"
 
-#: src/features/tasks/TaskDetailSheet.tsx:86
+#: src/features/tasks/TaskDetailSheet.tsx:88
 msgid "Aktarma başarısız."
 msgstr "Aktarma başarısız."
 
@@ -129,7 +133,7 @@ msgstr "Alet"
 msgid "Aletler"
 msgstr "Aletler"
 
-#: src/routes/signup.tsx:185
+#: src/routes/signup.tsx:189
 msgid "Already have an account? Sign in"
 msgstr "Already have an account? Sign in"
 
@@ -204,7 +208,7 @@ msgstr "Aşağıdaki olaylar için itici bildirim gönderilmez. Yeni saha sorunu
 msgid "Aşılama"
 msgstr "Aşılama"
 
-#: src/routes/signup.tsx:155
+#: src/routes/signup.tsx:159
 msgid "At least 8 characters, including one number."
 msgstr "At least 8 characters, including one number."
 
@@ -228,7 +232,7 @@ msgstr "At least 8 characters, including one number."
 msgid "Back to login"
 msgstr "Back to login"
 
-#: src/routes/forgot-password.tsx:111
+#: src/routes/forgot-password.tsx:114
 #: src/routes/reset-password.tsx:104
 #: src/routes/reset-password.tsx:157
 msgid "Back to sign-in"
@@ -242,7 +246,7 @@ msgstr "Başla"
 msgid "Başlangıç"
 msgstr "Başlangıç"
 
-#: src/features/tasks/TaskDetailSheet.tsx:40
+#: src/features/tasks/TaskDetailSheet.tsx:41
 msgid "Başlatıldı"
 msgstr "Başlatıldı"
 
@@ -290,7 +294,7 @@ msgid "Bilinmiyor"
 msgstr "Bilinmiyor"
 
 #: src/features/tasks/TaskCreateModal.tsx:106
-#: src/features/tasks/TaskDetailSheet.tsx:73
+#: src/features/tasks/TaskDetailSheet.tsx:75
 msgid "Bir kişi seçin."
 msgstr "Bir kişi seçin."
 
@@ -317,23 +321,23 @@ msgstr "Bitiş tarihi geçmişte olamaz."
 #: src/features/dashboard/TodaysBoard.tsx:19
 #: src/features/dashboard/TodaysBoard.tsx:28
 #: src/features/tasks/TaskCard.mobile.tsx:35
-#: src/features/tasks/TaskDetailSheet.tsx:28
+#: src/features/tasks/TaskDetailSheet.tsx:29
 #: src/features/tasks/TasksKanban.tsx:20
 #: src/features/tasks/TasksTable.tsx:15
 #: src/routes/_owner/tasks.tsx:25
-#: src/routes/m/history.tsx:55
+#: src/routes/m/history.tsx:58
 msgid "Bitti"
 msgstr "Bitti"
 
 #: src/features/dashboard/TodaysBoard.tsx:29
-#: src/features/tasks/TaskDetailSheet.tsx:29
+#: src/features/tasks/TaskDetailSheet.tsx:30
 #: src/features/tasks/TasksKanban.tsx:21
 #: src/features/tasks/TasksTable.tsx:16
 #: src/routes/_owner/tasks.tsx:26
 msgid "Bloke"
 msgstr "Bloke"
 
-#: src/features/tasks/TaskDetailSheet.tsx:42
+#: src/features/tasks/TaskDetailSheet.tsx:43
 msgid "Bloke edildi"
 msgstr "Bloke edildi"
 
@@ -346,14 +350,15 @@ msgid "Boş"
 msgstr "Boş"
 
 #: src/features/issues/CategoryGrid.tsx:10
-#: src/features/issues/IssueConfirm.tsx:13
+#: src/features/issues/IssueConfirm.tsx:14
 #: src/features/issues/IssuesFeed.tsx:17
+#: src/features/tasks/TaskDetailMediaSection.tsx:13
 msgid "Bozuk alet"
 msgstr "Bozuk alet"
 
 #: src/routes/m/history.tsx:78
-msgid "Bu aralıkta görev yok."
-msgstr "Bu aralıkta görev yok."
+#~ msgid "Bu aralıkta görev yok."
+#~ msgstr "Bu aralıkta görev yok."
 
 #: src/routes/setup.$token.tsx:162
 msgid "Bu ekip üyesi pasif. Yardım için işletme sahibiyle iletişime geçin."
@@ -392,16 +397,16 @@ msgid "Budama"
 msgstr "Budama"
 
 #: src/routes/m/tasks.tsx:22
-msgid "Bugün"
-msgstr "Bugün"
+#~ msgid "Bugün"
+#~ msgstr "Bugün"
 
 #: src/features/dashboard/TodaysBoard.tsx:47
 msgid "Bugün — pano"
 msgstr "Bugün — pano"
 
 #: src/routes/m/tasks.tsx:40
-msgid "Bugün için görev yok"
-msgstr "Bugün için görev yok"
+#~ msgid "Bugün için görev yok"
+#~ msgstr "Bugün için görev yok"
 
 #: src/features/dashboard/TodaysBoard.tsx:45
 msgid "Bugünkü görev panosu"
@@ -454,7 +459,7 @@ msgstr "Chrome’da agrova.app adresini açın."
 msgid "Cihaz e-postanız ve mevcut şifreniz. E-posta ile sıfırlama cihaz hesaplarında yok."
 msgstr "Cihaz e-postanız ve mevcut şifreniz. E-posta ile sıfırlama cihaz hesaplarında yok."
 
-#: src/routes/forgot-password.tsx:50
+#: src/routes/forgot-password.tsx:53
 msgid "Cihaz hesapları (@device) için e-posta ile sıfırlama yok. İşletme sahibinden yeni şifre isteyin (Ekip) veya giriş yaptıysanız Profil’den şifre değiştirin."
 msgstr "Cihaz hesapları (@device) için e-posta ile sıfırlama yok. İşletme sahibinden yeni şifre isteyin (Ekip) veya giriş yaptıysanız Profil’den şifre değiştirin."
 
@@ -474,7 +479,7 @@ msgid "Confirm new password"
 msgstr "Confirm new password"
 
 #: src/routes/_owner/people.tsx:548
-#: src/routes/signup.tsx:160
+#: src/routes/signup.tsx:164
 msgid "Confirm password"
 msgstr "Confirm password"
 
@@ -484,6 +489,7 @@ msgstr "Confirm password"
 
 #: src/features/issues/IssuesFeed.tsx:163
 #: src/features/issues/IssuesFeed.tsx:206
+#: src/features/tasks/TaskDetailMediaSection.tsx:124
 msgid "Çözüldü"
 msgstr "Çözüldü"
 
@@ -496,11 +502,11 @@ msgstr "Çözüldü olarak işaretle"
 msgid "Crates"
 msgstr "Crates"
 
-#: src/routes/login.tsx:152
+#: src/routes/login.tsx:134
 msgid "Create an account"
 msgstr "Create an account"
 
-#: src/routes/signup.tsx:87
+#: src/routes/signup.tsx:91
 msgid "Create owner account"
 msgstr "Create owner account"
 
@@ -535,8 +541,12 @@ msgid "Current password"
 msgstr "Current password"
 
 #: src/routes/m/history.tsx:75
-msgid "Daha eski"
-msgstr "Daha eski"
+#~ msgid "Daha eski"
+#~ msgstr "Daha eski"
+
+#: src/routes/m/history.tsx:78
+msgid "Daha fazla"
+msgstr "Daha fazla"
 
 #: src/routes/_owner/settings.tsx:241
 msgid "Data export"
@@ -594,7 +604,7 @@ msgid "Durdur"
 msgstr "Durdur"
 
 #: src/features/issues/IssuesFeed.tsx:155
-#: src/features/tasks/TaskDetailSheet.tsx:193
+#: src/features/tasks/TaskDetailSheet.tsx:195
 #: src/features/tasks/TasksTable.tsx:36
 #: src/routes/_owner/tasks.tsx:85
 msgid "Durum"
@@ -605,7 +615,7 @@ msgstr "Durum"
 msgid "Düşük"
 msgstr "Düşük"
 
-#: src/routes/signup.tsx:81
+#: src/routes/signup.tsx:85
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 
@@ -669,18 +679,19 @@ msgid "Ekran görüntüleri: Yakında"
 msgstr "Ekran görüntüleri: Yakında"
 
 #: src/features/issues/CategoryGrid.tsx:15
-#: src/features/issues/IssueConfirm.tsx:18
+#: src/features/issues/IssueConfirm.tsx:19
 #: src/features/issues/IssuesFeed.tsx:22
+#: src/features/tasks/TaskDetailMediaSection.tsx:18
 msgid "Eksik malzeme"
 msgstr "Eksik malzeme"
 
-#: src/routes/forgot-password.tsx:87
-#: src/routes/login.tsx:105
-#: src/routes/signup.tsx:95
+#: src/routes/forgot-password.tsx:90
+#: src/routes/login.tsx:87
+#: src/routes/signup.tsx:99
 msgid "Email"
 msgstr "Email"
 
-#: src/features/tasks/TaskDetailSheet.tsx:124
+#: src/features/tasks/TaskDetailSheet.tsx:126
 msgid "En az bir tarla seçin."
 msgstr "En az bir tarla seçin."
 
@@ -692,12 +703,12 @@ msgstr "En fazla 60 saniye."
 msgid "End this session on this device. You can sign in again with your work email and password."
 msgstr "End this session on this device. You can sign in again with your work email and password."
 
-#: src/routes/signup.tsx:89
+#: src/routes/signup.tsx:93
 msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "Enter your work email and a phone in international format (E.164)."
 
 #: src/routes/_owner/equipment.tsx:205
-#: src/routes/_owner/route.tsx:40
+#: src/routes/_owner/route.tsx:45
 msgid "Equipment"
 msgstr "Equipment"
 
@@ -714,7 +725,7 @@ msgid "Evet, bitir"
 msgstr "Evet, bitir"
 
 #: src/routes/_owner/fields.tsx:254
-#: src/routes/_owner/route.tsx:36
+#: src/routes/_owner/route.tsx:41
 msgid "Fields"
 msgstr "Fields"
 
@@ -724,7 +735,7 @@ msgstr "Fields"
 msgid "Foreman"
 msgstr "Foreman"
 
-#: src/routes/login.tsx:143
+#: src/routes/login.tsx:125
 msgid "Forgot password?"
 msgstr "Forgot password?"
 
@@ -737,11 +748,11 @@ msgstr "Forgot password?"
 #: src/routes/_owner/people.tsx:292
 #: src/routes/_owner/settings.tsx:56
 #: src/routes/_owner/settings.tsx:98
-#: src/routes/forgot-password.tsx:45
+#: src/routes/forgot-password.tsx:48
 #: src/routes/login.tsx:56
 #: src/routes/m/profile.tsx:91
 #: src/routes/reset-password.tsx:56
-#: src/routes/signup.tsx:61
+#: src/routes/signup.tsx:65
 msgid "Formu kontrol edin."
 msgstr "Formu kontrol edin."
 
@@ -753,19 +764,27 @@ msgstr "Foto bekleniyor"
 msgid "Foto seç veya çek"
 msgstr "Foto seç veya çek"
 
+#: src/features/tasks/TaskDetailMediaSection.tsx:90
+msgid "Foto ve ses"
+msgstr "Foto ve ses"
+
 #: src/features/tasks/CompletionFlow.tsx:102
 msgid "Foto yok, devam"
 msgstr "Foto yok, devam"
+
+#: src/features/tasks/TaskDetailMediaSection.tsx:128
+msgid "Foto yükleniyor…"
+msgstr "Foto yükleniyor…"
 
 #: src/features/tasks/CompletionFlow.tsx:80
 msgid "Fotoğraf eklensin mi?"
 msgstr "Fotoğraf eklensin mi?"
 
-#: src/features/issues/IssueConfirm.tsx:71
+#: src/features/issues/IssueConfirm.tsx:78
 msgid "Fotoğraf işlenemedi. Yeniden çekmeyi deneyin."
 msgstr "Fotoğraf işlenemedi. Yeniden çekmeyi deneyin."
 
-#: src/features/issues/IssueConfirm.tsx:50
+#: src/features/issues/IssueConfirm.tsx:51
 msgid "Fotoğraf önizlemesi"
 msgstr "Fotoğraf önizlemesi"
 
@@ -774,18 +793,22 @@ msgid "Fotoğrafı büyüt"
 msgstr "Fotoğrafı büyüt"
 
 #: src/features/people/csv.ts:21
-#: src/routes/signup.tsx:110
+#: src/routes/signup.tsx:114
 msgid "Full name"
 msgstr "Full name"
 
 #: src/components/layout/MobileShell.tsx:16
-#: src/routes/m/history.tsx:32
+#: src/routes/m/history.tsx:35
 msgid "Geçmiş"
 msgstr "Geçmiş"
 
 #: src/features/tasks/TaskCreateModal.tsx:400
 msgid "Geri"
 msgstr "Geri"
+
+#: src/routes/login.tsx:81
+msgid "Giriş"
+msgstr "Giriş"
 
 #: src/routes/_owner/people.tsx:228
 msgid "Giriş e-postası (cihaz hesabı) panoya kopyalandı. Çalışan bu adres ve sizin belirlediğiniz şifre ile uygulamaya girer; şifre sunucuda saklanmaz, tekrar gösterilmez."
@@ -803,15 +826,15 @@ msgstr "Gizlilik (KVKK)"
 msgid "Gizlilik (KVKK) sayfası"
 msgstr "Gizlilik (KVKK) sayfası"
 
-#: src/features/issues/IssueConfirm.tsx:77
+#: src/features/issues/IssueConfirm.tsx:84
 msgid "Gönder"
 msgstr "Gönder"
 
-#: src/features/issues/IssueConfirm.tsx:68
+#: src/features/issues/IssueConfirm.tsx:73
 msgid "Gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin."
 msgstr "Gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin."
 
-#: src/features/issues/IssueConfirm.tsx:77
+#: src/features/issues/IssueConfirm.tsx:84
 msgid "Gönderiliyor…"
 msgstr "Gönderiliyor…"
 
@@ -847,7 +870,7 @@ msgstr "Görev bloke edildi"
 msgid "Görev bulunamadı."
 msgstr "Görev bulunamadı."
 
-#: src/features/tasks/TaskDetailSheet.tsx:163
+#: src/features/tasks/TaskDetailSheet.tsx:165
 msgid "Görev detayı"
 msgstr "Görev detayı"
 
@@ -864,17 +887,21 @@ msgstr "görev oluşturulacak"
 #: src/features/dashboard/DashboardActivityFeed.tsx:9
 #: src/features/notifications/NotificationsBell.tsx:16
 #: src/features/settings/notification-mute-settings.tsx:13
-#: src/features/tasks/TaskDetailSheet.tsx:37
+#: src/features/tasks/TaskDetailSheet.tsx:38
 msgid "Görev oluşturuldu"
 msgstr "Görev oluşturuldu"
 
-#: src/features/tasks/TaskDetailSheet.tsx:174
+#: src/features/tasks/TaskDetailSheet.tsx:176
 msgid "Görev yüklenemedi."
 msgstr "Görev yüklenemedi."
 
 #: src/features/equipment/AttachSheet.mobile.tsx:88
 msgid "Görevde kullandığınız araç ve aletleri işaretleyin."
 msgstr "Görevde kullandığınız araç ve aletleri işaretleyin."
+
+#: src/features/tasks/TaskDetailMediaSection.tsx:110
+msgid "Göreve bağlı sorunlar"
+msgstr "Göreve bağlı sorunlar"
 
 #: src/routes/m/report-issue.tsx:47
 msgid "Göreve dön"
@@ -888,7 +915,6 @@ msgstr "Görevi aç"
 msgid "Görevi bitirmek üzeresiniz"
 msgstr "Görevi bitirmek üzeresiniz"
 
-#: src/components/layout/MobileShell.tsx:15
 #: src/routes/m/report-issue.tsx:51
 #: src/routes/m/task.$id.tsx:93
 msgid "Görevler"
@@ -937,13 +963,14 @@ msgid "Hata: <0>{code}</0>"
 msgstr "Hata: <0>{code}</0>"
 
 #: src/features/issues/CategoryGrid.tsx:13
-#: src/features/issues/IssueConfirm.tsx:16
+#: src/features/issues/IssueConfirm.tsx:17
 #: src/features/issues/IssuesFeed.tsx:20
+#: src/features/tasks/TaskDetailMediaSection.tsx:16
 msgid "Hava hasarı"
 msgstr "Hava hasarı"
 
 #: src/features/dashboard/DashboardActivityFeed.tsx:37
-#: src/features/tasks/TaskDetailSheet.tsx:241
+#: src/features/tasks/TaskDetailSheet.tsx:245
 msgid "Henüz kayıt yok."
 msgstr "Henüz kayıt yok."
 
@@ -961,12 +988,13 @@ msgstr "Hissedilen"
 #~ msgstr "History"
 
 #: src/features/issues/CategoryGrid.tsx:14
-#: src/features/issues/IssueConfirm.tsx:17
+#: src/features/issues/IssueConfirm.tsx:18
 #: src/features/issues/IssuesFeed.tsx:21
+#: src/features/tasks/TaskDetailMediaSection.tsx:17
 msgid "Hırsızlık"
 msgstr "Hırsızlık"
 
-#: src/routes/forgot-password.tsx:81
+#: src/routes/forgot-password.tsx:84
 msgid "If an account exists for that address, you’ll receive an email with a link. Check spam."
 msgstr "If an account exists for that address, you’ll receive an email with a link. Check spam."
 
@@ -997,12 +1025,16 @@ msgstr "iPhone: Safari’de Paylaş (□↑) → “Ana ekrana ekle” ile Agrov
 #: src/features/dashboard/TodaysBoard.tsx:30
 #: src/features/tasks/CompletionFlow.tsx:123
 #: src/features/tasks/TaskCard.mobile.tsx:37
-#: src/features/tasks/TaskDetailSheet.tsx:30
+#: src/features/tasks/TaskDetailSheet.tsx:31
 #: src/features/tasks/TasksKanban.tsx:22
 #: src/features/tasks/TasksTable.tsx:17
 #: src/routes/_owner/tasks.tsx:27
 msgid "İptal"
 msgstr "İptal"
+
+#: src/routes/login.tsx:82
+msgid "İş e-postası ve şifre."
+msgstr "İş e-postası ve şifre."
 
 #: src/features/tasks/TaskCreateModal.tsx:61
 msgid "İşçi"
@@ -1036,7 +1068,7 @@ msgstr "Kaldırılmış kullanıcı"
 #: src/features/issues/IssuesFeed.tsx:257
 #: src/features/tasks/ReassignSheet.mobile.tsx:58
 #: src/features/tasks/TaskCreateModal.tsx:205
-#: src/features/tasks/TaskDetailSheet.tsx:166
+#: src/features/tasks/TaskDetailSheet.tsx:168
 msgid "Kapat"
 msgstr "Kapat"
 
@@ -1044,7 +1076,7 @@ msgstr "Kapat"
 msgid "Kasalar"
 msgstr "Kasalar"
 
-#: src/features/issues/IssueConfirm.tsx:44
+#: src/features/issues/IssueConfirm.tsx:45
 #: src/features/issues/IssuesFeed.tsx:125
 msgid "Kategori"
 msgstr "Kategori"
@@ -1072,7 +1104,7 @@ msgid "Kayıt başarısız."
 msgstr "Kayıt başarısız."
 
 #: src/features/tasks/TaskCreateModal.tsx:314
-#: src/features/tasks/TaskDetailSheet.tsx:190
+#: src/features/tasks/TaskDetailSheet.tsx:192
 #: src/features/tasks/TasksTable.tsx:35
 #: src/routes/_owner/tasks.tsx:124
 msgid "Kime"
@@ -1086,20 +1118,20 @@ msgstr "Kimyasal uygulamalar"
 msgid "Kimyasallar"
 msgstr "Kimyasallar"
 
-#: src/features/tasks/TaskDetailSheet.tsx:226
+#: src/features/tasks/TaskDetailSheet.tsx:230
 msgid "Kopyala"
 msgstr "Kopyala"
 
-#: src/features/tasks/TaskDetailSheet.tsx:109
-#: src/features/tasks/TaskDetailSheet.tsx:142
+#: src/features/tasks/TaskDetailSheet.tsx:111
+#: src/features/tasks/TaskDetailSheet.tsx:144
 msgid "Kopyalama başarısız."
 msgstr "Kopyalama başarısız."
 
-#: src/features/tasks/TaskDetailSheet.tsx:263
+#: src/features/tasks/TaskDetailSheet.tsx:267
 msgid "Kopyalanacak tarlalar"
 msgstr "Kopyalanacak tarlalar"
 
-#: src/features/tasks/TaskDetailSheet.tsx:39
+#: src/features/tasks/TaskDetailSheet.tsx:40
 msgid "Kopyalandı"
 msgstr "Kopyalandı"
 
@@ -1115,9 +1147,9 @@ msgstr "Kullanım geçmişi"
 msgid "Kurulum başarısız"
 msgstr "Kurulum başarısız"
 
-#: src/routes/login.tsx:83
-msgid "Kurulum linki işletme sahibiniz veya ekip sorumlunuz tarafından paylaşılır. SMS veya e-posta ile şifre yok; linkle tek seferlik cihaz eşleştirmesi yapılır."
-msgstr "Kurulum linki işletme sahibiniz veya ekip sorumlunuz tarafından paylaşılır. SMS veya e-posta ile şifre yok; linkle tek seferlik cihaz eşleştirmesi yapılır."
+#: src/routes/login.tsx:85
+#~ msgid "Kurulum linki işletme sahibiniz veya ekip sorumlunuz tarafından paylaşılır. SMS veya e-posta ile şifre yok; linkle tek seferlik cihaz eşleştirmesi yapılır."
+#~ msgstr "Kurulum linki işletme sahibiniz veya ekip sorumlunuz tarafından paylaşılır. SMS veya e-posta ile şifre yok; linkle tek seferlik cihaz eşleştirmesi yapılır."
 
 #: src/components/SyncSheet.tsx:70
 msgid "Kuyrukta kayıt yok."
@@ -1232,7 +1264,7 @@ msgid "Normal"
 msgstr "Normal"
 
 #: src/features/tasks/TaskCreateModal.tsx:370
-#: src/features/tasks/TaskDetailSheet.tsx:200
+#: src/features/tasks/TaskDetailSheet.tsx:202
 msgid "Not"
 msgstr "Not"
 
@@ -1244,7 +1276,7 @@ msgid "Notes"
 msgstr "Notes"
 
 #: src/features/tasks/TaskCreateModal.tsx:423
-#: src/features/tasks/TaskDetailSheet.tsx:289
+#: src/features/tasks/TaskDetailSheet.tsx:293
 msgid "Oluştur"
 msgstr "Oluştur"
 
@@ -1300,9 +1332,9 @@ msgstr "Owner"
 #~ msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 #~ msgstr "Owner home placeholder — M0-03 smoke; routing in M0-05."
 
-#: src/routes/login.tsx:99
-msgid "Owner sign-in"
-msgstr "Owner sign-in"
+#: src/routes/login.tsx:101
+#~ msgid "Owner sign-in"
+#~ msgstr "Owner sign-in"
 
 #: src/routes/_owner/today.tsx:71
 msgid "Özet — görevler, sorunlar ve tarlalar."
@@ -1313,8 +1345,8 @@ msgid "Pano"
 msgstr "Pano"
 
 #: src/routes/_owner/settings.tsx:189
-#: src/routes/login.tsx:120
-#: src/routes/signup.tsx:142
+#: src/routes/login.tsx:102
+#: src/routes/signup.tsx:146
 msgid "Password"
 msgstr "Password"
 
@@ -1332,7 +1364,7 @@ msgstr "Paylaş düğmesine basın"
 msgid "Phone"
 msgstr "Phone"
 
-#: src/routes/signup.tsx:125
+#: src/routes/signup.tsx:129
 msgid "Phone (E.164)"
 msgstr "Phone (E.164)"
 
@@ -1369,7 +1401,7 @@ msgstr "Preparing your session…"
 msgid "Preparing…"
 msgstr "Preparing…"
 
-#: src/routes/login.tsx:157
+#: src/routes/login.tsx:139
 msgid "Privacy"
 msgstr "Privacy"
 
@@ -1400,7 +1432,7 @@ msgstr "Redraw boundary"
 #~ msgstr "Report an issue"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:41
+#: src/routes/_owner/route.tsx:46
 msgid "Reports"
 msgstr "Reports"
 
@@ -1408,7 +1440,7 @@ msgstr "Reports"
 msgid "Request reset email"
 msgstr "Request reset email"
 
-#: src/routes/forgot-password.tsx:74
+#: src/routes/forgot-password.tsx:77
 msgid "Reset password"
 msgstr "Reset password"
 
@@ -1434,9 +1466,9 @@ msgstr "Saha sorunları ve fotoğraflar."
 msgid "Sahip"
 msgstr "Sahip"
 
-#: src/routes/login.tsx:87
-msgid "Sahip hesabıyla giriş:"
-msgstr "Sahip hesabıyla giriş:"
+#: src/routes/login.tsx:89
+#~ msgid "Sahip hesabıyla giriş:"
+#~ msgstr "Sahip hesabıyla giriş:"
 
 #: src/routes/setup.$token.tsx:161
 msgid "Sahip hesapları cihaz kurulum linkiyle giriş yapamaz."
@@ -1471,17 +1503,25 @@ msgstr "Sayfa"
 msgid "Seçin…"
 msgstr "Seçin…"
 
-#: src/routes/forgot-password.tsx:101
+#: src/routes/forgot-password.tsx:104
 msgid "Send link"
 msgstr "Send link"
 
-#: src/routes/forgot-password.tsx:101
+#: src/routes/forgot-password.tsx:104
 msgid "Sending…"
 msgstr "Sending…"
 
 #: src/features/issues/VoiceRecorder.tsx:50
 msgid "Ses kaydı bu tarayıcıda desteklenmiyor."
 msgstr "Ses kaydı bu tarayıcıda desteklenmiyor."
+
+#: src/features/tasks/TaskDetailMediaSection.tsx:143
+msgid "Ses notu"
+msgstr "Ses notu"
+
+#: src/features/tasks/TaskDetailMediaSection.tsx:140
+msgid "Ses yükleniyor…"
+msgstr "Ses yükleniyor…"
 
 #: src/features/issues/VoiceRecorder.tsx:127
 msgid "Sesi sil"
@@ -1508,7 +1548,7 @@ msgstr "Set a new sign-in password. They keep the same device e-mail; tell them 
 msgid "Set password"
 msgstr "Set password"
 
-#: src/routes/_owner/route.tsx:42
+#: src/routes/_owner/route.tsx:47
 #: src/routes/_owner/settings.tsx:130
 #: src/routes/_owner/settings.tsx:138
 msgid "Settings"
@@ -1535,15 +1575,15 @@ msgstr "Show archived"
 msgid "Şifrenizi unuttuysanız işletme sahibinden (Ekip) yeni şifre isteyin."
 msgstr "Şifrenizi unuttuysanız işletme sahibinden (Ekip) yeni şifre isteyin."
 
-#: src/routes/login.tsx:135
+#: src/routes/login.tsx:117
 msgid "Sign in"
 msgstr "Sign in"
 
-#: src/routes/login.tsx:89
-msgid "Sign in (owner)"
-msgstr "Sign in (owner)"
+#: src/routes/login.tsx:91
+#~ msgid "Sign in (owner)"
+#~ msgstr "Sign in (owner)"
 
-#: src/routes/signup.tsx:176
+#: src/routes/signup.tsx:180
 msgid "Sign up"
 msgstr "Sign up"
 
@@ -1555,11 +1595,11 @@ msgstr "Sign-in e-mail (login)"
 msgid "Sign-in password"
 msgstr "Sign-in password"
 
-#: src/routes/login.tsx:135
+#: src/routes/login.tsx:117
 msgid "Signing in…"
 msgstr "Signing in…"
 
-#: src/routes/signup.tsx:176
+#: src/routes/signup.tsx:180
 msgid "Signing up…"
 msgstr "Signing up…"
 
@@ -1570,6 +1610,10 @@ msgstr "Şimdi değil"
 #: src/routes/m/profile.tsx:163
 msgid "Sistem"
 msgstr "Sistem"
+
+#: src/routes/m/tasks.tsx:41
+msgid "Size atanan veya üzerinizdeki işler burada listelenir."
+msgstr "Size atanan veya üzerinizdeki işler burada listelenir."
 
 #: src/features/equipment/EquipmentUsageSheet.tsx:57
 msgid "Son 30 gün"
@@ -1611,7 +1655,7 @@ msgid "Sorun raporu"
 msgstr "Sorun raporu"
 
 #: src/routes/_owner/issues.tsx:61
-#: src/routes/_owner/route.tsx:38
+#: src/routes/_owner/route.tsx:43
 msgid "Sorunlar"
 msgstr "Sorunlar"
 
@@ -1625,15 +1669,16 @@ msgid "Sulama"
 msgstr "Sulama"
 
 #: src/features/issues/CategoryGrid.tsx:12
-#: src/features/issues/IssueConfirm.tsx:15
+#: src/features/issues/IssueConfirm.tsx:16
 #: src/features/issues/IssuesFeed.tsx:19
+#: src/features/tasks/TaskDetailMediaSection.tsx:15
 msgid "Sulama sorunu"
 msgstr "Sulama sorunu"
 
 #: src/features/dashboard/TodaysBoard.tsx:18
 #: src/features/dashboard/TodaysBoard.tsx:27
 #: src/features/tasks/TaskCard.mobile.tsx:34
-#: src/features/tasks/TaskDetailSheet.tsx:27
+#: src/features/tasks/TaskDetailSheet.tsx:28
 #: src/features/tasks/TasksKanban.tsx:19
 #: src/features/tasks/TasksTable.tsx:14
 #: src/routes/_owner/tasks.tsx:24
@@ -1644,11 +1689,23 @@ msgstr "Sürüyor"
 msgid "Tablo"
 msgstr "Tablo"
 
-#: src/features/tasks/TaskDetailSheet.tsx:41
+#: src/routes/m/history.tsx:82
+msgid "Tamamlanan veya kapanan görev yok."
+msgstr "Tamamlanan veya kapanan görev yok."
+
+#: src/features/tasks/TaskDetailSheet.tsx:42
 msgid "Tamamlandı"
 msgstr "Tamamlandı"
 
-#: src/features/tasks/TaskDetailSheet.tsx:196
+#: src/features/tasks/TaskDetailMediaSection.tsx:97
+msgid "Tamamlanma görüntüsü"
+msgstr "Tamamlanma görüntüsü"
+
+#: src/features/tasks/TaskDetailMediaSection.tsx:93
+msgid "Tamamlanma görüntüsü yükleniyor…"
+msgstr "Tamamlanma görüntüsü yükleniyor…"
+
+#: src/features/tasks/TaskDetailSheet.tsx:198
 #: src/features/tasks/TasksTable.tsx:38
 msgid "Tarih"
 msgstr "Tarih"
@@ -1659,7 +1716,7 @@ msgstr "Tarih aralığını kontrol edin."
 
 #: src/features/issues/IssuesFeed.tsx:140
 #: src/features/issues/IssuesFeed.tsx:218
-#: src/features/tasks/TaskDetailSheet.tsx:185
+#: src/features/tasks/TaskDetailSheet.tsx:187
 #: src/features/tasks/TasksTable.tsx:34
 #: src/routes/_owner/tasks.tsx:106
 msgid "Tarla"
@@ -1681,7 +1738,7 @@ msgstr "tarlada dağılmış"
 msgid "Tarlalar yükleniyor…"
 msgstr "Tarlalar yükleniyor…"
 
-#: src/features/tasks/TaskDetailSheet.tsx:232
+#: src/features/tasks/TaskDetailSheet.tsx:236
 msgid "Tarlalara kopyala…"
 msgstr "Tarlalara kopyala…"
 
@@ -1697,13 +1754,13 @@ msgstr "Task id"
 msgid "Task, field, people, and issue data belong to your operation; access is enforced with Row Level Security."
 msgstr "Task, field, people, and issue data belong to your operation; access is enforced with Row Level Security."
 
-#: src/routes/_owner/route.tsx:37
+#: src/routes/_owner/route.tsx:42
 #: src/routes/_owner/tasks.tsx:73
 msgid "Tasks"
 msgstr "Tasks"
 
 #: src/routes/_owner/people.tsx:337
-#: src/routes/_owner/route.tsx:39
+#: src/routes/_owner/route.tsx:44
 msgid "Team"
 msgstr "Team"
 
@@ -1723,7 +1780,7 @@ msgstr "This page describes how Agrova processes personal and operational data. 
 msgid "Time zone"
 msgstr "Time zone"
 
-#: src/routes/_owner/route.tsx:35
+#: src/routes/_owner/route.tsx:40
 #: src/routes/_owner/today.tsx:70
 msgid "Today"
 msgstr "Today"
@@ -1796,7 +1853,7 @@ msgid "Variety"
 msgstr "Variety"
 
 #: src/features/tasks/CompletionFlow.tsx:106
-#: src/features/tasks/TaskDetailSheet.tsx:286
+#: src/features/tasks/TaskDetailSheet.tsx:290
 msgid "Vazgeç"
 msgstr "Vazgeç"
 
@@ -1809,7 +1866,7 @@ msgstr "Vehicles"
 msgid "Vehicles, tools, chemicals, and crates."
 msgstr "Vehicles, tools, chemicals, and crates."
 
-#: src/routes/forgot-password.tsx:76
+#: src/routes/forgot-password.tsx:79
 msgid "We’ll send a link to your work email. Use the same address as your Agrova owner account."
 msgstr "We’ll send a link to your work email. Use the same address as your Agrova owner account."
 
@@ -1821,9 +1878,9 @@ msgstr "Weather"
 msgid "Weather city"
 msgstr "Weather city"
 
-#: src/routes/login.tsx:100
-msgid "Work email and password."
-msgstr "Work email and password."
+#: src/routes/login.tsx:102
+#~ msgid "Work email and password."
+#~ msgstr "Work email and password."
 
 #: src/features/people/csv.ts:13
 #: src/routes/_owner/people.tsx:42
@@ -1831,9 +1888,9 @@ msgstr "Work email and password."
 msgid "Worker"
 msgstr "Worker"
 
-#: src/routes/login.tsx:81
-msgid "Worker device"
-msgstr "Worker device"
+#: src/routes/login.tsx:83
+#~ msgid "Worker device"
+#~ msgstr "Worker device"
 
 #: src/components/layout/MobileShell.tsx:63
 msgid "Worker navigation"
@@ -1847,16 +1904,18 @@ msgstr "Worker password was updated. They sign in with the same device e-mail an
 #~ msgid "Worker PWA task list — /m URL prefix until role-based routing."
 #~ msgstr "Worker PWA task list — /m URL prefix until role-based routing."
 
+#: src/components/layout/MobileShell.tsx:15
 #: src/features/dashboard/TodaysBoard.tsx:17
 #: src/features/tasks/TaskCard.mobile.tsx:33
-#: src/features/tasks/TaskDetailSheet.tsx:26
+#: src/features/tasks/TaskDetailSheet.tsx:27
 #: src/features/tasks/TasksKanban.tsx:18
 #: src/features/tasks/TasksTable.tsx:13
 #: src/routes/_owner/tasks.tsx:23
+#: src/routes/m/tasks.tsx:22
 msgid "Yapılacak"
 msgstr "Yapılacak"
 
-#: src/routes/forgot-password.tsx:56
+#: src/routes/forgot-password.tsx:59
 msgid "Yapılandırma hatası: site adresi (VITE_SITE_URL) tanımlı değil."
 msgstr "Yapılandırma hatası: site adresi (VITE_SITE_URL) tanımlı değil."
 
@@ -1865,18 +1924,19 @@ msgid "Yapılandırma hatası: VITE_SITE_URL tanımlı değil."
 msgstr "Yapılandırma hatası: VITE_SITE_URL tanımlı değil."
 
 #: src/features/issues/CategoryGrid.tsx:11
-#: src/features/issues/IssueConfirm.tsx:14
+#: src/features/issues/IssueConfirm.tsx:15
 #: src/features/issues/IssuesFeed.tsx:18
+#: src/features/tasks/TaskDetailMediaSection.tsx:14
 msgid "Yaralanma"
 msgstr "Yaralanma"
 
-#: src/features/tasks/TaskDetailSheet.tsx:229
+#: src/features/tasks/TaskDetailSheet.tsx:233
 msgid "Yarın için kopyala"
 msgstr "Yarın için kopyala"
 
 #: src/routes/m/tasks.tsx:41
-msgid "Yeni atamalar burada listelenir."
-msgstr "Yeni atamalar burada listelenir."
+#~ msgid "Yeni atamalar burada listelenir."
+#~ msgstr "Yeni atamalar burada listelenir."
 
 #: src/features/tasks/TaskCreateModal.tsx:198
 #: src/routes/_owner/tasks.tsx:78
@@ -1891,7 +1951,7 @@ msgstr "Yeni görev"
 msgid "Yeni saha sorunu (KPI)"
 msgstr "Yeni saha sorunu (KPI)"
 
-#: src/features/tasks/TaskDetailSheet.tsx:212
+#: src/features/tasks/TaskDetailSheet.tsx:216
 msgid "Yeni sorumlu…"
 msgstr "Yeni sorumlu…"
 
@@ -1899,7 +1959,7 @@ msgstr "Yeni sorumlu…"
 msgid "Yeni sorun raporu"
 msgstr "Yeni sorun raporu"
 
-#: src/features/issues/IssueConfirm.tsx:81
+#: src/features/issues/IssueConfirm.tsx:88
 msgid "Yeniden çek"
 msgstr "Yeniden çek"
 
@@ -1918,21 +1978,22 @@ msgstr "You can export field-level chemical logs as CSV; a full data export is p
 #: src/features/issues/IssuesFeed.tsx:196
 #: src/features/notifications/NotificationsBell.tsx:79
 #: src/features/tasks/ReassignSheet.mobile.tsx:62
-#: src/features/tasks/TaskDetailSheet.tsx:170
-#: src/routes/m/history.tsx:33
+#: src/features/tasks/TaskDetailSheet.tsx:172
+#: src/routes/m/history.tsx:36
 #: src/routes/m/profile.tsx:116
 #: src/routes/m/task.$id.tsx:62
 #: src/routes/m/tasks.tsx:37
 msgid "Yükleniyor…"
 msgstr "Yükleniyor…"
 
-#: src/features/tasks/TaskDetailSheet.tsx:238
+#: src/features/tasks/TaskDetailSheet.tsx:242
 msgid "Zaman çizelgesi"
 msgstr "Zaman çizelgesi"
 
 #: src/features/issues/CategoryGrid.tsx:9
-#: src/features/issues/IssueConfirm.tsx:12
+#: src/features/issues/IssueConfirm.tsx:13
 #: src/features/issues/IssuesFeed.tsx:16
+#: src/features/tasks/TaskDetailMediaSection.tsx:12
 msgid "Zararlı / hastalık"
 msgstr "Zararlı / hastalık"
 

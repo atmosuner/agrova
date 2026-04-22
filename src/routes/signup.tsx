@@ -183,7 +183,7 @@ function SignUpPage() {
       <p className="text-center text-sm text-fg-secondary">
         <Link
           to="/login"
-          search={{ redirect: redirectTo, worker: false }}
+          search={{ redirect: redirectTo }}
           className="font-medium text-orchard-500 underline-offset-2 hover:underline"
         >
           {t`Already have an account? Sign in`}

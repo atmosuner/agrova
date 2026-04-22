@@ -1,49 +1,48 @@
 /* eslint-disable lingui/no-unlocalized-strings */
 import { useQuery } from '@tanstack/react-query'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
-import { addDaysToISODate, thisWeekRangeISODateInIstanbul } from '@/lib/date-istanbul'
 import { supabase } from '@/lib/supabase'
 import type { TaskListRow } from '@/features/tasks/useTasksQuery'
 
-const DEFAULT_DAYS_BACK = 21
-const PAGE_DAYS = 7
+const PAGE = 50
+
+export type MyTaskHistoryRow = TaskListRow & {
+  completed_at: string | null
+  updated_at: string
+}
 
 export function useMyTaskHistoryQuery() {
   const { data: me } = useMyPersonQuery()
   const personId = me?.id
-  const { start: weekStart, end: weekEnd } = useMemo(() => thisWeekRangeISODateInIstanbul(), [])
-  const [daysBack, setDaysBack] = useState(DEFAULT_DAYS_BACK)
-
-  const fromDate = addDaysToISODate(weekStart, -daysBack)
+  const [limit, setLimit] = useState(PAGE)
 
   const query = useQuery({
-    queryKey: ['my-task-history', personId, fromDate, weekEnd],
+    queryKey: ['my-task-history', personId, limit],
     enabled: Boolean(personId),
     queryFn: async () => {
       if (!personId) {
-        return { rows: [] as TaskListRow[] }
+        return { rows: [] as MyTaskHistoryRow[] }
       }
       const { data, error } = await supabase
         .from('tasks')
         .select(
-          `id, activity, status, priority, due_date, field_id, assignee_id, fields ( name ), assignee:people!tasks_assignee_id_fkey ( id, full_name )`,
+          `id, activity, status, priority, due_date, field_id, assignee_id, completed_at, updated_at, fields ( name ), assignee:people!tasks_assignee_id_fkey ( id, full_name )`,
         )
         .eq('assignee_id', personId)
-        .gte('due_date', fromDate)
-        .lte('due_date', weekEnd)
-        .order('due_date', { ascending: false })
+        .in('status', ['DONE', 'CANCELLED', 'BLOCKED'])
+        .order('updated_at', { ascending: false })
+        .limit(limit)
       if (error) {
         throw error
       }
-      return { rows: (data ?? []) as TaskListRow[] }
+      return { rows: (data ?? []) as MyTaskHistoryRow[] }
     },
   })
 
   return {
     ...query,
-    fromDate,
-    weekEnd,
-    loadOlder: () => setDaysBack((d) => d + PAGE_DAYS),
+    limit,
+    loadOlder: () => setLimit((l) => l + PAGE),
   }
 }

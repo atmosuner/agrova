@@ -8,6 +8,7 @@ import { activityIdFromDbValue } from '@/features/tasks/activities'
 import { duplicateTaskForTomorrow, duplicateTaskToFields } from '@/features/tasks/duplicate-task'
 import { fieldMatchesQuery } from '@/features/tasks/field-filter'
 import { reassignTask } from '@/features/tasks/reassign-task'
+import { TaskDetailMediaSection } from '@/features/tasks/TaskDetailMediaSection'
 import { useTaskActivityLogQuery } from '@/features/tasks/useTaskActivityLogQuery'
 import { useTaskDetailQuery } from '@/features/tasks/useTaskDetailQuery'
 import { useAssignablePeopleQuery } from '@/features/tasks/useAssignablePeopleQuery'
@@ -63,6 +64,7 @@ export function TaskDetailSheet({ taskId, onClose }: Props) {
     await refetch()
     void qc.invalidateQueries({ queryKey: ['tasks'] })
     void qc.invalidateQueries({ queryKey: ['task', taskId, 'activity_log'] })
+    void qc.invalidateQueries({ queryKey: ['task', taskId, 'linked_issues'] })
   }, [qc, refetch, taskId])
 
   async function onReassign() {
@@ -200,6 +202,8 @@ export function TaskDetailSheet({ taskId, onClose }: Props) {
               <span className="text-fg-secondary">{t`Not`}:</span> {task.notes}
             </p>
           ) : null}
+
+          <TaskDetailMediaSection taskId={task.id} completionPhotoPath={task.completion_photo_url} />
 
           <div className="space-y-2 border-t border-border pt-3">
             <p className="text-xs font-semibold text-fg-secondary">{t`Aktar`}</p>
