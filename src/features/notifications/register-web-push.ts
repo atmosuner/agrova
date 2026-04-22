@@ -15,6 +15,10 @@ function urlBase64ToUint8Array(base64String: string): BufferSource {
 
 /**
  * Subscribes this browser to Web Push and stores keys in `push_subscriptions`.
+ * The `web-push-fanout` edge function only sends to **owner** `person_id` rows, so
+ * the owner app must call this (see `RegisterOwnerWebPush`); worker-only runs do not
+ * receive those pushes.
+ *
  * No-op if Notification API unavailable, permission denied, or VAPID not configured.
  */
 export async function registerWebPushIfPossible(

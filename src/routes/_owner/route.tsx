@@ -1,6 +1,7 @@
 import { msg } from '@lingui/macro'
 import { defaultStringifySearch, Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
+import { RegisterOwnerWebPush } from '@/features/notifications/RegisterOwnerWebPush'
 import { OperationSettingsProvider } from '@/features/settings/operation-settings-context'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
 import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
@@ -54,6 +55,7 @@ function OwnerLayoutInner() {
 
   return (
     <div className="flex min-h-dvh">
+      <RegisterOwnerWebPush />
       <aside className="flex w-60 flex-col border-r border-border bg-surface-0 px-3 py-4 text-sm">
         <div className="mb-6">
           <div className="font-medium leading-snug text-orchard-500">{headerTitle}</div>
