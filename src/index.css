@@ -2,6 +2,10 @@
 @import "@fontsource-variable/inter/wght.css";
 @import "@fontsource-variable/jetbrains-mono/wght.css";
 @import "./styles/agrova-vars.css";
+@import "tw-animate-css";
+@import "shadcn/tailwind.css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   /* Typography — Inter + JetBrains per DESIGN.md §3 */
@@ -45,10 +49,16 @@
   }
 
   body {
-    @apply min-h-dvh bg-canvas font-sans text-fg text-base antialiased;
+    @apply min-h-dvh font-sans text-base antialiased bg-background text-foreground;
     font-weight: 400;
     /* DESIGN.md: cv11, ss01, calt (Turkish + Inter) */
     font-feature-settings: "cv11" 1, "ss01" 1, "calt" 1;
+  }
+  * {
+    @apply border-border outline-ring/50;
+  }
+  html {
+    @apply font-sans;
   }
 }
 
@@ -58,4 +68,126 @@
   *::after {
     transition-duration: 0.01ms !important;
   }
+}
+
+@theme inline {
+  --font-heading: var(--font-sans);
+  /* Keep Inter (DESIGN.md) — not Geist from the Nova preset */
+  --font-sans:
+    "Inter Variable", "Inter", ui-sans-serif, -apple-system, "Segoe UI", Roboto,
+    sans-serif;
+  --color-sidebar-ring:
+    var(--sidebar-ring);
+  --color-sidebar-border:
+    var(--sidebar-border);
+  --color-sidebar-accent-foreground:
+    var(--sidebar-accent-foreground);
+  --color-sidebar-accent:
+    var(--sidebar-accent);
+  --color-sidebar-primary-foreground:
+    var(--sidebar-primary-foreground);
+  --color-sidebar-primary:
+    var(--sidebar-primary);
+  --color-sidebar-foreground:
+    var(--sidebar-foreground);
+  --color-sidebar:
+    var(--sidebar);
+  --color-chart-5:
+    var(--chart-5);
+  --color-chart-4:
+    var(--chart-4);
+  --color-chart-3:
+    var(--chart-3);
+  --color-chart-2:
+    var(--chart-2);
+  --color-chart-1:
+    var(--chart-1);
+  --color-ring:
+    var(--ring);
+  --color-input:
+    var(--input);
+  --color-border:
+    var(--border);
+  --color-destructive:
+    var(--destructive);
+  --color-accent-foreground:
+    var(--accent-foreground);
+  --color-accent:
+    var(--accent);
+  --color-muted-foreground:
+    var(--muted-foreground);
+  --color-muted:
+    var(--muted);
+  --color-secondary-foreground:
+    var(--secondary-foreground);
+  --color-secondary:
+    var(--secondary);
+  --color-primary-foreground:
+    var(--primary-foreground);
+  --color-primary:
+    var(--primary);
+  --color-popover-foreground:
+    var(--popover-foreground);
+  --color-popover:
+    var(--popover);
+  --color-card-foreground:
+    var(--card-foreground);
+  --color-card:
+    var(--card);
+  --color-foreground:
+    var(--foreground);
+  --color-background:
+    var(--background);
+  --radius-sm:
+    calc(var(--radius) * 0.6);
+  --radius-md:
+    calc(var(--radius) * 0.8);
+  --radius-lg:
+    var(--radius);
+  --radius-xl:
+    calc(var(--radius) * 1.4);
+  --radius-2xl:
+    calc(var(--radius) * 1.8);
+  --radius-3xl:
+    calc(var(--radius) * 2.2);
+  --radius-4xl:
+    calc(var(--radius) * 2.6);
+}
+
+/* shadcn semantic colors → follow DESIGN.md via --agrova-* (incl. system dark) */
+:root {
+  --background: var(--agrova-canvas);
+  --foreground: var(--agrova-fg);
+  --card: var(--agrova-surface-0);
+  --card-foreground: var(--agrova-fg);
+  --popover: var(--agrova-surface-0);
+  --popover-foreground: var(--agrova-fg);
+  --primary: var(--agrova-orchard-500);
+  /* DESIGN.md: primary CTA label on brand green */
+  --primary-foreground: #ffffff;
+  --secondary: var(--agrova-surface-0);
+  --secondary-foreground: var(--agrova-fg);
+  --muted: var(--agrova-surface-1);
+  --muted-foreground: var(--agrova-fg-muted);
+  --accent: var(--agrova-surface-1);
+  --accent-foreground: var(--agrova-fg);
+  --destructive: var(--agrova-status-blocked);
+  --border: var(--agrova-border-subtle);
+  --input: var(--agrova-border-strong);
+  --ring: var(--agrova-orchard-500);
+  --chart-1: var(--agrova-orchard-500);
+  --chart-2: var(--agrova-harvest-500);
+  --chart-3: var(--agrova-fg-secondary);
+  --chart-4: var(--agrova-status-progress);
+  --chart-5: var(--agrova-status-todo);
+  /* DESIGN.md §4: 8px default radius for cards/inputs; pill CTAs are separate */
+  --radius: 0.5rem;
+  --sidebar: var(--agrova-surface-0);
+  --sidebar-foreground: var(--agrova-fg);
+  --sidebar-primary: var(--agrova-orchard-500);
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: var(--agrova-surface-1);
+  --sidebar-accent-foreground: var(--agrova-fg);
+  --sidebar-border: var(--agrova-border-subtle);
+  --sidebar-ring: var(--agrova-orchard-500);
 }

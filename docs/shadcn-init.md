@@ -1,23 +1,28 @@
 # shadcn/ui init (non-interactive)
 
-The CLI is interactive in a TTY. For agents and CI, call it with explicit flags so it never blocks on prompts.
+The CLI is interactive in a TTY. For agents and CI, pass explicit flags that match the **Vite + React** stack in this repo.
 
-**Recommended (defaults + Radix, Nova / New York–style stack):**
+**Working recipe (Vite, Radix, Nova preset):**
 
 ```bash
-pnpm dlx shadcn@latest init -y --defaults --base-color neutral
+pnpm dlx shadcn@latest init -y --template vite -b radix -p nova
 ```
 
-- `-y` / `--yes` — skip confirmation
-- `--defaults` — use the default template stack (Vite + React; preset aligns with current shadcn defaults, often **Nova** + **Radix** primitives)
-- `--base-color neutral` — avoids a known edge case where `--defaults` alone can fail validation on `tailwind` in some versions
+- `-y` — skip confirmation
+- `--template vite` — **not** `--defaults` (that targets Next and would be wrong)
+- `-b` / `--base radix` — Radix primitives
+- `-p` / `--preset nova` — Nova (available presets: nova, vega, maia, …)
 
-If `--defaults` errors, fall back to fully explicit init (see [shadcn CLI docs](https://ui.shadcn.com/docs/cli)) after Tailwind is installed in M0-03.
+**Precondition:** the root `tsconfig.json` must include `compilerOptions.paths` for `@/*` → `./src/*` (the CLI validates the alias; project references in `tsconfig.app.json` alone are not enough).
 
-**Do not** run `shadcn init` without these flags in automation — it will block on style/preset questions.
+The CLI may add `tw-animate-css`, `shadcn/tailwind.css` imports, and **Nova’s Geist** font. This project **removes** Geist in favor of **Inter** (`DESIGN.md`); the `@theme inline` font stack in `src/index.css` is pointed at **Inter Variable**, and shadcn semantic colors in `:root` are mapped to `--agrova-*` in the same file.
 
-Add components non-interactively later:
+`--base-color` is **not** a valid flag in current CLI (use the preset you need).
+
+**Add components (non-interactive):**
 
 ```bash
 pnpm dlx shadcn@latest add button -y
 ```
+
+`buttonVariants` lives in `src/components/ui/button-variants.ts` so `button.tsx` can export only the component and satisfy `react-refresh/only-export-components`.
