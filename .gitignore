@@ -5,6 +5,7 @@ node_modules/
 
 # ---------- Build output ----------
 dist/
+dist-ssr/
 build/
 out/
 .next/
@@ -58,3 +59,4 @@ test-results/
 .eslintcache
 .stylelintcache
 *.local
+tmp/

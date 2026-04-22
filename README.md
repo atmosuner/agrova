@@ -31,7 +31,21 @@ See [`specs/farm-operations-app.md §16`](./specs/farm-operations-app.md#16-deli
 
 ## Running locally
 
-Nothing to run yet — the web app scaffold lands in **Slice B** of Phase 2. Watch this README.
+```bash
+corepack enable pnpm   # once per machine
+pnpm install
+pnpm dev                # http://127.0.0.1:5173
+```
+
+Quality:
+
+```bash
+pnpm typecheck
+pnpm lint
+pnpm build
+```
+
+**shadcn/ui (M0-04):** use non-interactive flags — see [`docs/shadcn-init.md`](./docs/shadcn-init.md).
 
 ## Contributing
 
