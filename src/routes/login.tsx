@@ -144,6 +144,11 @@ function LoginPage() {
           {t`Create an account`}
         </Link>
       </p>
+      <p className="mt-2 text-center text-xs text-fg-faint">
+        <Link to="/privacy" className="underline-offset-2 hover:underline">
+          {t`Privacy`}
+        </Link>
+      </p>
     </div>
   )
 }

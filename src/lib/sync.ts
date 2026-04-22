@@ -1,6 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings -- log / error strings */
 import { reassignTask } from '@/features/tasks/reassign-task'
 import { db, type OutboxRow } from '@/lib/db'
+import { invokeWebPushFanout } from '@/lib/invoke-web-push-fanout'
 import { supabase } from '@/lib/supabase'
 import type { Database, Json } from '@/types/db'
 
@@ -21,6 +22,20 @@ function asTaskStatus(s: string | undefined, fallback: TaskStatus): TaskStatus {
     return s
   }
   return fallback
+}
+
+async function fanoutLatestTaskActivity(taskId: string): Promise<void> {
+  const { data } = await supabase
+    .from('activity_log')
+    .select('id')
+    .eq('subject_id', taskId)
+    .eq('subject_type', 'task')
+    .order('created_at', { ascending: false })
+    .limit(1)
+    .maybeSingle()
+  if (data?.id) {
+    void invokeWebPushFanout(supabase, data.id)
+  }
 }
 
 function asIssueCategory(s: string | undefined, fallback: IssueCategory): IssueCategory {
@@ -93,6 +108,7 @@ async function processRow(row: OutboxRow): Promise<void> {
     if (uErr) {
       throw uErr
     }
+    await fanoutLatestTaskActivity(taskId)
     return
   }
   if (row.kind === 'task_reassign') {
@@ -102,6 +118,7 @@ async function processRow(row: OutboxRow): Promise<void> {
       return
     }
     await reassignTask(supabase, { taskId, newAssigneeId })
+    await fanoutLatestTaskActivity(taskId)
     return
   }
   if (row.kind === 'task_equipment') {
@@ -188,6 +205,18 @@ async function processRow(row: OutboxRow): Promise<void> {
         return
       }
       throw insErr
+    }
+    const { data: al } = await supabase
+      .from('activity_log')
+      .select('id')
+      .eq('subject_id', issueId)
+      .eq('subject_type', 'issue')
+      .eq('action', 'issue.reported')
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (al?.id) {
+      void invokeWebPushFanout(supabase, al.id)
     }
     return
   }

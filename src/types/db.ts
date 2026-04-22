@@ -196,7 +196,7 @@ export type Database = {
           gps_lat: number | null
           gps_lng: number | null
           id: string
-          photo_url: string | null
+          photo_url: string
           reporter_id: string
           resolved_at: string | null
           resolved_by: string | null
@@ -224,7 +224,7 @@ export type Database = {
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
-          photo_url?: string | null
+          photo_url?: string
           reporter_id?: string
           resolved_at?: string | null
           resolved_by?: string | null
@@ -298,6 +298,41 @@ export type Database = {
           {
             foreignKeyName: "notifications_recipient_id_fkey"
             columns: ["recipient_id"]
+            isOneToOne: false
+            referencedRelation: "people"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          p256dh: string
+          person_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          p256dh: string
+          person_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          p256dh?: string
+          person_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "push_subscriptions_person_id_fkey"
+            columns: ["person_id"]
             isOneToOne: false
             referencedRelation: "people"
             referencedColumns: ["id"]
@@ -707,4 +742,5 @@ export const Constants = {
     },
   },
 } as const
+
 

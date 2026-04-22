@@ -4,8 +4,11 @@ import { useState } from 'react'
 import { useNavigate } from '@tanstack/react-router'
 import { Camera, Check } from 'lucide-react'
 import { WorkerButton } from '@/components/ui/WorkerButton'
+import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
+import { registerWebPushIfPossible } from '@/features/notifications/register-web-push'
 import { queueTaskCompletionWithOptionalPhoto } from '@/features/tasks/worker-mutations'
 import { useQueryClient } from '@tanstack/react-query'
+import { supabase } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
 import { cn } from '@/lib/utils'
 import type { Database } from '@/types/db'
@@ -30,12 +33,16 @@ export function CompletionFlow({ taskId, fromStatus, onClose }: Props) {
   )
   const navigate = useNavigate()
   const queryClient = useQueryClient()
+  const { data: me } = useMyPersonQuery()
 
   async function onConfirm() {
     setErr(null)
     setBusy(true)
     try {
       await queueTaskCompletionWithOptionalPhoto({ taskId, fromStatus, file: file ?? undefined })
+      if (me?.id) {
+        void registerWebPushIfPossible(supabase, me.id)
+      }
       setStep('done')
       if (!prefersReduce) {
         await new Promise((r) => setTimeout(r, 300))

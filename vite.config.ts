@@ -36,6 +36,7 @@ export default defineConfig({
         'src/features/equipment/useActiveEquipmentQuery.ts',
         'src/features/equipment/useEquipmentUsage.ts',
         'src/features/fields/useFieldChemicalApplicationsQuery.ts',
+        'src/features/dashboard/use-dashboard-stats.ts',
       ],
       thresholds: {
         lines: 80,
@@ -80,6 +81,8 @@ export default defineConfig({
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
         navigateFallback: '/index.html',
+        // M6-04: push notification click (see public/notification-sw.js)
+        importScripts: ['notification-sw.js'],
         // Offline IndexedDB / API: later milestones; shell precache only for now
         runtimeCaching: [],
       },

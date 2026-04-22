@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
+import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MRouteRouteImport } from './routes/m/route'
 import { Route as OwnerRouteRouteImport } from './routes/_owner/route'
@@ -33,6 +34,11 @@ import { Route as MTaskIdRouteImport } from './routes/m/task.$id'
 const SignupRoute = SignupRouteImport.update({
   id: '/signup',
   path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PrivacyRoute = PrivacyRouteImport.update({
+  id: '/privacy',
+  path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -134,6 +140,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/m': typeof MRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
   '/fields': typeof OwnerFieldsRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
   '/fields': typeof OwnerFieldsRoute
@@ -177,6 +185,7 @@ export interface FileRoutesById {
   '/_owner': typeof OwnerRouteRouteWithChildren
   '/m': typeof MRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/_owner/equipment': typeof OwnerEquipmentRoute
   '/_owner/fields': typeof OwnerFieldsRoute
@@ -200,6 +209,7 @@ export interface FileRouteTypes {
     | '/'
     | '/m'
     | '/login'
+    | '/privacy'
     | '/signup'
     | '/equipment'
     | '/fields'
@@ -220,6 +230,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/privacy'
     | '/signup'
     | '/equipment'
     | '/fields'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/_owner'
     | '/m'
     | '/login'
+    | '/privacy'
     | '/signup'
     | '/_owner/equipment'
     | '/_owner/fields'
@@ -265,6 +277,7 @@ export interface RootRouteChildren {
   OwnerRouteRoute: typeof OwnerRouteRouteWithChildren
   MRouteRoute: typeof MRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PrivacyRoute: typeof PrivacyRoute
   SignupRoute: typeof SignupRoute
   SetupTokenRoute: typeof SetupTokenRoute
 }
@@ -276,6 +289,13 @@ declare module '@tanstack/react-router' {
       path: '/signup'
       fullPath: '/signup'
       preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/privacy': {
+      id: '/privacy'
+      path: '/privacy'
+      fullPath: '/privacy'
+      preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -466,6 +486,7 @@ const rootRouteChildren: RootRouteChildren = {
   OwnerRouteRoute: OwnerRouteRouteWithChildren,
   MRouteRoute: MRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  PrivacyRoute: PrivacyRoute,
   SignupRoute: SignupRoute,
   SetupTokenRoute: SetupTokenRoute,
 }

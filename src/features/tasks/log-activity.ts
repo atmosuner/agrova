@@ -1,6 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings -- DB action slugs */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database, Json } from '@/types/db'
+import { invokeWebPushFanout } from '@/lib/invoke-web-push-fanout'
 
 type Action =
   | 'task.created'
@@ -23,14 +24,21 @@ export async function logActivity(
     payload?: Json
   },
 ): Promise<void> {
-  const { error } = await supabase.from('activity_log').insert({
-    actor_id: input.actorId,
-    action: input.action,
-    subject_type: input.subjectType,
-    subject_id: input.subjectId,
-    payload: input.payload ?? {},
-  })
+  const { data, error } = await supabase
+    .from('activity_log')
+    .insert({
+      actor_id: input.actorId,
+      action: input.action,
+      subject_type: input.subjectType,
+      subject_id: input.subjectId,
+      payload: input.payload ?? {},
+    })
+    .select('id')
+    .single()
   if (error) {
     throw error
+  }
+  if (data?.id) {
+    void invokeWebPushFanout(supabase, data.id)
   }
 }

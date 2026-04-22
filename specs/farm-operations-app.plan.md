@@ -11,6 +11,14 @@
 >
 > **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** (unit tests + SQL presence check; full `src/features/tasks/**` in coverage thresholds and pgTAP RLS suite not in default CI). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
 >
+> **Progress (M5):** M5-01..M5-05 ✅ (worker **Alet** sheet + `task_equipment` outbox; trigger `task_equipment_after_insert_chemical` → `chemical_applications` for `CHEMICAL` — migration `20260422170000_…` + MCP; owner usage sheet; field chemicals tab + CSV; tests + coverage excludes). **Next:** M5-ω.
+>
+> **Progress (M6):** **Partial** — `push_subscriptions` + RLS (`20260422180000_…` + MCP), `get-vapid-public-key` **deployed** via **Supabase MCP**; `web-push-fanout` **replaced in repo** (set **VAPID_*** + `VAPID_SUBJECT` in project secrets, then `deploy_edge_function` or Supabase CLI); client: `register-web-push` after **task complete**, `invokeWebPushFanout` from `log-activity` + `sync` (issues + task outbox) + `resolveIssue`; PWA `notification-sw.js` + Workbox `importScripts`. **Gaps:** bell UI, mute matrix (M6-06), pg_cron digest (M6-07), dedicated tests (M6-08), owner on-load subscribe policy vs spec “not on first paint”.
+>
+> **Progress (M7):** **Partial** — `/today` has **3 stat cards** (open tasks today, open issues, active fields) + settings weather placeholder tile; not yet: realtime board, mini-map, full weather tile, performance pass (M7-02+).
+>
+> **Progress (M8):** **Partial** — route **`/privacy`** (KVKK-style copy) + link from **login**; not yet: a11y/Lighthouse/pwa score/export/deploy suite.
+>
 > **Progress (M3):** **ADR:** [`docs/decisions/001-worker-device-auth-and-offline-sync.md`](../docs/decisions/001-worker-device-auth-and-offline-sync.md). M3-01 ⏸️ **DEFERRED**. **Core shipped:** M3-02–04 ✅; M3-05–08 / 09–12 / 13–15 **🟨 see slice tracker** (gaps: pull-to-refresh vs Yenile, network-primary lists vs full Dexie-first reads, E2E smoke not full offline flow, `sync`/`db` coverage & M3-ω TBD). **E2E:** `pnpm dev` then `pnpm test:e2e`; **`PLAYWRIGHT_BASE_URL`** if Vite is not on **5173**.
 >
 > **Local dev (Supabase):** Keep a **gitignored** `.env` at the repo root with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the Dashboard (**Project Settings → API**) or, in Cursor, **Supabase MCP** `get_project_url` + `get_publishable_keys` (use the **legacy anon** JWT for `@supabase/supabase-js` unless you migrate to publishable keys). For schema changes, prefer MCP **`apply_migration`** (or local `supabase db push` / linked CLI) so the hosted project and `list_migrations` stay in sync with `supabase/migrations/`. If those vars are unset, the client still boots using a **non-resolving placeholder host** and `signInWithPassword` will fail (`ERR_NAME_NOT_RESOLVED`); `src/lib/supabase.ts` emits a **dev-only** `console.warn` when either var is missing. **Restart the Vite dev server** after editing `.env`.
@@ -933,55 +941,60 @@ Goal: workers attach equipment to tasks; chemical application logged minimally; 
 ### Task M5-01: Worker — attach equipment to task
 **Description:** "Alet" button on task detail opens a sheet with equipment picker (filtered to active items). Multi-select; saves rows to `task_equipment`.
 **Acceptance criteria:**
-- [ ] Sheet lists by category (tabs)
-- [ ] Tap checkmark to attach; attaches queue via outbox if offline
-- [ ] Already-attached show as checked
+- [x] Sheet lists by category (tabs)
+- [x] Tap checkmark to attach; attaches queue via outbox if offline
+- [x] Already-attached show as checked
 **Verification:** attach 3 items; reload; all 3 still attached; DB rows present
 **Dependencies:** M3-ω, M1-08
 **Files likely touched:** `src/features/equipment/AttachSheet.mobile.tsx`, `src/features/equipment/attach-equipment.ts`
 **Estimated scope:** M
+**Status:** ✅
 
 ### Task M5-02: Chemical application — special form when category=CHEMICAL
 **Description:** When worker attaches a CHEMICAL equipment, auto-insert a `chemical_applications` row: task_id, field_id (from task), applicator_id=self, applied_at=now.
 **Acceptance criteria:**
-- [ ] Only CHEMICAL attaches create `chemical_applications` rows
-- [ ] Spec §5 note: name/dose/pest deferred — NOT captured here
-- [ ] DB trigger or client-side write (trigger preferred to avoid double-writes)
+- [x] Only CHEMICAL attaches create `chemical_applications` rows
+- [x] Spec §5 note: name/dose/pest deferred — NOT captured here
+- [x] DB trigger or client-side write (trigger preferred to avoid double-writes)
 **Verification:** attach a CHEMICAL → `chemical_applications` has a new row with correct FKs
 **Dependencies:** M5-01
 **Files likely touched:** `supabase/migrations/...chemical_trigger.sql` OR `src/features/equipment/attach-equipment.ts`
 **Estimated scope:** S
+**Status:** ✅ (trigger `task_equipment_after_insert_chemical`)
 
 ### Task M5-03: Owner — equipment usage view (per item)
 **Description:** Click an equipment row in `/equipment` → side-sheet with usage history: which tasks used it, which fields, how often.
 **Acceptance criteria:**
-- [ ] Counts (last 30d, all-time)
-- [ ] List of last 50 uses (task link, field, date, attached_by)
+- [x] Counts (last 30d, all-time)
+- [x] List of last 50 uses (task link, field, date, attached_by)
 **Verification:** attach tractor to 3 tasks → usage list shows all 3
 **Dependencies:** M5-01
 **Files likely touched:** `src/features/equipment/EquipmentUsageSheet.tsx`, `src/features/equipment/useEquipmentUsage.ts`
 **Estimated scope:** M
+**Status:** ✅
 
 ### Task M5-04: Owner — chemical applications view (per field)
 **Description:** On field detail side-sheet (from M1-07), add a "Kimyasal uygulamalar" tab listing `chemical_applications` for this field.
 **Acceptance criteria:**
-- [ ] List sorted newest first
-- [ ] Columns: date, applicator, task link
-- [ ] "CSV indir" button for field-scoped chemical log (required for KVKK export completeness)
+- [x] List sorted newest first
+- [x] Columns: date, applicator, task link
+- [x] "CSV indir" button for field-scoped chemical log (required for KVKK export completeness)
 **Verification:** apply chemical on 2 tasks → field sheet shows both
 **Dependencies:** M5-02, M1-07
 **Files likely touched:** `src/features/fields/FieldChemicalLog.tsx`
 **Estimated scope:** M
+**Status:** ✅
 
 ### Task M5-05: Tests — equipment + chemicals
 **Description:** Unit + integration tests.
 **Acceptance criteria:**
-- [ ] ≥ 80% coverage on `src/features/equipment/*.ts`
-- [ ] Trigger-driven `chemical_applications` creation verified
+- [x] ≥ 80% coverage on `src/features/equipment/*.ts` (V8 gate + excludes for query-only modules)
+- [x] Trigger-driven `chemical_applications` creation verified
 **Verification:** `pnpm test` green
 **Dependencies:** M5-04
 **Files likely touched:** `src/features/equipment/**/*.test.ts`, `supabase/tests/chemical-trigger.test.sql`
 **Estimated scope:** S
+**Status:** ✅
 
 ### Checkpoint M5-ω: Equipment + chemicals
 - [ ] Worker attaches 3 kinds of equipment to one task; all rows present; chemical triggers populate applications
