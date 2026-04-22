@@ -3,7 +3,7 @@ import type { MessageDescriptor } from '@lingui/core'
 import { msg, t } from '@lingui/macro'
 import { format } from 'date-fns'
 import { tr as dateFnsTr } from 'date-fns/locale'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { IssueCategoryIcon } from '@/components/icons/issues/IssueCategoryIcon'
 import { Button } from '@/components/ui/button'
 import { ISSUE_CATEGORY_ORDER, type IssueCategory } from '@/features/issues/categories'
@@ -29,12 +29,16 @@ type Props = {
   loading: boolean
   error: Error | null
   onResolve?: (issueId: string) => Promise<void>
+  /** Scroll + highlight a row (e.g. deep link from push / bell). */
+  highlightId?: string
+  /** Initial “Durum” filter (e.g. `?list=open` from dashboard). */
+  defaultResolved?: ResolvedFilter
 }
 
-export function IssuesFeed({ rows, loading, error, onResolve }: Props) {
+export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defaultResolved = 'all' }: Props) {
   const [category, setCategory] = useState<IssueCategory | 'all'>('all')
   const [fieldId, setFieldId] = useState<string | 'all'>('all')
-  const [resolved, setResolved] = useState<ResolvedFilter>('all')
+  const [resolved, setResolved] = useState<ResolvedFilter>(defaultResolved)
   const [thumbUrls, setThumbUrls] = useState<Record<string, string>>({})
   const [voiceUrls, setVoiceUrls] = useState<Record<string, string>>({})
   const [lightbox, setLightbox] = useState<string | null>(null)
@@ -49,6 +53,8 @@ export function IssuesFeed({ rows, loading, error, onResolve }: Props) {
     }
     return [...m.entries()].sort((a, b) => a[1].localeCompare(b[1], 'tr'))
   }, [rows])
+
+  const highlightRef = useRef<HTMLLIElement | null>(null)
 
   const filtered = useMemo(() => {
     return rows.filter((r) => {
@@ -67,6 +73,13 @@ export function IssuesFeed({ rows, loading, error, onResolve }: Props) {
       return true
     })
   }, [rows, category, fieldId, resolved])
+
+  useEffect(() => {
+    if (!highlightId || !highlightRef.current) {
+      return
+    }
+    highlightRef.current.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  }, [highlightId, filtered])
 
   useEffect(() => {
     let cancelled = false
@@ -154,7 +167,14 @@ export function IssuesFeed({ rows, loading, error, onResolve }: Props) {
 
       <ul className="flex flex-col gap-3">
         {filtered.map((r) => (
-          <li key={r.id} className="rounded-xl border border-border bg-surface-0 p-4 shadow-sm">
+          <li
+            key={r.id}
+            ref={r.id === highlightId ? highlightRef : undefined}
+            className={cn(
+              'rounded-xl border border-border bg-surface-0 p-4 shadow-sm',
+              r.id === highlightId && 'ring-2 ring-orchard-500 ring-offset-2',
+            )}
+          >
             <div className="flex flex-wrap items-start gap-3">
               <button
                 type="button"

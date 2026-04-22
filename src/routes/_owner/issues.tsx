@@ -11,11 +11,20 @@ import {
 } from '@/features/issues/useIssuesQuery'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 
+function parseIssuesSearch(s: Record<string, unknown>) {
+  return {
+    highlight: typeof s.highlight === 'string' && s.highlight.length > 0 ? s.highlight : undefined,
+    list: s.list === 'open' ? ('open' as const) : ('all' as const),
+  }
+}
+
 export const Route = createFileRoute('/_owner/issues')({
+  validateSearch: (s) => parseIssuesSearch(s),
   component: IssuesPage,
 })
 
 function IssuesPage() {
+  const { highlight: highlightId, list } = Route.useSearch()
   const qc = useQueryClient()
   const { data: me } = useMyPersonQuery()
   useIssuesRealtime()
@@ -53,10 +62,14 @@ function IssuesPage() {
       <p className="mt-1 text-sm text-fg-secondary">{t`Saha sorunları ve fotoğraflar.`}</p>
       <div className="mt-6">
         <IssuesFeed
+          key={list}
           rows={data ?? []}
           loading={isLoading}
           error={error instanceof Error ? error : null}
           onResolve={onResolve}
+          highlightId={highlightId}
+          // eslint-disable-next-line lingui/no-unlocalized-strings -- internal filter keys
+          defaultResolved={list === 'open' ? 'open' : 'all'}
         />
       </div>
     </div>

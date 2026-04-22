@@ -1,7 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings */
 import { t, Trans } from '@lingui/macro'
 import { useEffect, useRef, useState } from 'react'
-import { createFileRoute, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { supabase } from '@/lib/supabase'
 
@@ -138,6 +138,11 @@ function SetupPage() {
         </>
       ) : null}
       {phase === 'error' && err ? <SetupError code={err} token={token} /> : null}
+      <p className="text-center text-xs text-fg-muted">
+        <Link to="/privacy" className="text-orchard-600 hover:underline">
+          {t`Gizlilik (KVKK)`}
+        </Link>
+      </p>
     </div>
   )
 }

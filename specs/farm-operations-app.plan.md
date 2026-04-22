@@ -13,11 +13,11 @@
 >
 > **Progress (M5):** M5-01..M5-05 ✅ (worker **Alet** sheet + `task_equipment` outbox; trigger `task_equipment_after_insert_chemical` → `chemical_applications` for `CHEMICAL` — migration `20260422170000_…` + MCP; owner usage sheet; field chemicals tab + CSV; tests + coverage excludes). **Next:** M5-ω.
 >
-> **Progress (M6):** **Partial** — `push_subscriptions` + RLS (`20260422180000_…` + MCP), `get-vapid-public-key` **deployed** via **Supabase MCP**; `web-push-fanout` **replaced in repo** (set **VAPID_*** + `VAPID_SUBJECT` in project secrets, then `deploy_edge_function` or Supabase CLI); client: `register-web-push` after **task complete**, `invokeWebPushFanout` from `log-activity` + `sync` (issues + task outbox) + `resolveIssue`; PWA `notification-sw.js` + Workbox `importScripts`. **Gaps:** bell UI, mute matrix (M6-06), pg_cron digest (M6-07), dedicated tests (M6-08), owner on-load subscribe policy vs spec “not on first paint”.
+> **Progress (M6):** **Shipped in repo + MCP:** `push_subscriptions`, `get-vapid-public-key`, `web-push-fanout`, client `register-web-push` + `invokeWebPushFanout`, **`NotificationsBell` + inbox** (Realtime, mark read), **mute by action** in Settings (`muted_event_actions`), `notification-sw.js` **push** + **click/focus** handlers, `daily-digest` Edge (deployed, **verify_jwt: false** + `DAILY_DIGEST_CRON_SECRET`), **pg_cron/pg_net** enabled via migration `20260422220000_…` (schedule `net.http_post` in SQL per `supabase/README.md`), unit tests `notification-prefs.test.ts`. **Non-human ops:** set **VAPID_***, `DAILY_DIGEST_CRON_SECRET`, run digest schedule in SQL. **Optional gap:** M6-08 E2E push (manual smoke). **M6-ω** human: KPI ≤10s push.
 >
-> **Progress (M7):** **Partial** — `/today` has **3 stat cards** (open tasks today, open issues, active fields) + settings weather placeholder tile; not yet: realtime board, mini-map, full weather tile, performance pass (M7-02+).
+> **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **M7-ω gaps:** strict LCP/CLS/Lighthouse file in `docs/lighthouse/`, performance audit still human.
 >
-> **Progress (M8):** **Partial** — route **`/privacy`** (KVKK-style copy) + link from **login**; not yet: a11y/Lighthouse/pwa score/export/deploy suite.
+> **Progress (M8):** **Shipped (non-human):** **`export-data`** Edge (deployed) + Settings download, migration **anonymize on archive** + sentinel person, routes **`/offline`**, **`/how-to-install`**, `e2e/a11y.spec.ts` (axe, no serious/critical), `docs/contrast-audit.md`, **nightly** `.github/workflows/e2e-nightly.yml`, README deploy/E2E notes, KVKK links on **setup** + **settings**. **Gaps (human/ops):** full Turkish catalog fill for new strings (Lingui missing count post-extract), Lighthouse/PWA ≥90 in CI, M8-10 seven-flow E2E not all deterministic, M8-11 real domain, M8-12 launch retro.
 >
 > **Progress (M3):** **ADR:** [`docs/decisions/001-worker-device-auth-and-offline-sync.md`](../docs/decisions/001-worker-device-auth-and-offline-sync.md). M3-01 ⏸️ **DEFERRED**. **Core shipped:** M3-02–04 ✅; M3-05–08 / 09–12 / 13–15 **🟨 see slice tracker** (gaps: pull-to-refresh vs Yenile, network-primary lists vs full Dexie-first reads, E2E smoke not full offline flow, `sync`/`db` coverage & M3-ω TBD). **E2E:** `pnpm dev` then `pnpm test:e2e`; **`PLAYWRIGHT_BASE_URL`** if Vite is not on **5173**.
 >
@@ -1406,11 +1406,11 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
 | M2 Tasks | 9 | 0 | 0 | 9 |
 | M3 Worker mobile | 15 | 0 | 0 | 15 |
 | M4 Issues | 8 | 8 | 0 | 0 |
-| M5 Equipment | 5 | 0 | 0 | 5 |
-| M6 Notifications | 8 | 0 | 0 | 8 |
-| M7 Dashboard | 9 | 0 | 0 | 9 |
-| M8 Launch | 12 | 0 | 0 | 12 |
-| **Total** | **95** | **9** | **0** | **86** |
+| M5 Equipment | 5 | 5 | 0 | 0 (ω only) |
+| M6 Notifications | 8 | 7 | 0 | 1 (M6-08 E2E / ω) |
+| M7 Dashboard | 9 | 8 | 0 | 1 (M7-ω perf file) |
+| M8 Launch | 12 | 9 | 0 | 3 (i18n review, E2E×7, deploy/retro) |
+| **Total** | **95** | **+see above** | **0** | **human+ops** |
 
 Update this table at each checkpoint.
 

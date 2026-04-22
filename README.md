@@ -75,6 +75,10 @@ pnpm build
 
 Fast test run without coverage thresholds: `pnpm test:run`. Watch mode: `pnpm test` (Vitest).
 
+**E2E:** `pnpm dev` in one terminal, then `pnpm test:e2e` (or `PLAYWRIGHT_BASE_URL` if the dev server port differs). A **nightly** workflow (`.github/workflows/e2e-nightly.yml`) builds, runs `vite preview`, and executes Playwright — set `VITE_*` secrets in CI if tests need a real Supabase project.
+
+**Production deploy (outline):** Build the static client with `pnpm build`. Host the `dist/` output on **Vercel**, **Cloudflare Pages**, or similar. Set `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` in the host’s environment (no service role on the client). Point your domain’s DNS to the host; enforce HTTPS. Supabase Edge Functions and DB stay on the Supabase project (Seoul).
+
 **shadcn/ui (M0-04):** use non-interactive flags — see [`docs/shadcn-init.md`](./docs/shadcn-init.md).
 
 ## Contributing

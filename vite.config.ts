@@ -37,6 +37,11 @@ export default defineConfig({
         'src/features/equipment/useEquipmentUsage.ts',
         'src/features/fields/useFieldChemicalApplicationsQuery.ts',
         'src/features/dashboard/use-dashboard-stats.ts',
+        'src/features/dashboard/use-activity-feed.ts',
+        'src/features/dashboard/use-todays-board-tasks.ts',
+        'src/features/dashboard/use-all-fields-for-map.ts',
+        'src/features/weather/use-weather.ts',
+        'src/features/notifications/use-notifications-inbox.ts',
       ],
       thresholds: {
         lines: 80,

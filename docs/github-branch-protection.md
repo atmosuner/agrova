@@ -11,7 +11,7 @@ Apply these rules in the GitHub **UI** (or via `gh` API) so `main` only moves th
 3. **Require status checks to pass**  
    - Enable **Require status checks to pass before merging** (and, if available, *Require branches to be up to date*).  
    - Select the check that comes from this repo’s workflow [`.github/workflows/ci.yml`](../.github/workflows/ci.yml).  
-   - The job is named: **`lint · typecheck · test · build`**. In the checks picker it may also appear as **`CI / lint · typecheck · test · build`** (workflow file name + job name). After the first successful run on `main`, the exact name is visible in the list.
+   - The job is named: **`lint · typecheck · test+coverage · build`**. In the checks picker it may also appear as **`CI / lint · typecheck · test+coverage · build`** (workflow file name + job name). After the first successful run on `main`, the exact name is visible in the list.
 
 4. **Block force-pushes** to `main`.  
 5. **Block deletions** of `main` (if offered).  

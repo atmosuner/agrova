@@ -1,11 +1,14 @@
-import { t } from '@lingui/macro'
+import { msg, t } from '@lingui/macro'
 import { useMemo, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { LOCKED_APP_TIMEZONE } from '@/features/settings/constants'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
+import { downloadAgrovaDataExport } from '@/features/settings/download-export'
+import { NotificationMuteSettings } from '@/features/settings/notification-mute-settings'
 import { operationSettingsFormSchema, type OperationSettingsFormValues } from '@/features/settings/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
+import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
 
 export const Route = createFileRoute('/_owner/settings')({
@@ -14,6 +17,8 @@ export const Route = createFileRoute('/_owner/settings')({
 
 function SettingsPage() {
   const { settings, refresh, loading: bootLoading } = useOperationSettings()
+  const [exporting, setExporting] = useState(false)
+  const [exportErr, setExportErr] = useState<string | null>(null)
   const fromDb = useMemo((): OperationSettingsFormValues => {
     if (settings) {
       return { operationName: settings.operation_name, weatherCity: settings.weather_city }
@@ -130,6 +135,34 @@ function SettingsPage() {
           {saving ? t`Saving…` : t`Save`}
         </Button>
       </form>
+      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Data export`)}>
+        <h2 className="text-lg font-medium text-fg">{t`Tüm verilerimi indir`}</h2>
+        <p className="mt-1 text-sm text-fg-secondary">
+          {t`JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görüntüsü.`}
+        </p>
+        {exportErr ? <p className="mt-2 text-sm text-harvest-600">{exportErr}</p> : null}
+        <Button
+          type="button"
+          // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token
+          variant="secondary"
+          className="mt-3"
+          disabled={exporting}
+          onClick={() => {
+            setExportErr(null)
+            setExporting(true)
+            void downloadAgrovaDataExport()
+              .catch((e: unknown) => {
+                setExportErr(e instanceof Error ? e.message : String(e))
+              })
+              .finally(() => {
+                setExporting(false)
+              })
+          }}
+        >
+          {exporting ? t`Preparing…` : t`İndir`}
+        </Button>
+      </section>
+      <NotificationMuteSettings />
     </div>
   )
 }

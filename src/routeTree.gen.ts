@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignupRouteImport } from './routes/signup'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as OfflineRouteImport } from './routes/offline'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as HowToInstallRouteImport } from './routes/how-to-install'
 import { Route as MRouteRouteImport } from './routes/m/route'
 import { Route as OwnerRouteRouteImport } from './routes/_owner/route'
 import { Route as IndexRouteImport } from './routes/index'
@@ -41,9 +43,19 @@ const PrivacyRoute = PrivacyRouteImport.update({
   path: '/privacy',
   getParentRoute: () => rootRouteImport,
 } as any)
+const OfflineRoute = OfflineRouteImport.update({
+  id: '/offline',
+  path: '/offline',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const HowToInstallRoute = HowToInstallRouteImport.update({
+  id: '/how-to-install',
+  path: '/how-to-install',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MRouteRoute = MRouteRouteImport.update({
@@ -139,7 +151,9 @@ const MTaskIdRoute = MTaskIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/m': typeof MRouteRouteWithChildren
+  '/how-to-install': typeof HowToInstallRoute
   '/login': typeof LoginRoute
+  '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
@@ -160,7 +174,9 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/how-to-install': typeof HowToInstallRoute
   '/login': typeof LoginRoute
+  '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
@@ -184,7 +200,9 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_owner': typeof OwnerRouteRouteWithChildren
   '/m': typeof MRouteRouteWithChildren
+  '/how-to-install': typeof HowToInstallRoute
   '/login': typeof LoginRoute
+  '/offline': typeof OfflineRoute
   '/privacy': typeof PrivacyRoute
   '/signup': typeof SignupRoute
   '/_owner/equipment': typeof OwnerEquipmentRoute
@@ -208,7 +226,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/m'
+    | '/how-to-install'
     | '/login'
+    | '/offline'
     | '/privacy'
     | '/signup'
     | '/equipment'
@@ -229,7 +249,9 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/how-to-install'
     | '/login'
+    | '/offline'
     | '/privacy'
     | '/signup'
     | '/equipment'
@@ -252,7 +274,9 @@ export interface FileRouteTypes {
     | '/'
     | '/_owner'
     | '/m'
+    | '/how-to-install'
     | '/login'
+    | '/offline'
     | '/privacy'
     | '/signup'
     | '/_owner/equipment'
@@ -276,7 +300,9 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   OwnerRouteRoute: typeof OwnerRouteRouteWithChildren
   MRouteRoute: typeof MRouteRouteWithChildren
+  HowToInstallRoute: typeof HowToInstallRoute
   LoginRoute: typeof LoginRoute
+  OfflineRoute: typeof OfflineRoute
   PrivacyRoute: typeof PrivacyRoute
   SignupRoute: typeof SignupRoute
   SetupTokenRoute: typeof SetupTokenRoute
@@ -298,11 +324,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/offline': {
+      id: '/offline'
+      path: '/offline'
+      fullPath: '/offline'
+      preLoaderRoute: typeof OfflineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/how-to-install': {
+      id: '/how-to-install'
+      path: '/how-to-install'
+      fullPath: '/how-to-install'
+      preLoaderRoute: typeof HowToInstallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/m': {
@@ -485,7 +525,9 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   OwnerRouteRoute: OwnerRouteRouteWithChildren,
   MRouteRoute: MRouteRouteWithChildren,
+  HowToInstallRoute: HowToInstallRoute,
   LoginRoute: LoginRoute,
+  OfflineRoute: OfflineRoute,
   PrivacyRoute: PrivacyRoute,
   SignupRoute: SignupRoute,
   SetupTokenRoute: SetupTokenRoute,

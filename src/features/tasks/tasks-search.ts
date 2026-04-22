@@ -33,6 +33,11 @@ export const defaultTasksSearch = (): TasksSearchState => ({
   task: null,
 })
 
+/** Dashboard / deep links: tasks due on a single calendar day (Istanbul). */
+export function tasksSearchDueOn(isoDate: string): TasksSearchState {
+  return { ...defaultTasksSearch(), dueFrom: isoDate, dueTo: isoDate }
+}
+
 export function parseTasksSearch(raw: Record<string, unknown>): TasksSearchState {
   const d = defaultTasksSearch()
   const status = typeof raw.status === 'string' && isTaskStatus(raw.status) ? raw.status : d.status
