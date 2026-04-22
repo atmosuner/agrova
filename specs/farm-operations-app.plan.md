@@ -15,7 +15,7 @@
 >
 > **Progress (M6):** M6-01..M6-08 ✅ in repo: push stack + prefs + **`supabase/functions/web-push-fanout/IDEMPOTENCY.md`** (duplicate `notifications` insert = `23505` skip) + `invoke-web-push-fanout.test.ts` + `notification-prefs.test.ts` + **M6-ω** push KPI in staging. **E2E push** to a real subscription remains manual smoke in deployed env.
 >
-> **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **M7-ω gaps:** strict LCP/CLS/Lighthouse file in `docs/lighthouse/`, performance audit still human.
+> **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **Lighthouse:** `pnpm lh:report` → `docs/lighthouse/m7-ω.html` (unauth `/today`); KPI sign-off for logged-in + human M7-ω.
 >
 > **Progress (M8):** Shipped: export, anonymize, `/offline`, `/how-to-install`, a11y/axe, contrast doc, **nightly E2E** workflow, `e2e/m8-10-critical-path-smoke.spec.ts` (seven **unauthenticated** shell smokes) + a11y routes. **Pending:** Lingui tr catalog completion, Lighthouse/PWA in CI, **authed** seven-flow E2E + staging, **M8-11/12** domain + launch.
 >
@@ -1425,7 +1425,7 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
 - **M3-01** → *pending* (⏸️ deferred, v1.1+). **M3-05..10, 12..15** → *in progress* (UI/CI gaps; **M3-11** engineering ✅).
 - **M4-08** → ✅ *done* (M4-ω: dual-browser realtime in staging if desired).
 - **M6-08** → ✅ *done* (M6-ω: push KPI in staging; device E2E optional).
-- **M7-09 / M7-ω** → *pending* (run Lighthouse, replace `docs/lighthouse/m7-omega-PLACEHOLDER.html` with real export).
+- **M7-09 / M7-ω** → *in progress* (committed `docs/lighthouse/m7-ω.html` + `.json` from `pnpm lh:report` — **unauth** redirect baseline; re-run in Chrome for **logged-in** `/today` to validate Perf ≥ 85 / LCP / CLS KPIs).
 - **M8** *pending* = 3: **(1)** i18n — Turkish catalog completion, **(2)** M8-11/12 — production domain + launch retro, **(3)** authed 7-flow E2E w/ `storageState` (shell smokes in CI/nightly: `m8-10-critical-path-smoke.spec.ts`).
 
 **Checkpoints (ω)** are not separate rows; they close when the milestone’s *Done* + agreed *In progress* matches exit criteria in each **Checkpoint Mx-ω** section (often **human**).

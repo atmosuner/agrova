@@ -15,7 +15,9 @@
     "supabase:test": "npx -y supabase@2 db test",
     "test:e2e": "playwright test",
     "i18n:extract": "lingui extract",
+    "i18n:fill-tr": "node scripts/fill-tr-po.mjs",
     "i18n:compile": "lingui compile --typescript",
+    "lh:report": "node scripts/lighthouse-today.mjs",
     "preview": "vite preview",
     "supabase:gen-types": "node scripts/supabase-gen-types.mjs",
     "supabase:functions:serve": "npx -y supabase@2 functions serve"
@@ -70,6 +72,8 @@
     "eslint-plugin-react-refresh": "^0.5.2",
     "fake-indexeddb": "6",
     "globals": "^17.5.0",
+    "lighthouse": "^13.1.0",
+    "pofile": "1.1.4",
     "tailwindcss": "^4.2.4",
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",

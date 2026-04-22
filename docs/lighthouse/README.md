@@ -2,12 +2,26 @@
 
 Owner dashboard performance is tracked in the plan as **M7-09** (Lighthouse Performance ≥ 85 on simulated 4G, LCP ≤ 800ms, CLS below 0.05).
 
-## How to capture a report
+## Automated report (`/today`, unauthenticated)
 
-1. `pnpm build && pnpm preview` (or point at staging).
-2. Open Chrome → DevTools → **Lighthouse** (or use the Lighthouse CLI against `http://127.0.0.1:4173/today` or your preview port).
-3. Save the **HTML** (and optionally JSON) export and commit it here, e.g. `docs/lighthouse/m7-omega-<date>.html`, when running the **Checkpoint M7-ω** review.
+With a **preview** server running, the repo can generate HTML + JSON:
 
-A placeholder is committed at `m7-omega-PLACEHOLDER.html` until a real run replaces it.
+```bash
+pnpm build
+pnpm preview --port 4173 --host 127.0.0.1   # other shell
+pnpm lh:report
+```
 
-The plan asks for a committed report at `docs/lighthouse/m7-ω.html` for final sign-off; replace that filename when the numbers meet the spec.
+This runs Lighthouse against `http://127.0.0.1:4173/today`. **Without a session**, the app redirects to `/login`, so scores reflect the **login shell** (baseline). For **owner dashboard** metrics, run against a logged-in profile in Chrome DevTools or point `LIGHTHOUSE_URL` at staging with cookies.
+
+Outputs (also copied to M7-ω filenames):
+
+- `m7-today.report.html` / `m7-today.report.json`
+- `m7-ω.html` / `m7-ω.json`
+
+## Manual capture (full owner session)
+
+1. Log in as owner in Chrome, then DevTools → **Lighthouse** on `/today`.
+2. Save the HTML/JSON export into this folder for the **Checkpoint M7-ω** review.
+
+Re-run `pnpm lh:report` after meaningful performance work to refresh the committed baselines.

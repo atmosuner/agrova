@@ -41,7 +41,7 @@ See [`specs/farm-operations-app.md §16`](./specs/farm-operations-app.md#16-deli
 ## i18n (Lingui)
 
 - **Source strings** in code use Lingui `msg` / `t` template macros in English; **Turkish copy** lives in `src/locales/tr/messages.po` (and English in `en/`). **Default locale** is `tr` (`src/lib/i18n.ts`).
-- **Extract / compile:** `pnpm i18n:extract` → `pnpm i18n:compile` (or rely on `pnpm build`, which compiles catalogs first). Commit both `.po` and generated `src/locales/*/messages.ts`.
+- **Extract / compile:** `pnpm i18n:extract` → optional `pnpm i18n:fill-tr` (fills empty `msgstr` in `tr` via `scripts/fill-tr-po.mjs`) → `pnpm i18n:compile` (or rely on `pnpm build`, which compiles catalogs first). Commit both `.po` and generated `src/locales/*/messages.ts`.
 - **Vite:** `@lingui/vite-plugin` + Babel — `@vitejs/plugin-react` is **pinned to v5** (v6 no longer exposes `babel` options; Lingui still needs the macro transform).
 
 ## Environment (M0-08)
@@ -75,7 +75,9 @@ pnpm build
 
 **Supabase (local):** after `supabase link` and a running stack, `pnpm supabase:test` runs `supabase db test` against `supabase/tests/*.sql` (includes `tasks-rls.test.sql` + `rls.test.sql` when your CLI runs the folder). Not part of the default GitHub **quality** job. See `supabase/README.md`.
 
-**Lighthouse (M7-ω):** see [`docs/lighthouse/README.md`](./docs/lighthouse/README.md).
+**Lighthouse (M7-ω):** see [`docs/lighthouse/README.md`](./docs/lighthouse/README.md). After `pnpm build`, start `pnpm preview --port 4173` and run `pnpm lh:report` to refresh `docs/lighthouse/m7-ω.html` (unauthenticated `/today` → login redirect baseline).
+
+**Playwright (optional authed E2E):** set `E2E_OWNER_EMAIL` and `E2E_OWNER_PASSWORD` in `.env` (see `.env.example`). Playwright then runs `e2e/auth.owner.setup.ts`, writes `e2e/.auth/owner.json` (gitignored), and runs `e2e/*.authed.spec.ts`. Without these vars, authed specs are skipped and only public smokes run.
 
 Fast test run without coverage thresholds: `pnpm test:run`. Watch mode: `pnpm test` (Vitest).
 
