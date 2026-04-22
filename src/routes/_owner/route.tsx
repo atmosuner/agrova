@@ -1,5 +1,5 @@
 import { msg } from '@lingui/macro'
-import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { defaultStringifySearch, Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { OperationSettingsProvider } from '@/features/settings/operation-settings-context'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
 import { i18n } from '@/lib/i18n'
@@ -11,9 +11,11 @@ export const Route = createFileRoute('/_owner')({
       data: { session },
     } = await supabase.auth.getSession()
     if (!session) {
+      // `location.search` is a parsed object, not a query string; stringify for /login?redirect=…
+      const returnTo = `${location.pathname}${defaultStringifySearch(location.search)}`
       throw redirect({
         to: '/login',
-        search: { redirect: `${location.pathname}${location.search}` },
+        search: { redirect: returnTo },
       })
     }
   },
