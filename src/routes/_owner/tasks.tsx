@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button'
 import { ACTIVITY_IDS, ACTIVITY_LABEL, activityDbValue } from '@/features/tasks/activities'
 import { TaskCreateModal } from '@/features/tasks/TaskCreateModal'
 import { TaskDetailSheet } from '@/features/tasks/TaskDetailSheet'
+import { TasksKanban } from '@/features/tasks/TasksKanban'
 import { parseTasksSearch, type TasksSearchState } from '@/features/tasks/tasks-search'
 import { TasksTable } from '@/features/tasks/TasksTable'
 import { TASKS_PAGE_SIZE, useTasksQuery } from '@/features/tasks/useTasksQuery'
@@ -186,20 +187,41 @@ function TasksPage() {
         {search.dueFrom && search.dueTo && search.dueFrom > search.dueTo ? (
           <p className="text-sm text-amber-700 dark:text-amber-400">{t`Tarih aralığını kontrol edin.`}</p>
         ) : null}
+        <div className="flex flex-wrap gap-2">
+          <Button
+            type="button"
+            size="sm"
+            variant={search.view === 'table' ? 'default' : 'outline'}
+            onClick={() => void navigate({ to: '/tasks', search: { ...search, view: 'table' } })}
+          >
+            {t`Tablo`}
+          </Button>
+          <Button
+            type="button"
+            size="sm"
+            variant={search.view === 'kanban' ? 'default' : 'outline'}
+            onClick={() => void navigate({ to: '/tasks', search: { ...search, view: 'kanban' } })}
+          >
+            {t`Pano`}
+          </Button>
+        </div>
       </div>
 
       {listError ? (
         <p className="text-sm text-red-600 dark:text-red-400">{listError.message}</p>
       ) : null}
       {isLoading ? <p className="text-sm text-fg-secondary">{t`Görevler yükleniyor…`}</p> : null}
-      {!isLoading && !listError ? (
+      {!isLoading && !listError && search.view === 'table' ? (
         <TasksTable
           rows={listData?.rows ?? []}
           onRowClick={(id) => patchSearch({ task: id })}
         />
       ) : null}
+      {!isLoading && !listError && search.view === 'kanban' ? (
+        <TasksKanban rows={listData?.rows ?? []} onCardClick={(id) => patchSearch({ task: id })} />
+      ) : null}
 
-      {listData && !isLoading && listData.total > 0 ? (
+      {listData && !isLoading && listData.total > 0 && search.view === 'table' ? (
         <div className="mt-3 flex items-center justify-between gap-2 text-sm text-fg-secondary">
           <span>
             {t`Toplam`}: {listData.total} · {t`Sayfa`} {page + 1} / {totalPages}

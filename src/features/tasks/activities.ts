@@ -40,6 +40,15 @@ export const ACTIVITY_LABEL: Record<ActivityId, MessageDescriptor> = {
 }
 
 /** Value stored in `tasks.activity` (user-visible Turkish). */
+export function activityIdFromDbValue(db: string): ActivityId | null {
+  for (const id of ACTIVITY_IDS) {
+    if (activityDbValue(id) === db) {
+      return id
+    }
+  }
+  return null
+}
+
 export function activityDbValue(id: ActivityId): string {
   // Keep consistent with spec §3; i18n display uses ACTIVITY_LABEL in UI
   const map: Record<ActivityId, string> = {

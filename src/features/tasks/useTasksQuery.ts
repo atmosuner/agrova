@@ -16,15 +16,19 @@ export type TaskListRow = Pick<
 
 type Args = { search: TasksSearchState }
 
+const KANBAN_CAP = 200
+
 export function useTasksQuery({ search }: Args) {
   const { status, field, assignee, activity, dueFrom, dueTo, page } = search
+  const { view } = search
 
   return useQuery({
-    queryKey: ['tasks', { status, field, assignee, activity, dueFrom, dueTo, page, view: search.view }],
+    queryKey: [
+      'tasks',
+      { status, field, assignee, activity, dueFrom, dueTo, page, view: search.view },
+    ],
     placeholderData: keepPreviousData,
     queryFn: async () => {
-      const rFrom = page * PAGE
-      const rTo = rFrom + PAGE - 1
       let q = supabase
         .from('tasks')
         .select(
@@ -32,7 +36,13 @@ export function useTasksQuery({ search }: Args) {
           { count: 'exact' },
         )
         .order('due_date', { ascending: true })
-        .range(rFrom, rTo)
+      if (view === 'kanban') {
+        q = q.limit(KANBAN_CAP)
+      } else {
+        const rFrom = page * PAGE
+        const rTo = rFrom + PAGE - 1
+        q = q.range(rFrom, rTo)
+      }
       if (status) {
         q = q.eq('status', status)
       }

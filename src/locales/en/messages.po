@@ -30,6 +30,7 @@ msgid "3. Kişi, son tarih ve not"
 msgstr "3. Kişi, son tarih ve not"
 
 #: src/features/tasks/TaskCreateModal.tsx:353
+#: src/features/tasks/TasksTable.tsx:23
 msgid "Acil"
 msgstr "Acil"
 
@@ -58,6 +59,11 @@ msgstr "Agronomist"
 #: src/routes/_owner/route.tsx:55
 msgid "Agrova"
 msgstr "Agrova"
+
+#: src/features/tasks/TasksTable.tsx:33
+#: src/routes/_owner/tasks.tsx:142
+msgid "Aktivite"
+msgstr "Aktivite"
 
 #: src/features/tasks/TaskCreateModal.tsx:211
 msgid "Aktiviteler"
@@ -122,6 +128,14 @@ msgstr "At least 8 characters, including one number."
 #~ msgid "Authentication form ships in a later milestone."
 #~ msgstr "Authentication form ships in a later milestone."
 
+#: src/features/tasks/TaskDetailSheet.tsx:29
+msgid "Ayrıntılar burada görüntülenecek."
+msgstr "Ayrıntılar burada görüntülenecek."
+
+#: src/routes/_owner/tasks.tsx:163
+msgid "Başlangıç"
+msgstr "Başlangıç"
+
 #: src/features/tasks/activities.ts:37
 msgid "Biçme"
 msgstr "Biçme"
@@ -130,6 +144,10 @@ msgstr "Biçme"
 msgid "Bir kişi seçin."
 msgstr "Bir kişi seçin."
 
+#: src/routes/_owner/tasks.tsx:175
+msgid "Bitiş"
+msgstr "Bitiş"
+
 #: src/features/tasks/TaskCreateModal.tsx:337
 msgid "Bitiş tarihi"
 msgstr "Bitiş tarihi"
@@ -137,6 +155,18 @@ msgstr "Bitiş tarihi"
 #: src/features/tasks/TaskCreateModal.tsx:102
 msgid "Bitiş tarihi geçmişte olamaz."
 msgstr "Bitiş tarihi geçmişte olamaz."
+
+#: src/features/tasks/TasksKanban.tsx:20
+#: src/features/tasks/TasksTable.tsx:15
+#: src/routes/_owner/tasks.tsx:25
+msgid "Bitti"
+msgstr "Bitti"
+
+#: src/features/tasks/TasksKanban.tsx:21
+#: src/features/tasks/TasksTable.tsx:16
+#: src/routes/_owner/tasks.tsx:26
+msgid "Bloke"
+msgstr "Bloke"
 
 #: src/features/tasks/activities.ts:26
 msgid "Budama"
@@ -233,7 +263,13 @@ msgstr "Draw a field boundary on the map first."
 msgid "Draw parcels on the map, then save. Center uses the weather city in settings."
 msgstr "Draw parcels on the map, then save. Center uses the weather city in settings."
 
+#: src/features/tasks/TasksTable.tsx:36
+#: src/routes/_owner/tasks.tsx:85
+msgid "Durum"
+msgstr "Durum"
+
 #: src/features/tasks/TaskCreateModal.tsx:351
+#: src/features/tasks/TasksTable.tsx:23
 msgid "Düşük"
 msgstr "Düşük"
 
@@ -311,13 +347,25 @@ msgstr "Formu kontrol edin."
 msgid "Full name"
 msgstr "Full name"
 
-#: src/features/tasks/TaskCreateModal.tsx:401
+#: src/features/tasks/TaskCreateModal.tsx:400
 msgid "Geri"
 msgstr "Geri"
 
-#: src/features/tasks/TaskCreateModal.tsx:385
+#: src/features/tasks/TaskDetailSheet.tsx:23
+msgid "Görev"
+msgstr "Görev"
+
+#: src/features/tasks/TaskDetailSheet.tsx:20
+msgid "Görev detayı"
+msgstr "Görev detayı"
+
+#: src/features/tasks/TaskCreateModal.tsx:384
 msgid "görev oluşturulacak"
 msgstr "görev oluşturulacak"
+
+#: src/routes/_owner/tasks.tsx:213
+msgid "Görevler yükleniyor…"
+msgstr "Görevler yükleniyor…"
 
 #: src/features/tasks/activities.ts:35
 msgid "Gözlem"
@@ -345,9 +393,15 @@ msgstr "History"
 msgid "İlaçlama"
 msgstr "İlaçlama"
 
-#: src/features/tasks/TaskCreateModal.tsx:420
+#: src/features/tasks/TaskCreateModal.tsx:419
 msgid "İleri"
 msgstr "İleri"
+
+#: src/features/tasks/TasksKanban.tsx:22
+#: src/features/tasks/TasksTable.tsx:17
+#: src/routes/_owner/tasks.tsx:27
+msgid "İptal"
+msgstr "İptal"
 
 #: src/features/tasks/TaskCreateModal.tsx:61
 msgid "İşçi"
@@ -363,10 +417,11 @@ msgid "Kaldır"
 msgstr "Kaldır"
 
 #: src/features/tasks/TaskCreateModal.tsx:205
+#: src/features/tasks/TaskDetailSheet.tsx:25
 msgid "Kapat"
 msgstr "Kapat"
 
-#: src/features/tasks/TaskCreateModal.tsx:424
+#: src/features/tasks/TaskCreateModal.tsx:423
 msgid "Kaydediliyor…"
 msgstr "Kaydediliyor…"
 
@@ -379,6 +434,8 @@ msgid "Kayıt başarısız."
 msgstr "Kayıt başarısız."
 
 #: src/features/tasks/TaskCreateModal.tsx:314
+#: src/features/tasks/TasksTable.tsx:35
+#: src/routes/_owner/tasks.tsx:124
 msgid "Kime"
 msgstr "Kime"
 
@@ -445,6 +502,7 @@ msgid "No people match."
 msgstr "No people match."
 
 #: src/features/tasks/TaskCreateModal.tsx:352
+#: src/features/tasks/TasksTable.tsx:23
 msgid "Normal"
 msgstr "Normal"
 
@@ -459,11 +517,17 @@ msgstr "Not"
 msgid "Notes"
 msgstr "Notes"
 
-#: src/features/tasks/TaskCreateModal.tsx:424
+#: src/features/tasks/TaskCreateModal.tsx:423
 msgid "Oluştur"
 msgstr "Oluştur"
 
+#: src/routes/_owner/tasks.tsx:237
+msgid "Önceki"
+msgstr "Önceki"
+
 #: src/features/tasks/TaskCreateModal.tsx:347
+#: src/features/tasks/TasksKanban.tsx:64
+#: src/features/tasks/TasksTable.tsx:37
 msgid "Öncelik"
 msgstr "Öncelik"
 
@@ -496,6 +560,10 @@ msgstr "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgid "Owner sign-in"
 msgstr "Owner sign-in"
 
+#: src/routes/_owner/tasks.tsx:205
+msgid "Pano"
+msgstr "Pano"
+
 #: src/routes/login.tsx:96
 #: src/routes/signup.tsx:142
 msgid "Password"
@@ -522,7 +590,7 @@ msgstr "Phone (TR)"
 msgid "Placeholder."
 msgstr "Placeholder."
 
-#: src/routes/_owner/tasks.tsx:21
+#: src/routes/_owner/tasks.tsx:75
 msgid "Plan and assign work across fields."
 msgstr "Plan and assign work across fields."
 
@@ -583,6 +651,10 @@ msgstr "Saved."
 msgid "Saving…"
 msgstr "Saving…"
 
+#: src/routes/_owner/tasks.tsx:227
+msgid "Sayfa"
+msgstr "Sayfa"
+
 #: src/features/tasks/TaskCreateModal.tsx:327
 msgid "Seçin…"
 msgstr "Seçin…"
@@ -622,6 +694,10 @@ msgstr "Signing in…"
 msgid "Signing up…"
 msgstr "Signing up…"
 
+#: src/routes/_owner/tasks.tsx:246
+msgid "Sonraki"
+msgstr "Sonraki"
+
 #: src/features/people/csv.ts:24
 #: src/routes/_owner/people.tsx:240
 msgid "Status"
@@ -630,6 +706,29 @@ msgstr "Status"
 #: src/features/tasks/activities.ts:28
 msgid "Sulama"
 msgstr "Sulama"
+
+#: src/features/tasks/TasksKanban.tsx:19
+#: src/features/tasks/TasksTable.tsx:14
+#: src/routes/_owner/tasks.tsx:24
+msgid "Sürüyor"
+msgstr "Sürüyor"
+
+#: src/routes/_owner/tasks.tsx:197
+msgid "Tablo"
+msgstr "Tablo"
+
+#: src/features/tasks/TasksTable.tsx:38
+msgid "Tarih"
+msgstr "Tarih"
+
+#: src/routes/_owner/tasks.tsx:188
+msgid "Tarih aralığını kontrol edin."
+msgstr "Tarih aralığını kontrol edin."
+
+#: src/features/tasks/TasksTable.tsx:34
+#: src/routes/_owner/tasks.tsx:106
+msgid "Tarla"
+msgstr "Tarla"
 
 #: src/features/tasks/TaskCreateModal.tsx:246
 msgid "Tarla veya ürün…"
@@ -648,7 +747,7 @@ msgid "Task"
 msgstr "Task"
 
 #: src/routes/_owner/route.tsx:36
-#: src/routes/_owner/tasks.tsx:19
+#: src/routes/_owner/tasks.tsx:73
 #: src/routes/m/route.tsx:11
 #: src/routes/m/tasks.tsx:11
 msgid "Tasks"
@@ -673,9 +772,20 @@ msgstr "Today"
 msgid "Tools"
 msgstr "Tools"
 
+#: src/routes/_owner/tasks.tsx:227
+msgid "Toplam"
+msgstr "Toplam"
+
 #: src/routes/_owner/people.tsx:319
 msgid "TR mobile. Roles: foreman, agronomist, worker."
 msgstr "TR mobile. Roles: foreman, agronomist, worker."
+
+#: src/routes/_owner/tasks.tsx:97
+#: src/routes/_owner/tasks.tsx:115
+#: src/routes/_owner/tasks.tsx:133
+#: src/routes/_owner/tasks.tsx:151
+msgid "Tümü"
+msgstr "Tümü"
 
 #: src/routes/_owner/settings.tsx:117
 msgid "Turkish name as you would say it; used for the forecast widget (later)."
@@ -721,8 +831,14 @@ msgstr "Worker"
 msgid "Worker PWA task list — /m URL prefix until role-based routing."
 msgstr "Worker PWA task list — /m URL prefix until role-based routing."
 
+#: src/features/tasks/TasksKanban.tsx:18
+#: src/features/tasks/TasksTable.tsx:13
+#: src/routes/_owner/tasks.tsx:23
+msgid "Yapılacak"
+msgstr "Yapılacak"
+
 #: src/features/tasks/TaskCreateModal.tsx:198
-#: src/routes/_owner/tasks.tsx:24
+#: src/routes/_owner/tasks.tsx:78
 msgid "Yeni görev"
 msgstr "Yeni görev"
 
