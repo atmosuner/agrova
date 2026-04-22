@@ -13,31 +13,73 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/routes/_owner/route.tsx:24
+#: src/routes/_owner/route.tsx:36
 msgid "Agrova"
 msgstr "Agrova"
 
+#: src/routes/signup.tsx:185
+msgid "Already have an account? Sign in"
+msgstr "Zaten hesabınız var mı? Giriş yapın"
+
+#: src/routes/signup.tsx:155
+msgid "At least 8 characters, including one number."
+msgstr "En az 8 karakter, en az bir rakam."
+
 #: src/routes/login.tsx:13
-msgid "Authentication form ships in a later milestone."
-msgstr "Kimlik doğrulama formu sonraki kilometre taşlarında eklenecek."
+#~ msgid "Authentication form ships in a later milestone."
+#~ msgstr "Kimlik doğrulama formu sonraki kilometre taşlarında eklenecek."
+
+#: src/routes/signup.tsx:160
+msgid "Confirm password"
+msgstr "Şifre tekrar"
 
 #: src/routes/login.tsx:19
-msgid "Continue to Today"
-msgstr "Bugüne devam et"
+#~ msgid "Continue to Today"
+#~ msgstr "Bugüne devam et"
+
+#: src/routes/login.tsx:116
+msgid "Create an account"
+msgstr "Hesap oluştur"
+
+#: src/routes/signup.tsx:87
+msgid "Create owner account"
+msgstr "Sahip hesabı oluştur"
 
 #: src/routes/setup.$token.tsx:12
 msgid "Device setup"
 msgstr "Cihaz kurulumu"
 
+#: src/routes/signup.tsx:81
+msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
+msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
+
+#: src/routes/login.tsx:77
+#: src/routes/signup.tsx:95
+msgid "Email"
+msgstr "E-posta"
+
+#: src/routes/signup.tsx:89
+msgid "Enter your work email and a phone in international format (E.164)."
+msgstr "İş e-postanızı ve telefonu uluslararası (E.164) formatta girin."
+
 #: src/routes/_owner/equipment.tsx:11
-#: src/routes/_owner/route.tsx:15
+#: src/routes/_owner/route.tsx:27
 msgid "Equipment"
 msgstr "Ekipman"
 
 #: src/routes/_owner/fields.tsx:11
-#: src/routes/_owner/route.tsx:11
+#: src/routes/_owner/route.tsx:23
 msgid "Fields"
 msgstr "Tarlalar"
+
+#: src/routes/login.tsx:47
+#: src/routes/signup.tsx:61
+msgid "Formu kontrol edin."
+msgstr "Formu kontrol edin."
+
+#: src/routes/signup.tsx:110
+msgid "Full name"
+msgstr "Ad soyad"
 
 #: src/routes/m/history.tsx:11
 #: src/routes/m/route.tsx:12
@@ -45,17 +87,30 @@ msgid "History"
 msgstr "Geçmiş"
 
 #: src/routes/_owner/issues.tsx:11
-#: src/routes/_owner/route.tsx:13
+#: src/routes/_owner/route.tsx:25
 msgid "Issues"
 msgstr "Sorunlar"
+
+#: src/routes/login.tsx:61
+msgid "Oturum açılamadı. Yeniden deneyin."
+msgstr "Oturum açılamadı. Yeniden deneyin."
 
 #: src/routes/_owner/today.tsx:13
 msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgstr "Sahip ana ekran yer tutucu — M0-03 duman testi; yönlendirme M0-05."
 
-#: src/routes/login.tsx:11
+#: src/routes/login.tsx:71
 msgid "Owner sign-in"
 msgstr "Giriş (sahip)"
+
+#: src/routes/login.tsx:92
+#: src/routes/signup.tsx:142
+msgid "Password"
+msgstr "Şifre"
+
+#: src/routes/signup.tsx:125
+msgid "Phone (E.164)"
+msgstr "Telefon (E.164)"
 
 #: src/routes/_owner/equipment.tsx:12
 #: src/routes/_owner/fields.tsx:12
@@ -80,20 +135,36 @@ msgid "Report an issue"
 msgstr "Sorun bildir"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:16
+#: src/routes/_owner/route.tsx:28
 msgid "Reports"
 msgstr "Raporlar"
 
-#: src/routes/_owner/route.tsx:17
+#: src/routes/_owner/route.tsx:29
 #: src/routes/_owner/settings.tsx:11
 msgid "Settings"
 msgstr "Ayarlar"
+
+#: src/routes/login.tsx:107
+msgid "Sign in"
+msgstr "Giriş yap"
+
+#: src/routes/signup.tsx:176
+msgid "Sign up"
+msgstr "Kayıt ol"
+
+#: src/routes/login.tsx:107
+msgid "Signing in…"
+msgstr "Giriş yapılıyor…"
+
+#: src/routes/signup.tsx:176
+msgid "Signing up…"
+msgstr "Kayıt yapılıyor…"
 
 #: src/routes/m/task.$id.tsx:12
 msgid "Task"
 msgstr "Görev"
 
-#: src/routes/_owner/route.tsx:12
+#: src/routes/_owner/route.tsx:24
 #: src/routes/_owner/tasks.tsx:11
 #: src/routes/m/route.tsx:11
 #: src/routes/m/tasks.tsx:11
@@ -101,14 +172,18 @@ msgid "Tasks"
 msgstr "Görevler"
 
 #: src/routes/_owner/people.tsx:11
-#: src/routes/_owner/route.tsx:14
+#: src/routes/_owner/route.tsx:26
 msgid "Team"
 msgstr "Ekip"
 
-#: src/routes/_owner/route.tsx:10
+#: src/routes/_owner/route.tsx:22
 #: src/routes/_owner/today.tsx:11
 msgid "Today"
 msgstr "Bugün"
+
+#: src/routes/login.tsx:72
+msgid "Work email and password."
+msgstr "İş e-postası ve şifre."
 
 #: src/routes/m/tasks.tsx:13
 msgid "Worker PWA task list — /m URL prefix until role-based routing."

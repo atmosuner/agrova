@@ -1,8 +1,20 @@
 import { msg } from '@lingui/macro'
-import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
+import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
 import { i18n } from '@/lib/i18n'
+import { supabase } from '@/lib/supabase'
 
 export const Route = createFileRoute('/_owner')({
+  beforeLoad: async ({ location }) => {
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
+    if (!session) {
+      throw redirect({
+        to: '/login',
+        search: { redirect: `${location.pathname}${location.search}` },
+      })
+    }
+  },
   component: OwnerLayout,
 })
 

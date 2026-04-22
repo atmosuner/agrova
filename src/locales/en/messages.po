@@ -13,31 +13,73 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/routes/_owner/route.tsx:24
+#: src/routes/_owner/route.tsx:36
 msgid "Agrova"
 msgstr "Agrova"
 
+#: src/routes/signup.tsx:185
+msgid "Already have an account? Sign in"
+msgstr "Already have an account? Sign in"
+
+#: src/routes/signup.tsx:155
+msgid "At least 8 characters, including one number."
+msgstr "At least 8 characters, including one number."
+
 #: src/routes/login.tsx:13
-msgid "Authentication form ships in a later milestone."
-msgstr "Authentication form ships in a later milestone."
+#~ msgid "Authentication form ships in a later milestone."
+#~ msgstr "Authentication form ships in a later milestone."
+
+#: src/routes/signup.tsx:160
+msgid "Confirm password"
+msgstr "Confirm password"
 
 #: src/routes/login.tsx:19
-msgid "Continue to Today"
-msgstr "Continue to Today"
+#~ msgid "Continue to Today"
+#~ msgstr "Continue to Today"
+
+#: src/routes/login.tsx:116
+msgid "Create an account"
+msgstr "Create an account"
+
+#: src/routes/signup.tsx:87
+msgid "Create owner account"
+msgstr "Create owner account"
 
 #: src/routes/setup.$token.tsx:12
 msgid "Device setup"
 msgstr "Device setup"
 
+#: src/routes/signup.tsx:81
+msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
+msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
+
+#: src/routes/login.tsx:77
+#: src/routes/signup.tsx:95
+msgid "Email"
+msgstr "Email"
+
+#: src/routes/signup.tsx:89
+msgid "Enter your work email and a phone in international format (E.164)."
+msgstr "Enter your work email and a phone in international format (E.164)."
+
 #: src/routes/_owner/equipment.tsx:11
-#: src/routes/_owner/route.tsx:15
+#: src/routes/_owner/route.tsx:27
 msgid "Equipment"
 msgstr "Equipment"
 
 #: src/routes/_owner/fields.tsx:11
-#: src/routes/_owner/route.tsx:11
+#: src/routes/_owner/route.tsx:23
 msgid "Fields"
 msgstr "Fields"
+
+#: src/routes/login.tsx:47
+#: src/routes/signup.tsx:61
+msgid "Formu kontrol edin."
+msgstr "Formu kontrol edin."
+
+#: src/routes/signup.tsx:110
+msgid "Full name"
+msgstr "Full name"
 
 #: src/routes/m/history.tsx:11
 #: src/routes/m/route.tsx:12
@@ -45,17 +87,30 @@ msgid "History"
 msgstr "History"
 
 #: src/routes/_owner/issues.tsx:11
-#: src/routes/_owner/route.tsx:13
+#: src/routes/_owner/route.tsx:25
 msgid "Issues"
 msgstr "Issues"
+
+#: src/routes/login.tsx:61
+msgid "Oturum açılamadı. Yeniden deneyin."
+msgstr "Oturum açılamadı. Yeniden deneyin."
 
 #: src/routes/_owner/today.tsx:13
 msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgstr "Owner home placeholder — M0-03 smoke; routing in M0-05."
 
-#: src/routes/login.tsx:11
+#: src/routes/login.tsx:71
 msgid "Owner sign-in"
 msgstr "Owner sign-in"
+
+#: src/routes/login.tsx:92
+#: src/routes/signup.tsx:142
+msgid "Password"
+msgstr "Password"
+
+#: src/routes/signup.tsx:125
+msgid "Phone (E.164)"
+msgstr "Phone (E.164)"
 
 #: src/routes/_owner/equipment.tsx:12
 #: src/routes/_owner/fields.tsx:12
@@ -80,20 +135,36 @@ msgid "Report an issue"
 msgstr "Report an issue"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:16
+#: src/routes/_owner/route.tsx:28
 msgid "Reports"
 msgstr "Reports"
 
-#: src/routes/_owner/route.tsx:17
+#: src/routes/_owner/route.tsx:29
 #: src/routes/_owner/settings.tsx:11
 msgid "Settings"
 msgstr "Settings"
+
+#: src/routes/login.tsx:107
+msgid "Sign in"
+msgstr "Sign in"
+
+#: src/routes/signup.tsx:176
+msgid "Sign up"
+msgstr "Sign up"
+
+#: src/routes/login.tsx:107
+msgid "Signing in…"
+msgstr "Signing in…"
+
+#: src/routes/signup.tsx:176
+msgid "Signing up…"
+msgstr "Signing up…"
 
 #: src/routes/m/task.$id.tsx:12
 msgid "Task"
 msgstr "Task"
 
-#: src/routes/_owner/route.tsx:12
+#: src/routes/_owner/route.tsx:24
 #: src/routes/_owner/tasks.tsx:11
 #: src/routes/m/route.tsx:11
 #: src/routes/m/tasks.tsx:11
@@ -101,14 +172,18 @@ msgid "Tasks"
 msgstr "Tasks"
 
 #: src/routes/_owner/people.tsx:11
-#: src/routes/_owner/route.tsx:14
+#: src/routes/_owner/route.tsx:26
 msgid "Team"
 msgstr "Team"
 
-#: src/routes/_owner/route.tsx:10
+#: src/routes/_owner/route.tsx:22
 #: src/routes/_owner/today.tsx:11
 msgid "Today"
 msgstr "Today"
+
+#: src/routes/login.tsx:72
+msgid "Work email and password."
+msgstr "Work email and password."
 
 #: src/routes/m/tasks.tsx:13
 msgid "Worker PWA task list — /m URL prefix until role-based routing."

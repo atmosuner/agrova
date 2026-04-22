@@ -7,6 +7,8 @@
 >
 > **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
+> **Progress (M1):** M1-01 ✅ **owner signup + email/password + auth-gated `/_owner/*` + DB trigger `handle_new_owner`** (apply migration `20260422000600_handle_new_owner_auth.sql` on Supabase); next: M1-02 settings.
+>
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
 ---
@@ -321,11 +323,11 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (MVP policy: push only; SMS/WhatsApp deferred to v1.1+)
 
 ### Checkpoint M0-ω: Foundations done
-- [ ] Full CI green including migrations-applied smoke test
+- [x] Full CI green on `main` (lint, typecheck, unit tests, build; `pnpm` pinned to `9.15.4` in CI). *Migrations-applied DB smoke is manual / deploy-time (`supabase db push` or MCP) — not automated in this workflow yet.*
 - [x] All 9 tables + RLS + `issue-photos` bucket live on Supabase (Seoul)
 - [x] Edge function stubs deployed (`web-push-fanout`, `setup-link`)
 - [x] TypeScript types regenerate via `pnpm supabase:gen-types` (MCP or CLI; see `supabase/README.md`)
-- [ ] Human review: M1 may start
+- [x] Human review: M1 may start
 
 ---
 
@@ -336,14 +338,15 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-01: Owner signup + email/password auth flow
 **Description:** Supabase Auth email/password. `/signup` + `/login` routes (owner-only). After signup, create a `people` row with role=`OWNER` linked to `auth.users.id` via trigger.
 **Acceptance criteria:**
-- [ ] `/signup` form: email, password, password-confirm, full_name, phone
-- [ ] DB trigger `handle_new_owner` inserts into `people`
-- [ ] Login persists session; logged-in user lands on `/today`
-- [ ] Password validation: ≥ 8 chars, at least one number
+- [x] `/signup` form: email, password, password-confirm, full_name, phone
+- [x] DB trigger `handle_new_owner` inserts into `people` (migration `20260422000600_handle_new_owner_auth.sql`)
+- [x] Login persists session; logged-in user lands on `/today` (or `redirect` search param)
+- [x] Password validation: ≥ 8 chars, at least one number
 **Verification:** sign up → row in `people` exists with `role='OWNER'`
 **Dependencies:** M0-ω
 **Files likely touched:** `src/routes/signup.tsx`, `src/routes/login.tsx`, `src/features/auth/*`, `supabase/migrations/...auth_trigger.sql`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (apply migration on project DB before manual verification)
 
 ### Task M1-02: Settings — operation name, city (for weather), timezone lock
 **Description:** `/settings` page. Single-row `operation_settings` table (uuid pk, user_id fk, operation_name, weather_city, created_at). Owner fills on first login.

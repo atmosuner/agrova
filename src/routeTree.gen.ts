@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignupRouteImport } from './routes/signup'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MRouteRouteImport } from './routes/m/route'
 import { Route as OwnerRouteRouteImport } from './routes/_owner/route'
@@ -29,6 +30,11 @@ import { Route as OwnerFieldsRouteImport } from './routes/_owner/fields'
 import { Route as OwnerEquipmentRouteImport } from './routes/_owner/equipment'
 import { Route as MTaskIdRouteImport } from './routes/m/task.$id'
 
+const SignupRoute = SignupRouteImport.update({
+  id: '/signup',
+  path: '/signup',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -128,6 +134,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/m': typeof MRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
   '/fields': typeof OwnerFieldsRoute
   '/issues': typeof OwnerIssuesRoute
@@ -147,6 +154,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/equipment': typeof OwnerEquipmentRoute
   '/fields': typeof OwnerFieldsRoute
   '/issues': typeof OwnerIssuesRoute
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/_owner': typeof OwnerRouteRouteWithChildren
   '/m': typeof MRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/signup': typeof SignupRoute
   '/_owner/equipment': typeof OwnerEquipmentRoute
   '/_owner/fields': typeof OwnerFieldsRoute
   '/_owner/issues': typeof OwnerIssuesRoute
@@ -191,6 +200,7 @@ export interface FileRouteTypes {
     | '/'
     | '/m'
     | '/login'
+    | '/signup'
     | '/equipment'
     | '/fields'
     | '/issues'
@@ -210,6 +220,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/signup'
     | '/equipment'
     | '/fields'
     | '/issues'
@@ -231,6 +242,7 @@ export interface FileRouteTypes {
     | '/_owner'
     | '/m'
     | '/login'
+    | '/signup'
     | '/_owner/equipment'
     | '/_owner/fields'
     | '/_owner/issues'
@@ -253,11 +265,19 @@ export interface RootRouteChildren {
   OwnerRouteRoute: typeof OwnerRouteRouteWithChildren
   MRouteRoute: typeof MRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
+  SignupRoute: typeof SignupRoute
   SetupTokenRoute: typeof SetupTokenRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/signup': {
+      id: '/signup'
+      path: '/signup'
+      fullPath: '/signup'
+      preLoaderRoute: typeof SignupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -446,6 +466,7 @@ const rootRouteChildren: RootRouteChildren = {
   OwnerRouteRoute: OwnerRouteRouteWithChildren,
   MRouteRoute: MRouteRouteWithChildren,
   LoginRoute: LoginRoute,
+  SignupRoute: SignupRoute,
   SetupTokenRoute: SetupTokenRoute,
 }
 export const routeTree = rootRouteImport
