@@ -196,7 +196,7 @@ export type Database = {
           gps_lat: number | null
           gps_lng: number | null
           id: string
-          photo_url: string
+          photo_url: string | null
           reporter_id: string
           resolved_at: string | null
           resolved_by: string | null
@@ -210,7 +210,7 @@ export type Database = {
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
-          photo_url: string
+          photo_url?: string | null
           reporter_id: string
           resolved_at?: string | null
           resolved_by?: string | null
@@ -224,7 +224,7 @@ export type Database = {
           gps_lat?: number | null
           gps_lng?: number | null
           id?: string
-          photo_url?: string
+          photo_url?: string | null
           reporter_id?: string
           resolved_at?: string | null
           resolved_by?: string | null
@@ -515,6 +515,14 @@ export type Database = {
       is_owner: { Args: never; Returns: boolean }
       reassign_task: {
         Args: { p_new_assignee: string; p_task_id: string }
+        Returns: undefined
+      }
+      set_issue_photo_url: {
+        Args: { p_issue_id: string; p_path: string }
+        Returns: undefined
+      }
+      set_issue_voice_note_url: {
+        Args: { p_issue_id: string; p_path: string }
         Returns: undefined
       }
       task_by_id: {
