@@ -1,8 +1,11 @@
 import { t } from '@lingui/macro'
-import { createFileRoute, Link } from '@tanstack/react-router'
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useCallback, useRef, useState } from 'react'
 import { CategoryGrid } from '@/features/issues/CategoryGrid'
 import type { IssueCategory } from '@/features/issues/categories'
+import { IssueConfirm } from '@/features/issues/IssueConfirm'
+import { submitIssueDraft } from '@/features/issues/submit-issue'
+import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 
 function parseReportIssueSearch(s: Record<string, unknown>): {
   taskId?: string
@@ -19,9 +22,12 @@ export const Route = createFileRoute('/m/report-issue')({
 })
 
 function ReportIssuePage() {
-  const { taskId } = Route.useSearch()
+  const { taskId, fieldId } = Route.useSearch()
+  const navigate = useNavigate()
+  const { data: me } = useMyPersonQuery()
   const inputRef = useRef<HTMLInputElement>(null)
   const [busyCategory, setBusyCategory] = useState<IssueCategory | null>(null)
+  const [draft, setDraft] = useState<{ category: IssueCategory; file: File } | null>(null)
 
   const openCameraForCategory = useCallback((category: IssueCategory) => {
     setBusyCategory(category)
@@ -55,13 +61,37 @@ function ReportIssuePage() {
         className="sr-only"
         aria-hidden
         onChange={(e) => {
+          const file = e.target.files?.[0]
+          const cat = busyCategory
           e.target.value = ''
           setBusyCategory(null)
+          if (file && cat) {
+            setDraft({ category: cat, file })
+          }
         }}
       />
 
       <div className="mt-6">
-        <CategoryGrid onSelectCategory={openCameraForCategory} disabled={busyCategory !== null} />
+        {draft && me ? (
+          <IssueConfirm
+            category={draft.category}
+            file={draft.file}
+            onRetake={() => setDraft(null)}
+            onSubmit={async (jpeg) => {
+              await submitIssueDraft({
+                category: draft.category,
+                photoJpeg: jpeg,
+                reporterId: me.id,
+                taskId: taskId ?? null,
+                fieldId: fieldId ?? null,
+              })
+              setDraft(null)
+              void navigate({ to: '/m/tasks' })
+            }}
+          />
+        ) : (
+          <CategoryGrid onSelectCategory={openCameraForCategory} disabled={busyCategory !== null || !me} />
+        )}
       </div>
     </div>
   )
