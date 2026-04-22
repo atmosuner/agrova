@@ -7,9 +7,15 @@
 >
 > **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
-> **Progress (M1):** M1-01 ✅ **owner signup + email/password + auth-gated `/_owner/*` + DB trigger `handle_new_owner`** (apply migration `20260422000600_handle_new_owner_auth.sql` on Supabase); next: M1-02 settings.
+> **Progress (M1):** M1-01 ✅ auth | M1-02 ✅ **operation_settings + `/settings` + sidebar title** | **Next:** M1-03 people CRUD
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
+
+**M1 slice tracker (executed top → bottom; update after each land):**
+
+| Task | M1-01 | M1-02 | M1-03 | M1-04 | M1-05 | M1-06 | M1-07 | M1-08 | M1-09 | M1-10 |
+|------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
+| Done | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 
 ---
 
@@ -351,13 +357,14 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-02: Settings — operation name, city (for weather), timezone lock
 **Description:** `/settings` page. Single-row `operation_settings` table (uuid pk, user_id fk, operation_name, weather_city, created_at). Owner fills on first login.
 **Acceptance criteria:**
-- [ ] `operation_settings` table + migration + RLS (owner-only)
-- [ ] Settings form saves + reflects in sidebar header
-- [ ] Weather_city stored as Turkish city name (e.g., "Antalya")
+- [x] `operation_settings` table + migration + RLS (owner-only) — `20260422000601_operation_settings.sql`, applied via Supabase MCP
+- [x] Settings form saves + reflects in sidebar header (`OperationSettingsProvider`)
+- [x] Weather_city stored as Turkish city name (e.g., "Antalya"); `timezone` locked to `Europe/Istanbul` in DB + UI
 **Verification:** change city → weather widget (M7-09) later reads updated value
 **Dependencies:** M1-01
 **Files likely touched:** `src/routes/_owner/settings.tsx`, `src/features/settings/*`, `supabase/migrations/...operation_settings.sql`
 **Estimated scope:** S
+**Status:** ✅ **DONE**
 
 ### Task M1-03: People CRUD — list + add form (no outbound SMS)
 **Description:** `/people` page with list + "Yeni kişi" modal. Fields: full_name, phone (E.164 validation via Zod), role select. Creates `people` row. Setup **URL** copy for workers is M1-04 (MVP: no SMS/WhatsApp).

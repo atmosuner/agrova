@@ -13,7 +13,8 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/routes/_owner/route.tsx:36
+#: src/routes/_owner/route.tsx:45
+#: src/routes/_owner/route.tsx:53
 msgid "Agrova"
 msgstr "Agrova"
 
@@ -37,7 +38,7 @@ msgstr "Confirm password"
 #~ msgid "Continue to Today"
 #~ msgstr "Continue to Today"
 
-#: src/routes/login.tsx:116
+#: src/routes/login.tsx:120
 msgid "Create an account"
 msgstr "Create an account"
 
@@ -53,7 +54,7 @@ msgstr "Device setup"
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 
-#: src/routes/login.tsx:77
+#: src/routes/login.tsx:81
 #: src/routes/signup.tsx:95
 msgid "Email"
 msgstr "Email"
@@ -63,16 +64,17 @@ msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "Enter your work email and a phone in international format (E.164)."
 
 #: src/routes/_owner/equipment.tsx:11
-#: src/routes/_owner/route.tsx:27
+#: src/routes/_owner/route.tsx:37
 msgid "Equipment"
 msgstr "Equipment"
 
 #: src/routes/_owner/fields.tsx:11
-#: src/routes/_owner/route.tsx:23
+#: src/routes/_owner/route.tsx:33
 msgid "Fields"
 msgstr "Fields"
 
-#: src/routes/login.tsx:47
+#: src/routes/_owner/settings.tsx:39
+#: src/routes/login.tsx:51
 #: src/routes/signup.tsx:61
 msgid "Formu kontrol edin."
 msgstr "Formu kontrol edin."
@@ -87,23 +89,43 @@ msgid "History"
 msgstr "History"
 
 #: src/routes/_owner/issues.tsx:11
-#: src/routes/_owner/route.tsx:25
+#: src/routes/_owner/route.tsx:35
 msgid "Issues"
 msgstr "Issues"
 
-#: src/routes/login.tsx:61
+#: src/routes/_owner/settings.tsx:75
+msgid "Loading…"
+msgstr "Loading…"
+
+#: src/routes/_owner/settings.tsx:124
+msgid "locked"
+msgstr "locked"
+
+#: src/routes/_owner/settings.tsx:89
+msgid "Operation name"
+msgstr "Operation name"
+
+#: src/routes/_owner/settings.tsx:84
+msgid "Operation name, weather city, and a fixed time zone. Use Turkish city names (e.g. Antalya)."
+msgstr "Operation name, weather city, and a fixed time zone. Use Turkish city names (e.g. Antalya)."
+
+#: src/routes/login.tsx:65
 msgid "Oturum açılamadı. Yeniden deneyin."
 msgstr "Oturum açılamadı. Yeniden deneyin."
+
+#: src/routes/_owner/settings.tsx:46
+msgid "Oturum bulunamadı."
+msgstr "Oturum bulunamadı."
 
 #: src/routes/_owner/today.tsx:13
 msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgstr "Owner home placeholder — M0-03 smoke; routing in M0-05."
 
-#: src/routes/login.tsx:71
+#: src/routes/login.tsx:75
 msgid "Owner sign-in"
 msgstr "Owner sign-in"
 
-#: src/routes/login.tsx:92
+#: src/routes/login.tsx:96
 #: src/routes/signup.tsx:142
 msgid "Password"
 msgstr "Password"
@@ -117,7 +139,6 @@ msgstr "Phone (E.164)"
 #: src/routes/_owner/issues.tsx:12
 #: src/routes/_owner/people.tsx:12
 #: src/routes/_owner/reports.tsx:12
-#: src/routes/_owner/settings.tsx:12
 #: src/routes/_owner/tasks.tsx:12
 #: src/routes/m/history.tsx:12
 #: src/routes/m/profile.tsx:12
@@ -135,16 +156,29 @@ msgid "Report an issue"
 msgstr "Report an issue"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:28
+#: src/routes/_owner/route.tsx:38
 msgid "Reports"
 msgstr "Reports"
 
-#: src/routes/_owner/route.tsx:29
-#: src/routes/_owner/settings.tsx:11
+#: src/routes/_owner/settings.tsx:130
+msgid "Save"
+msgstr "Save"
+
+#: src/routes/_owner/settings.tsx:128
+msgid "Saved."
+msgstr "Saved."
+
+#: src/routes/_owner/settings.tsx:130
+msgid "Saving…"
+msgstr "Saving…"
+
+#: src/routes/_owner/route.tsx:39
+#: src/routes/_owner/settings.tsx:74
+#: src/routes/_owner/settings.tsx:82
 msgid "Settings"
 msgstr "Settings"
 
-#: src/routes/login.tsx:107
+#: src/routes/login.tsx:111
 msgid "Sign in"
 msgstr "Sign in"
 
@@ -152,7 +186,7 @@ msgstr "Sign in"
 msgid "Sign up"
 msgstr "Sign up"
 
-#: src/routes/login.tsx:107
+#: src/routes/login.tsx:111
 msgid "Signing in…"
 msgstr "Signing in…"
 
@@ -164,7 +198,7 @@ msgstr "Signing up…"
 msgid "Task"
 msgstr "Task"
 
-#: src/routes/_owner/route.tsx:24
+#: src/routes/_owner/route.tsx:34
 #: src/routes/_owner/tasks.tsx:11
 #: src/routes/m/route.tsx:11
 #: src/routes/m/tasks.tsx:11
@@ -172,16 +206,28 @@ msgid "Tasks"
 msgstr "Tasks"
 
 #: src/routes/_owner/people.tsx:11
-#: src/routes/_owner/route.tsx:26
+#: src/routes/_owner/route.tsx:36
 msgid "Team"
 msgstr "Team"
 
-#: src/routes/_owner/route.tsx:22
+#: src/routes/_owner/settings.tsx:121
+msgid "Time zone"
+msgstr "Time zone"
+
+#: src/routes/_owner/route.tsx:32
 #: src/routes/_owner/today.tsx:11
 msgid "Today"
 msgstr "Today"
 
-#: src/routes/login.tsx:72
+#: src/routes/_owner/settings.tsx:117
+msgid "Turkish name as you would say it; used for the forecast widget (later)."
+msgstr "Turkish name as you would say it; used for the forecast widget (later)."
+
+#: src/routes/_owner/settings.tsx:104
+msgid "Weather city"
+msgstr "Weather city"
+
+#: src/routes/login.tsx:76
 msgid "Work email and password."
 msgstr "Work email and password."
 

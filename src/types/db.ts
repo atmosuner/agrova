@@ -304,6 +304,36 @@ export type Database = {
           },
         ]
       }
+      operation_settings: {
+        Row: {
+          created_at: string
+          id: string
+          operation_name: string
+          timezone: string
+          updated_at: string
+          user_id: string
+          weather_city: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          operation_name: string
+          timezone?: string
+          updated_at?: string
+          user_id: string
+          weather_city: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          operation_name?: string
+          timezone?: string
+          updated_at?: string
+          user_id?: string
+          weather_city?: string
+        }
+        Relationships: []
+      }
       people: {
         Row: {
           auth_user_id: string | null

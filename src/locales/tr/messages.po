@@ -13,7 +13,8 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/routes/_owner/route.tsx:36
+#: src/routes/_owner/route.tsx:45
+#: src/routes/_owner/route.tsx:53
 msgid "Agrova"
 msgstr "Agrova"
 
@@ -37,7 +38,7 @@ msgstr "Şifre tekrar"
 #~ msgid "Continue to Today"
 #~ msgstr "Bugüne devam et"
 
-#: src/routes/login.tsx:116
+#: src/routes/login.tsx:120
 msgid "Create an account"
 msgstr "Hesap oluştur"
 
@@ -53,7 +54,7 @@ msgstr "Cihaz kurulumu"
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 
-#: src/routes/login.tsx:77
+#: src/routes/login.tsx:81
 #: src/routes/signup.tsx:95
 msgid "Email"
 msgstr "E-posta"
@@ -63,16 +64,17 @@ msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "İş e-postanızı ve telefonu uluslararası (E.164) formatta girin."
 
 #: src/routes/_owner/equipment.tsx:11
-#: src/routes/_owner/route.tsx:27
+#: src/routes/_owner/route.tsx:37
 msgid "Equipment"
 msgstr "Ekipman"
 
 #: src/routes/_owner/fields.tsx:11
-#: src/routes/_owner/route.tsx:23
+#: src/routes/_owner/route.tsx:33
 msgid "Fields"
 msgstr "Tarlalar"
 
-#: src/routes/login.tsx:47
+#: src/routes/_owner/settings.tsx:39
+#: src/routes/login.tsx:51
 #: src/routes/signup.tsx:61
 msgid "Formu kontrol edin."
 msgstr "Formu kontrol edin."
@@ -87,23 +89,43 @@ msgid "History"
 msgstr "Geçmiş"
 
 #: src/routes/_owner/issues.tsx:11
-#: src/routes/_owner/route.tsx:25
+#: src/routes/_owner/route.tsx:35
 msgid "Issues"
 msgstr "Sorunlar"
 
-#: src/routes/login.tsx:61
+#: src/routes/_owner/settings.tsx:75
+msgid "Loading…"
+msgstr "Yükleniyor…"
+
+#: src/routes/_owner/settings.tsx:124
+msgid "locked"
+msgstr "sabit"
+
+#: src/routes/_owner/settings.tsx:89
+msgid "Operation name"
+msgstr "İşletme adı"
+
+#: src/routes/_owner/settings.tsx:84
+msgid "Operation name, weather city, and a fixed time zone. Use Turkish city names (e.g. Antalya)."
+msgstr "İşletme adı, hava için şehir ve sabit saat dilimi. Şehir adını Türkçe yazın (ör. Antalya)."
+
+#: src/routes/login.tsx:65
 msgid "Oturum açılamadı. Yeniden deneyin."
 msgstr "Oturum açılamadı. Yeniden deneyin."
+
+#: src/routes/_owner/settings.tsx:46
+msgid "Oturum bulunamadı."
+msgstr "Oturum bulunamadı."
 
 #: src/routes/_owner/today.tsx:13
 msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgstr "Sahip ana ekran yer tutucu — M0-03 duman testi; yönlendirme M0-05."
 
-#: src/routes/login.tsx:71
+#: src/routes/login.tsx:75
 msgid "Owner sign-in"
 msgstr "Giriş (sahip)"
 
-#: src/routes/login.tsx:92
+#: src/routes/login.tsx:96
 #: src/routes/signup.tsx:142
 msgid "Password"
 msgstr "Şifre"
@@ -117,7 +139,6 @@ msgstr "Telefon (E.164)"
 #: src/routes/_owner/issues.tsx:12
 #: src/routes/_owner/people.tsx:12
 #: src/routes/_owner/reports.tsx:12
-#: src/routes/_owner/settings.tsx:12
 #: src/routes/_owner/tasks.tsx:12
 #: src/routes/m/history.tsx:12
 #: src/routes/m/profile.tsx:12
@@ -135,16 +156,29 @@ msgid "Report an issue"
 msgstr "Sorun bildir"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:28
+#: src/routes/_owner/route.tsx:38
 msgid "Reports"
 msgstr "Raporlar"
 
-#: src/routes/_owner/route.tsx:29
-#: src/routes/_owner/settings.tsx:11
+#: src/routes/_owner/settings.tsx:130
+msgid "Save"
+msgstr "Kaydet"
+
+#: src/routes/_owner/settings.tsx:128
+msgid "Saved."
+msgstr "Kaydedildi."
+
+#: src/routes/_owner/settings.tsx:130
+msgid "Saving…"
+msgstr "Kaydediliyor…"
+
+#: src/routes/_owner/route.tsx:39
+#: src/routes/_owner/settings.tsx:74
+#: src/routes/_owner/settings.tsx:82
 msgid "Settings"
 msgstr "Ayarlar"
 
-#: src/routes/login.tsx:107
+#: src/routes/login.tsx:111
 msgid "Sign in"
 msgstr "Giriş yap"
 
@@ -152,7 +186,7 @@ msgstr "Giriş yap"
 msgid "Sign up"
 msgstr "Kayıt ol"
 
-#: src/routes/login.tsx:107
+#: src/routes/login.tsx:111
 msgid "Signing in…"
 msgstr "Giriş yapılıyor…"
 
@@ -164,7 +198,7 @@ msgstr "Kayıt yapılıyor…"
 msgid "Task"
 msgstr "Görev"
 
-#: src/routes/_owner/route.tsx:24
+#: src/routes/_owner/route.tsx:34
 #: src/routes/_owner/tasks.tsx:11
 #: src/routes/m/route.tsx:11
 #: src/routes/m/tasks.tsx:11
@@ -172,16 +206,28 @@ msgid "Tasks"
 msgstr "Görevler"
 
 #: src/routes/_owner/people.tsx:11
-#: src/routes/_owner/route.tsx:26
+#: src/routes/_owner/route.tsx:36
 msgid "Team"
 msgstr "Ekip"
 
-#: src/routes/_owner/route.tsx:22
+#: src/routes/_owner/settings.tsx:121
+msgid "Time zone"
+msgstr "Saat dilimi"
+
+#: src/routes/_owner/route.tsx:32
 #: src/routes/_owner/today.tsx:11
 msgid "Today"
 msgstr "Bugün"
 
-#: src/routes/login.tsx:72
+#: src/routes/_owner/settings.tsx:117
+msgid "Turkish name as you would say it; used for the forecast widget (later)."
+msgstr "Günlük konuştuğunuz gibi Türkçe şehir adı; hava widget’ı için (ileride)."
+
+#: src/routes/_owner/settings.tsx:104
+msgid "Weather city"
+msgstr "Hava için şehir"
+
+#: src/routes/login.tsx:76
 msgid "Work email and password."
 msgstr "İş e-postası ve şifre."
 

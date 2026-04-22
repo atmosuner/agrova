@@ -1,5 +1,7 @@
 import { msg } from '@lingui/macro'
 import { Link, Outlet, createFileRoute, redirect } from '@tanstack/react-router'
+import { OperationSettingsProvider } from '@/features/settings/operation-settings-context'
+import { useOperationSettings } from '@/features/settings/use-operation-settings'
 import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
 
@@ -18,6 +20,14 @@ export const Route = createFileRoute('/_owner')({
   component: OwnerLayout,
 })
 
+function OwnerLayout() {
+  return (
+    <OperationSettingsProvider>
+      <OwnerLayoutInner />
+    </OperationSettingsProvider>
+  )
+}
+
 const ownerNav = [
   { to: '/today', label: msg`Today` },
   { to: '/fields', label: msg`Fields` },
@@ -29,11 +39,20 @@ const ownerNav = [
   { to: '/settings', label: msg`Settings` },
 ] as const
 
-function OwnerLayout() {
+function OwnerLayoutInner() {
+  const { settings, loading } = useOperationSettings()
+  const headerTitle =
+    !loading && settings?.operation_name?.trim() ? settings.operation_name.trim() : i18n._(msg`Agrova`)
+
   return (
     <div className="flex min-h-dvh">
       <aside className="flex w-60 flex-col border-r border-border bg-surface-0 px-3 py-4 text-sm">
-        <div className="mb-6 font-medium text-orchard-500">{i18n._(msg`Agrova`)}</div>
+        <div className="mb-6">
+          <div className="font-medium leading-snug text-orchard-500">{headerTitle}</div>
+          {!loading && settings?.operation_name?.trim() ? (
+            <div className="text-xs text-fg-muted">{i18n._(msg`Agrova`)}</div>
+          ) : null}
+        </div>
         <nav className="flex flex-col gap-1">
           {ownerNav.map((item) => (
             <Link
