@@ -34,7 +34,7 @@ const ownerNav = [
   { to: '/today', label: msg`Today` },
   { to: '/fields', label: msg`Fields` },
   { to: '/tasks', label: msg`Tasks` },
-  { to: '/issues', label: msg`Issues` },
+  { to: '/issues', label: msg`Sorunlar` },
   { to: '/people', label: msg`Team` },
   { to: '/equipment', label: msg`Equipment` },
   { to: '/reports', label: msg`Reports` },
