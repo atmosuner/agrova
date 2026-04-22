@@ -4,6 +4,7 @@ import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { downloadEquipmentCsv } from '@/features/equipment/csv'
+import { EquipmentUsageSheet } from '@/features/equipment/EquipmentUsageSheet'
 import {
   equipmentFormSchema,
   parseEquipmentSearch,
@@ -49,6 +50,7 @@ function EquipmentPage() {
   const [saving, setSaving] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
   const [modal, setModal] = useState<null | { type: 'add' } | { type: 'edit'; row: Row }>(null)
+  const [usageFor, setUsageFor] = useState<Row | null>(null)
   const [form, setForm] = useState<EquipmentFormValues>(emptyForm)
   const [formError, setFormError] = useState<string | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
@@ -244,17 +246,27 @@ function EquipmentPage() {
       <ul className="mt-3 divide-y divide-orchard-100">
         {rows.map((r) => (
           <li key={r.id} className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-sm">
-            <div>
+            <button
+              type="button"
+              className="min-w-0 flex-1 cursor-pointer rounded text-left"
+              onClick={() => setUsageFor(r)}
+            >
               <span className="font-medium text-fg">{r.name}</span>
               {r.notes ? <p className="text-fg-secondary">{r.notes}</p> : null}
               {showArchived && !r.active ? (
                 <span className="text-xs text-fg-secondary">{t`archived`}</span>
               ) : null}
-            </div>
+            </button>
             <span className="inline-flex flex-wrap justify-end gap-2">
               {r.active ? (
                 <>
-                  <Button type={b.btn} size={b.sm} variant={b.out} onClick={() => openEdit(r)} disabled={saving}>
+                  <Button
+                    type={b.btn}
+                    size={b.sm}
+                    variant={b.out}
+                    onClick={() => openEdit(r)}
+                    disabled={saving}
+                  >
                     {t`Edit`}
                   </Button>
                   <Button
@@ -320,6 +332,7 @@ function EquipmentPage() {
           </div>
         </form>
       </dialog>
+      {usageFor ? <EquipmentUsageSheet equipment={usageFor} onClose={() => setUsageFor(null)} /> : null}
     </div>
   )
 }
