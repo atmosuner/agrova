@@ -7,7 +7,7 @@
 >
 > **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
-> **Progress (M1):** M1-01 ✅ auth | M1-02 ✅ **operation_settings + `/settings` + sidebar title** | **Next:** M1-03 people CRUD
+> **Progress (M1):** M1-01 ✅ | M1-02 ✅ | M1-03 ✅ **people list + modal + TR +90 + crew roles + archive** | **Next:** M1-04 setup link
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -15,7 +15,7 @@
 
 | Task | M1-01 | M1-02 | M1-03 | M1-04 | M1-05 | M1-06 | M1-07 | M1-08 | M1-09 | M1-10 |
 |------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-| Done | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Done | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
 
 ---
 
@@ -369,14 +369,15 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-03: People CRUD — list + add form (no outbound SMS)
 **Description:** `/people` page with list + "Yeni kişi" modal. Fields: full_name, phone (E.164 validation via Zod), role select. Creates `people` row. Setup **URL** copy for workers is M1-04 (MVP: no SMS/WhatsApp).
 **Acceptance criteria:**
-- [ ] Phone validates as +90xxxxxxxxxx via Zod
-- [ ] Duplicate phone → friendly error from unique constraint
-- [ ] Role options: Foreman, Agronomist, Worker (Owner not selectable here)
-- [ ] Edit row inline; archive (soft-delete via `active` flag — add to migration)
+- [x] Phone validates as +90xxxxxxxxxx via Zod (`^\+905[0-9]{9}$` after normalize)
+- [x] Duplicate phone → friendly error from unique constraint (mapped `23505` / message)
+- [x] Role options: Foreman, Agronomist, Worker (Owner not selectable; OWNER row: no edit/archive)
+- [x] Edit + archive: soft-delete via `people.active` + partial unique `people_one_owner_idx` (single OWNER)
 **Verification:** create 5 people via form; all appear in list; `select * from people` matches
 **Dependencies:** M1-01
 **Files likely touched:** `src/routes/_owner/people.tsx`, `src/features/people/*`, migration for `people.active` boolean
 **Estimated scope:** M
+**Status:** ✅ **DONE** (migration `20260422000602_people_active_single_owner.sql` applied via MCP)
 
 ### Task M1-04: People — "Kurulum linki" (copy URL; no SMS in MVP)
 **Description:** Button next to each person generates a `setup_token` (random 32-char URL-safe). Owner copies the URL (`/setup/{token}`) to the worker **out of band** (in person, printed note, etc.) — **the app does not send SMS or provider WhatsApp from the server in MVP**. Optional Netgsm SMS is **post-MVP**. Token expires 7 days.

@@ -13,6 +13,15 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/routes/_owner/people.tsx:222
+msgid "Active"
+msgstr "Active"
+
+#: src/routes/_owner/people.tsx:24
+#: src/routes/_owner/people.tsx:33
+msgid "Agronomist"
+msgstr "Agronomist"
+
 #: src/routes/_owner/route.tsx:45
 #: src/routes/_owner/route.tsx:53
 msgid "Agrova"
@@ -22,6 +31,18 @@ msgstr "Agrova"
 msgid "Already have an account? Sign in"
 msgstr "Already have an account? Sign in"
 
+#: src/routes/_owner/people.tsx:243
+msgid "Archive"
+msgstr "Archive"
+
+#: src/routes/_owner/people.tsx:153
+msgid "Archive this person? They can be shown again with “show archived”."
+msgstr "Archive this person? They can be shown again with “show archived”."
+
+#: src/routes/_owner/people.tsx:222
+msgid "Archived"
+msgstr "Archived"
+
 #: src/routes/signup.tsx:155
 msgid "At least 8 characters, including one number."
 msgstr "At least 8 characters, including one number."
@@ -29,6 +50,10 @@ msgstr "At least 8 characters, including one number."
 #: src/routes/login.tsx:13
 #~ msgid "Authentication form ships in a later milestone."
 #~ msgstr "Authentication form ships in a later milestone."
+
+#: src/routes/_owner/people.tsx:320
+msgid "Cancel"
+msgstr "Cancel"
 
 #: src/routes/signup.tsx:160
 msgid "Confirm password"
@@ -46,6 +71,10 @@ msgstr "Create an account"
 msgid "Create owner account"
 msgstr "Create owner account"
 
+#: src/routes/_owner/people.tsx:173
+msgid "Crew and roles. Turkish mobile +90; no SMS in MVP."
+msgstr "Crew and roles. Turkish mobile +90; no SMS in MVP."
+
 #: src/routes/setup.$token.tsx:12
 msgid "Device setup"
 msgstr "Device setup"
@@ -53,6 +82,14 @@ msgstr "Device setup"
 #: src/routes/signup.tsx:81
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
+
+#: src/routes/_owner/people.tsx:234
+msgid "Edit"
+msgstr "Edit"
+
+#: src/routes/_owner/people.tsx:266
+msgid "Edit person"
+msgstr "Edit person"
 
 #: src/routes/login.tsx:81
 #: src/routes/signup.tsx:95
@@ -73,6 +110,12 @@ msgstr "Equipment"
 msgid "Fields"
 msgstr "Fields"
 
+#: src/routes/_owner/people.tsx:23
+#: src/routes/_owner/people.tsx:32
+msgid "Foreman"
+msgstr "Foreman"
+
+#: src/routes/_owner/people.tsx:110
 #: src/routes/_owner/settings.tsx:39
 #: src/routes/login.tsx:51
 #: src/routes/signup.tsx:61
@@ -93,6 +136,7 @@ msgstr "History"
 msgid "Issues"
 msgstr "Issues"
 
+#: src/routes/_owner/people.tsx:191
 #: src/routes/_owner/settings.tsx:75
 msgid "Loading…"
 msgstr "Loading…"
@@ -100,6 +144,20 @@ msgstr "Loading…"
 #: src/routes/_owner/settings.tsx:124
 msgid "locked"
 msgstr "locked"
+
+#: src/routes/_owner/people.tsx:196
+#: src/routes/_owner/people.tsx:273
+msgid "Name"
+msgstr "Name"
+
+#: src/routes/_owner/people.tsx:176
+#: src/routes/_owner/people.tsx:266
+msgid "New person"
+msgstr "New person"
+
+#: src/routes/_owner/people.tsx:207
+msgid "No people match."
+msgstr "No people match."
 
 #: src/routes/_owner/settings.tsx:89
 msgid "Operation name"
@@ -117,6 +175,10 @@ msgstr "Oturum açılamadı. Yeniden deneyin."
 msgid "Oturum bulunamadı."
 msgstr "Oturum bulunamadı."
 
+#: src/routes/_owner/people.tsx:22
+msgid "Owner"
+msgstr "Owner"
+
 #: src/routes/_owner/today.tsx:13
 msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgstr "Owner home placeholder — M0-03 smoke; routing in M0-05."
@@ -130,14 +192,21 @@ msgstr "Owner sign-in"
 msgid "Password"
 msgstr "Password"
 
+#: src/routes/_owner/people.tsx:197
+msgid "Phone"
+msgstr "Phone"
+
 #: src/routes/signup.tsx:125
 msgid "Phone (E.164)"
 msgstr "Phone (E.164)"
 
+#: src/routes/_owner/people.tsx:286
+msgid "Phone (TR)"
+msgstr "Phone (TR)"
+
 #: src/routes/_owner/equipment.tsx:12
 #: src/routes/_owner/fields.tsx:12
 #: src/routes/_owner/issues.tsx:12
-#: src/routes/_owner/people.tsx:12
 #: src/routes/_owner/reports.tsx:12
 #: src/routes/_owner/tasks.tsx:12
 #: src/routes/m/history.tsx:12
@@ -160,6 +229,12 @@ msgstr "Report an issue"
 msgid "Reports"
 msgstr "Reports"
 
+#: src/routes/_owner/people.tsx:198
+#: src/routes/_owner/people.tsx:299
+msgid "Role"
+msgstr "Role"
+
+#: src/routes/_owner/people.tsx:323
 #: src/routes/_owner/settings.tsx:130
 msgid "Save"
 msgstr "Save"
@@ -168,6 +243,7 @@ msgstr "Save"
 msgid "Saved."
 msgstr "Saved."
 
+#: src/routes/_owner/people.tsx:323
 #: src/routes/_owner/settings.tsx:130
 msgid "Saving…"
 msgstr "Saving…"
@@ -177,6 +253,10 @@ msgstr "Saving…"
 #: src/routes/_owner/settings.tsx:82
 msgid "Settings"
 msgstr "Settings"
+
+#: src/routes/_owner/people.tsx:187
+msgid "Show archived"
+msgstr "Show archived"
 
 #: src/routes/login.tsx:111
 msgid "Sign in"
@@ -194,6 +274,10 @@ msgstr "Signing in…"
 msgid "Signing up…"
 msgstr "Signing up…"
 
+#: src/routes/_owner/people.tsx:199
+msgid "Status"
+msgstr "Status"
+
 #: src/routes/m/task.$id.tsx:12
 msgid "Task"
 msgstr "Task"
@@ -205,7 +289,7 @@ msgstr "Task"
 msgid "Tasks"
 msgstr "Tasks"
 
-#: src/routes/_owner/people.tsx:11
+#: src/routes/_owner/people.tsx:172
 #: src/routes/_owner/route.tsx:36
 msgid "Team"
 msgstr "Team"
@@ -219,6 +303,10 @@ msgstr "Time zone"
 msgid "Today"
 msgstr "Today"
 
+#: src/routes/_owner/people.tsx:269
+msgid "TR mobile. Roles: foreman, agronomist, worker."
+msgstr "TR mobile. Roles: foreman, agronomist, worker."
+
 #: src/routes/_owner/settings.tsx:117
 msgid "Turkish name as you would say it; used for the forecast widget (later)."
 msgstr "Turkish name as you would say it; used for the forecast widget (later)."
@@ -230,6 +318,11 @@ msgstr "Weather city"
 #: src/routes/login.tsx:76
 msgid "Work email and password."
 msgstr "Work email and password."
+
+#: src/routes/_owner/people.tsx:25
+#: src/routes/_owner/people.tsx:34
+msgid "Worker"
+msgstr "Worker"
 
 #: src/routes/m/tasks.tsx:13
 msgid "Worker PWA task list — /m URL prefix until role-based routing."

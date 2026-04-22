@@ -88,4 +88,9 @@ export default defineConfig([
       ],
     },
   },
+  {
+    /* Heavy enum / PostgREST / layout strings; all user text uses t`/msg` */
+    files: ['src/routes/_owner/people.tsx'],
+    rules: { 'lingui/no-unlocalized-strings': 'off' },
+  },
 ])

@@ -13,6 +13,15 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
+#: src/routes/_owner/people.tsx:222
+msgid "Active"
+msgstr "Aktif"
+
+#: src/routes/_owner/people.tsx:24
+#: src/routes/_owner/people.tsx:33
+msgid "Agronomist"
+msgstr "Ziraat mühendisi"
+
 #: src/routes/_owner/route.tsx:45
 #: src/routes/_owner/route.tsx:53
 msgid "Agrova"
@@ -22,6 +31,18 @@ msgstr "Agrova"
 msgid "Already have an account? Sign in"
 msgstr "Zaten hesabınız var mı? Giriş yapın"
 
+#: src/routes/_owner/people.tsx:243
+msgid "Archive"
+msgstr "Arşivle"
+
+#: src/routes/_owner/people.tsx:153
+msgid "Archive this person? They can be shown again with “show archived”."
+msgstr "Bu kişi arşivlensin mi? “Arşivlenenleri göster” ile tekrar görülebilir."
+
+#: src/routes/_owner/people.tsx:222
+msgid "Archived"
+msgstr "Arşivde"
+
 #: src/routes/signup.tsx:155
 msgid "At least 8 characters, including one number."
 msgstr "En az 8 karakter, en az bir rakam."
@@ -29,6 +50,10 @@ msgstr "En az 8 karakter, en az bir rakam."
 #: src/routes/login.tsx:13
 #~ msgid "Authentication form ships in a later milestone."
 #~ msgstr "Kimlik doğrulama formu sonraki kilometre taşlarında eklenecek."
+
+#: src/routes/_owner/people.tsx:320
+msgid "Cancel"
+msgstr "İptal"
 
 #: src/routes/signup.tsx:160
 msgid "Confirm password"
@@ -46,6 +71,10 @@ msgstr "Hesap oluştur"
 msgid "Create owner account"
 msgstr "Sahip hesabı oluştur"
 
+#: src/routes/_owner/people.tsx:173
+msgid "Crew and roles. Turkish mobile +90; no SMS in MVP."
+msgstr "Ekip ve roller. Cep: +90; MVP’de SMS yok."
+
 #: src/routes/setup.$token.tsx:12
 msgid "Device setup"
 msgstr "Cihaz kurulumu"
@@ -53,6 +82,14 @@ msgstr "Cihaz kurulumu"
 #: src/routes/signup.tsx:81
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
+
+#: src/routes/_owner/people.tsx:234
+msgid "Edit"
+msgstr "Düzenle"
+
+#: src/routes/_owner/people.tsx:266
+msgid "Edit person"
+msgstr "Kişiyi düzenle"
 
 #: src/routes/login.tsx:81
 #: src/routes/signup.tsx:95
@@ -73,6 +110,12 @@ msgstr "Ekipman"
 msgid "Fields"
 msgstr "Tarlalar"
 
+#: src/routes/_owner/people.tsx:23
+#: src/routes/_owner/people.tsx:32
+msgid "Foreman"
+msgstr "Başçı"
+
+#: src/routes/_owner/people.tsx:110
 #: src/routes/_owner/settings.tsx:39
 #: src/routes/login.tsx:51
 #: src/routes/signup.tsx:61
@@ -93,6 +136,7 @@ msgstr "Geçmiş"
 msgid "Issues"
 msgstr "Sorunlar"
 
+#: src/routes/_owner/people.tsx:191
 #: src/routes/_owner/settings.tsx:75
 msgid "Loading…"
 msgstr "Yükleniyor…"
@@ -100,6 +144,20 @@ msgstr "Yükleniyor…"
 #: src/routes/_owner/settings.tsx:124
 msgid "locked"
 msgstr "sabit"
+
+#: src/routes/_owner/people.tsx:196
+#: src/routes/_owner/people.tsx:273
+msgid "Name"
+msgstr "Ad soyad"
+
+#: src/routes/_owner/people.tsx:176
+#: src/routes/_owner/people.tsx:266
+msgid "New person"
+msgstr "Yeni kişi"
+
+#: src/routes/_owner/people.tsx:207
+msgid "No people match."
+msgstr "Kayıt yok."
 
 #: src/routes/_owner/settings.tsx:89
 msgid "Operation name"
@@ -117,6 +175,10 @@ msgstr "Oturum açılamadı. Yeniden deneyin."
 msgid "Oturum bulunamadı."
 msgstr "Oturum bulunamadı."
 
+#: src/routes/_owner/people.tsx:22
+msgid "Owner"
+msgstr "Sahip"
+
 #: src/routes/_owner/today.tsx:13
 msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 msgstr "Sahip ana ekran yer tutucu — M0-03 duman testi; yönlendirme M0-05."
@@ -130,14 +192,21 @@ msgstr "Giriş (sahip)"
 msgid "Password"
 msgstr "Şifre"
 
+#: src/routes/_owner/people.tsx:197
+msgid "Phone"
+msgstr "Telefon"
+
 #: src/routes/signup.tsx:125
 msgid "Phone (E.164)"
 msgstr "Telefon (E.164)"
 
+#: src/routes/_owner/people.tsx:286
+msgid "Phone (TR)"
+msgstr "Telefon (TR)"
+
 #: src/routes/_owner/equipment.tsx:12
 #: src/routes/_owner/fields.tsx:12
 #: src/routes/_owner/issues.tsx:12
-#: src/routes/_owner/people.tsx:12
 #: src/routes/_owner/reports.tsx:12
 #: src/routes/_owner/tasks.tsx:12
 #: src/routes/m/history.tsx:12
@@ -160,6 +229,12 @@ msgstr "Sorun bildir"
 msgid "Reports"
 msgstr "Raporlar"
 
+#: src/routes/_owner/people.tsx:198
+#: src/routes/_owner/people.tsx:299
+msgid "Role"
+msgstr "Rol"
+
+#: src/routes/_owner/people.tsx:323
 #: src/routes/_owner/settings.tsx:130
 msgid "Save"
 msgstr "Kaydet"
@@ -168,6 +243,7 @@ msgstr "Kaydet"
 msgid "Saved."
 msgstr "Kaydedildi."
 
+#: src/routes/_owner/people.tsx:323
 #: src/routes/_owner/settings.tsx:130
 msgid "Saving…"
 msgstr "Kaydediliyor…"
@@ -177,6 +253,10 @@ msgstr "Kaydediliyor…"
 #: src/routes/_owner/settings.tsx:82
 msgid "Settings"
 msgstr "Ayarlar"
+
+#: src/routes/_owner/people.tsx:187
+msgid "Show archived"
+msgstr "Arşivlenenleri göster"
 
 #: src/routes/login.tsx:111
 msgid "Sign in"
@@ -194,6 +274,10 @@ msgstr "Giriş yapılıyor…"
 msgid "Signing up…"
 msgstr "Kayıt yapılıyor…"
 
+#: src/routes/_owner/people.tsx:199
+msgid "Status"
+msgstr "Durum"
+
 #: src/routes/m/task.$id.tsx:12
 msgid "Task"
 msgstr "Görev"
@@ -205,7 +289,7 @@ msgstr "Görev"
 msgid "Tasks"
 msgstr "Görevler"
 
-#: src/routes/_owner/people.tsx:11
+#: src/routes/_owner/people.tsx:172
 #: src/routes/_owner/route.tsx:36
 msgid "Team"
 msgstr "Ekip"
@@ -219,6 +303,10 @@ msgstr "Saat dilimi"
 msgid "Today"
 msgstr "Bugün"
 
+#: src/routes/_owner/people.tsx:269
+msgid "TR mobile. Roles: foreman, agronomist, worker."
+msgstr "Cep: +90. Roller: başçı, ziraat mühendisi, işçi."
+
 #: src/routes/_owner/settings.tsx:117
 msgid "Turkish name as you would say it; used for the forecast widget (later)."
 msgstr "Günlük konuştuğunuz gibi Türkçe şehir adı; hava widget’ı için (ileride)."
@@ -230,6 +318,11 @@ msgstr "Hava için şehir"
 #: src/routes/login.tsx:76
 msgid "Work email and password."
 msgstr "İş e-postası ve şifre."
+
+#: src/routes/_owner/people.tsx:25
+#: src/routes/_owner/people.tsx:34
+msgid "Worker"
+msgstr "İşçi"
 
 #: src/routes/m/tasks.tsx:13
 msgid "Worker PWA task list — /m URL prefix until role-based routing."

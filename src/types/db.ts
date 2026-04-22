@@ -336,6 +336,7 @@ export type Database = {
       }
       people: {
         Row: {
+          active: boolean
           auth_user_id: string | null
           created_at: string
           full_name: string
@@ -347,6 +348,7 @@ export type Database = {
           updated_at: string
         }
         Insert: {
+          active?: boolean
           auth_user_id?: string | null
           created_at?: string
           full_name: string
@@ -358,6 +360,7 @@ export type Database = {
           updated_at?: string
         }
         Update: {
+          active?: boolean
           auth_user_id?: string | null
           created_at?: string
           full_name?: string
