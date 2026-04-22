@@ -80,6 +80,10 @@ Watch-mode tests: `pnpm test` (Vitest).
 
 Solo dev for now; if you land here anyway, read `specs/farm-operations-app.md` top-to-bottom first, then `DESIGN.md`, then pick a milestone.
 
+**Branch protection (M0-10):** after CI has run on `main`, enable rules for `main` — see [`docs/github-branch-protection.md`](./docs/github-branch-protection.md).
+
+**Supabase migrations:** SQL in [`supabase/migrations/`](./supabase/migrations/); see [`supabase/README.md`](./supabase/README.md).
+
 ## License
 
 TBD.

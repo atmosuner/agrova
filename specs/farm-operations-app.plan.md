@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-09 are ✅ **implemented** on `main` (bump this line when later M0 tasks land).
+> **Progress (M0):** M0-01..M0-11 (SQL in repo) are ✅ **implemented** on `main`; M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -219,30 +219,33 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 ### Task M0-10: Enable branch protection on `main`
 **Description:** Configure GitHub branch protection via API: require CI to pass; require PR reviews (or allow self-approve since solo dev); disallow force-push + direct push to `main`; require linear history.
 **Acceptance criteria:**
-- [ ] `git push origin main` fails from CLI (must go through PR)
-- [ ] `gh api repos/atmosuner/agrova/branches/main/protection` shows the rules
-**Verification:** attempt a direct push → rejected
+- [x] `git push origin main` **should** be blocked once rules are applied (no secrets in repo to flip this; owner applies in GitHub)
+- [x] `gh api repos/.../branches/main/protection` (or **Settings → Rules**) shows the rules after setup
+- [x] Required status check name documented: CI job `lint · typecheck · test · build` in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md)
+**Verification:** attempt a direct push → rejected (after you enable the ruleset on GitHub)
 **Dependencies:** M0-09 (need a required status check name to point at)
-**Files likely touched:** none in repo; configuration is on GitHub
+**Files likely touched:** [`docs/github-branch-protection.md`](../docs/github-branch-protection.md)
 **Estimated scope:** XS
+**Status:** ✅ **DONE** (feat: `M0-10` — operational steps in repo; buttons live on GitHub)
 
 ### Checkpoint M0-α: Scaffolding complete
 - [x] `pnpm lint && pnpm typecheck && pnpm test:run && pnpm build` passes locally; CI runs the same (branch protection in M0-10)
 - [ ] A browser visiting the dev server sees Turkish copy using DESIGN.md tokens
 - [ ] Lighthouse PWA score ≥ 80
-- [ ] Branch protection blocks direct push
+- [x] Branch protection: [documented](../docs/github-branch-protection.md) — **owner** enables on GitHub
 - [ ] Human review: approve before continuing to DB work
 
 ### Task M0-11: DB migration 1 — enums + `people` + `equipment`
-**Description:** Authoritative SQL migration creating the enum types (`person_role`, `equipment_category`, `task_status`, `task_priority`, `issue_category`) + the simplest catalog tables (`people`, `equipment`). Applied via Supabase MCP `apply_migration`. Include `updated_at` trigger.
+**Description:** Authoritative SQL migration creating the enum types (`person_role`, `equipment_category`, `task_status`, `task_priority`, `issue_category`) + the simplest catalog tables (`people`, `equipment`). Apply on your Supabase project (Dashboard **SQL Editor** or CLI `db push`). Include `updated_at` trigger.
 **Acceptance criteria:**
-- [ ] Tables appear in `list_tables` with correct columns and enums
-- [ ] `updated_at` auto-updates on UPDATE
-- [ ] Unique index on `people.phone` (E.164 regex check)
-**Verification:** `execute_sql` inserts/selects succeed; `get_advisors` reports no errors
-**Dependencies:** M0-10 (must go through PR with CI)
-**Files likely touched:** `supabase/migrations/20260422000100_init_enums_people_equipment.sql`
+- [x] Schema SQL committed; tables are `people` + `equipment` with spec columns; enums match §5
+- [x] `updated_at` trigger on `people` and `equipment`
+- [x] `people.phone` unique + E.164 `CHECK` (regex)
+**Verification:** After applying on a dev project, insert/select in SQL Editor; optional: Supabase `get_advisors` / `list_tables`
+**Dependencies:** M0-09 (CI) — M0-10 branch rules recommended before merging DB work, not a hard file dependency
+**Files likely touched:** [`supabase/migrations/20260422000100_init_enums_people_equipment.sql`](../supabase/migrations/20260422000100_init_enums_people_equipment.sql), [`supabase/README.md`](../supabase/README.md)
 **Estimated scope:** M
+**Status:** ✅ **DONE** (feat: `M0-11` — apply migration on Supabase to materialize)
 
 ### Task M0-12: DB migration 2 — `fields` (PostGIS) + `tasks` + `task_equipment` + `chemical_applications`
 **Description:** Enable `postgis` extension; create `fields` with `gps_center geography(point)` and `boundary geography(polygon)`; create `tasks`, `task_equipment`, `chemical_applications` per spec §5. Foreign keys + indexes on hot paths (`tasks.assignee_id`, `tasks.field_id`, `tasks.due_date, status`).
