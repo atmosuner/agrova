@@ -44,7 +44,6 @@ msgid "Acil"
 msgstr "Acil"
 
 #: src/features/issues/IssuesFeed.tsx:210
-#: src/routes/m/profile.tsx:164
 msgid "Açık"
 msgstr "Açık"
 
@@ -67,7 +66,7 @@ msgstr "Aktif tarlalar (bugün)"
 msgid "Activity"
 msgstr "Aktivite"
 
-#: src/routes/m/profile.tsx:134
+#: src/routes/m/profile.tsx:77
 msgid "Ad"
 msgstr "Ad"
 
@@ -277,7 +276,6 @@ msgstr "Bildirim yok"
 #: src/features/notifications/NotificationsBell.tsx:46
 #: src/features/notifications/NotificationsBell.tsx:62
 #: src/features/notifications/NotificationsBell.tsx:65
-#: src/routes/m/profile.tsx:143
 msgid "Bildirimler"
 msgstr "Bildirimler"
 
@@ -286,8 +284,12 @@ msgid "Bildirimler (Web Push)"
 msgstr "Bildirimler (Web Push)"
 
 #: src/routes/m/profile.tsx:145
-msgid "Bildirimleri sessize al"
-msgstr "Bildirimleri sessize al"
+#~ msgid "Bildirimleri sessize al"
+#~ msgstr "Bildirimleri sessize al"
+
+#: src/routes/m/profile.tsx:86
+msgid "Bildirimleri sessize alma bu uygulamada yasaktır."
+msgstr "Bildirimleri sessize alma bu uygulamada yasaktır."
 
 #: src/features/tasks/TaskCard.mobile.tsx:61
 msgid "Bilinmiyor"
@@ -433,7 +435,7 @@ msgid "Çevrimdışı"
 msgstr "Çevrimdışı"
 
 #: src/routes/_owner/settings.tsx:190
-#: src/routes/m/profile.tsx:185
+#: src/routes/m/profile.tsx:90
 msgid "Change password"
 msgstr "Change password"
 
@@ -455,7 +457,7 @@ msgstr "Choose a strong password for your account."
 msgid "Chrome’da agrova.app adresini açın."
 msgstr "Chrome’da agrova.app adresini açın."
 
-#: src/routes/m/profile.tsx:187
+#: src/routes/m/profile.tsx:92
 msgid "Cihaz e-postanız ve mevcut şifreniz. E-posta ile sıfırlama cihaz hesaplarında yok."
 msgstr "Cihaz e-postanız ve mevcut şifreniz. E-posta ile sıfırlama cihaz hesaplarında yok."
 
@@ -467,13 +469,13 @@ msgstr "Cihaz hesapları (@device) için e-posta ile sıfırlama yok. İşletme 
 #~ msgid "Cihaz kurulum linki panoya kopyalandı. Çalışan telefonda açın."
 #~ msgstr "Cihaz kurulum linki panoya kopyalandı. Çalışan telefonda açın."
 
-#: src/routes/m/profile.tsx:242
+#: src/routes/m/profile.tsx:147
 msgid "Çıkış yap"
 msgstr "Çıkış yap"
 
 #: src/routes/_owner/people.tsx:614
 #: src/routes/_owner/settings.tsx:223
-#: src/routes/m/profile.tsx:217
+#: src/routes/m/profile.tsx:122
 #: src/routes/reset-password.tsx:134
 msgid "Confirm new password"
 msgstr "Confirm new password"
@@ -536,7 +538,7 @@ msgid "Crop"
 msgstr "Kültür"
 
 #: src/routes/_owner/settings.tsx:197
-#: src/routes/m/profile.tsx:191
+#: src/routes/m/profile.tsx:96
 msgid "Current password"
 msgstr "Current password"
 
@@ -750,7 +752,7 @@ msgstr "Forgot password?"
 #: src/routes/_owner/settings.tsx:98
 #: src/routes/forgot-password.tsx:48
 #: src/routes/login.tsx:56
-#: src/routes/m/profile.tsx:91
+#: src/routes/m/profile.tsx:36
 #: src/routes/reset-password.tsx:56
 #: src/routes/signup.tsx:65
 msgid "Formu kontrol edin."
@@ -797,7 +799,7 @@ msgstr "Fotoğrafı büyüt"
 msgid "Full name"
 msgstr "Ad soyad"
 
-#: src/components/layout/MobileShell.tsx:16
+#: src/components/layout/MobileShell.tsx:17
 #: src/routes/m/history.tsx:35
 msgid "Geçmiş"
 msgstr "Geçmiş"
@@ -930,8 +932,8 @@ msgid "Görevlere dön"
 msgstr "Görevlere dön"
 
 #: src/routes/m/profile.tsx:159
-msgid "Görünüm"
-msgstr "Görünüm"
+#~ msgid "Görünüm"
+#~ msgstr "Görünüm"
 
 #: src/features/issues/IssuesFeed.tsx:250
 msgid "Gösterilecek sorun yok."
@@ -1136,8 +1138,8 @@ msgid "Kopyalandı"
 msgstr "Kopyalandı"
 
 #: src/routes/m/profile.tsx:165
-msgid "Koyu"
-msgstr "Koyu"
+#~ msgid "Koyu"
+#~ msgstr "Koyu"
 
 #: src/features/equipment/EquipmentUsageSheet.tsx:48
 msgid "Kullanım geçmişi"
@@ -1208,7 +1210,7 @@ msgstr "Tarla haritası"
 msgid "Menü (⋮) → “Uygulamayı yükle” veya “Ana ekrana ekle”."
 msgstr "Menü (⋮) → “Uygulamayı yükle” veya “Ana ekrana ekle”."
 
-#: src/components/layout/MobileShell.tsx:52
+#: src/components/layout/MobileShell.tsx:65
 msgid "Merhaba"
 msgstr "Merhaba"
 
@@ -1244,7 +1246,7 @@ msgstr "Yeni tarla"
 
 #: src/routes/_owner/people.tsx:600
 #: src/routes/_owner/settings.tsx:210
-#: src/routes/m/profile.tsx:204
+#: src/routes/m/profile.tsx:109
 #: src/routes/reset-password.tsx:120
 msgid "New password"
 msgstr "New password"
@@ -1351,7 +1353,7 @@ msgid "Password"
 msgstr "Şifre"
 
 #: src/routes/_owner/settings.tsx:235
-#: src/routes/m/profile.tsx:229
+#: src/routes/m/profile.tsx:134
 msgid "Password updated."
 msgstr "Password updated."
 
@@ -1409,12 +1411,12 @@ msgstr "Gizlilik"
 msgid "Privacy & data"
 msgstr "Privacy & data"
 
-#: src/components/layout/MobileShell.tsx:17
-#: src/routes/m/profile.tsx:131
+#: src/components/layout/MobileShell.tsx:18
+#: src/routes/m/profile.tsx:75
 msgid "Profil"
 msgstr "Profil"
 
-#: src/routes/m/profile.tsx:124
+#: src/routes/m/profile.tsx:68
 msgid "Profil yüklenemedi."
 msgstr "Profil yüklenemedi."
 
@@ -1444,7 +1446,7 @@ msgstr "Request reset email"
 msgid "Reset password"
 msgstr "Reset password"
 
-#: src/routes/m/profile.tsx:138
+#: src/routes/m/profile.tsx:81
 msgid "Rol"
 msgstr "Rol"
 
@@ -1490,7 +1492,7 @@ msgstr "Kaydedildi."
 #: src/routes/_owner/people.tsx:632
 #: src/routes/_owner/settings.tsx:186
 #: src/routes/_owner/settings.tsx:237
-#: src/routes/m/profile.tsx:231
+#: src/routes/m/profile.tsx:136
 #: src/routes/reset-password.tsx:148
 msgid "Saving…"
 msgstr "Kaydediliyor…"
@@ -1571,7 +1573,7 @@ msgstr "Seyreltme"
 msgid "Show archived"
 msgstr "Arşivlenenleri göster"
 
-#: src/routes/m/profile.tsx:245
+#: src/routes/m/profile.tsx:150
 msgid "Şifrenizi unuttuysanız işletme sahibinden (Ekip) yeni şifre isteyin."
 msgstr "Şifrenizi unuttuysanız işletme sahibinden (Ekip) yeni şifre isteyin."
 
@@ -1608,8 +1610,8 @@ msgid "Şimdi değil"
 msgstr "Şimdi değil"
 
 #: src/routes/m/profile.tsx:163
-msgid "Sistem"
-msgstr "Sistem"
+#~ msgid "Sistem"
+#~ msgstr "Sistem"
 
 #: src/routes/m/tasks.tsx:41
 msgid "Size atanan veya üzerinizdeki işler burada listelenir."
@@ -1764,7 +1766,7 @@ msgstr "Görevler"
 msgid "Team"
 msgstr "Ekip"
 
-#: src/routes/m/profile.tsx:136
+#: src/routes/m/profile.tsx:79
 msgid "Telefon"
 msgstr "Telefon"
 
@@ -1834,7 +1836,7 @@ msgid "Type the field name to confirm deletion."
 msgstr "Silme işlemini onaylamak için tarla adını yazın."
 
 #: src/routes/_owner/settings.tsx:237
-#: src/routes/m/profile.tsx:231
+#: src/routes/m/profile.tsx:136
 #: src/routes/reset-password.tsx:148
 msgid "Update password"
 msgstr "Update password"
@@ -1892,7 +1894,7 @@ msgstr "İşçi"
 #~ msgid "Worker device"
 #~ msgstr "Worker cihazı"
 
-#: src/components/layout/MobileShell.tsx:63
+#: src/components/layout/MobileShell.tsx:76
 msgid "Worker navigation"
 msgstr "Worker navigation"
 
@@ -1904,7 +1906,7 @@ msgstr "Worker password was updated. They sign in with the same device e-mail an
 #~ msgid "Worker PWA task list — /m URL prefix until role-based routing."
 #~ msgstr "İşçi PWA görev listesi — rol tabanlı yönlendirmeye kadar /m URL öneki."
 
-#: src/components/layout/MobileShell.tsx:15
+#: src/components/layout/MobileShell.tsx:16
 #: src/features/dashboard/TodaysBoard.tsx:17
 #: src/features/tasks/TaskCard.mobile.tsx:33
 #: src/features/tasks/TaskDetailSheet.tsx:27
@@ -1980,7 +1982,7 @@ msgstr "You can export field-level chemical logs as CSV; a full data export is p
 #: src/features/tasks/ReassignSheet.mobile.tsx:62
 #: src/features/tasks/TaskDetailSheet.tsx:172
 #: src/routes/m/history.tsx:36
-#: src/routes/m/profile.tsx:116
+#: src/routes/m/profile.tsx:60
 #: src/routes/m/task.$id.tsx:62
 #: src/routes/m/tasks.tsx:37
 msgid "Yükleniyor…"

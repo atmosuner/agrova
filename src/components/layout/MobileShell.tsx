@@ -1,7 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings */
 import { msg, t } from '@lingui/macro'
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { CheckCircle2, ClipboardList, User } from 'lucide-react'
 import { InstallPrompt } from '@/components/InstallPrompt'
 import { SyncIndicator } from '@/components/SyncIndicator'
@@ -9,6 +9,7 @@ import { bootstrapReadCachesForWorker } from '@/features/bootstrap/bootstrap-cac
 import { firstNameFromFull, useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import { drainOutbox } from '@/lib/sync'
 import { i18n } from '@/lib/i18n'
+import { applyThemeToDocument, getStoredAgrovaTheme } from '@/lib/theme'
 import { cn } from '@/lib/utils'
 
 const bottomTabs = [
@@ -29,6 +30,18 @@ function formatTrDateHeader(): string {
 export function MobileShell() {
   const { data: me, isSuccess } = useMyPersonQuery()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const themeBeforeMobileRef = useRef<ReturnType<typeof getStoredAgrovaTheme> | null>(null)
+
+  useEffect(() => {
+    themeBeforeMobileRef.current = getStoredAgrovaTheme()
+    applyThemeToDocument('light')
+    return () => {
+      const previous = themeBeforeMobileRef.current
+      if (previous != null) {
+        applyThemeToDocument(previous)
+      }
+    }
+  }, [])
 
   useEffect(() => {
     if (!isSuccess || !me?.id) {
