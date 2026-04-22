@@ -104,6 +104,55 @@ async function processRow(row: OutboxRow): Promise<void> {
     await reassignTask(supabase, { taskId, newAssigneeId })
     return
   }
+  if (row.kind === 'task_equipment') {
+    const taskId = typeof p.taskId === 'string' ? p.taskId : ''
+    const equipmentId = typeof p.equipmentId === 'string' ? p.equipmentId : ''
+    const op = p.op === 'detach' ? 'detach' : 'attach'
+    if (!taskId || !equipmentId) {
+      return
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      throw new Error('no auth')
+    }
+    const { data: me, error: meErr } = await supabase.from('people').select('id').eq('auth_user_id', user.id).maybeSingle()
+    if (meErr) {
+      throw meErr
+    }
+    if (!me) {
+      throw new Error('no person')
+    }
+    if (op === 'attach') {
+      const { data: ex, error: exErr } = await supabase
+        .from('task_equipment')
+        .select('task_id')
+        .eq('task_id', taskId)
+        .eq('equipment_id', equipmentId)
+        .maybeSingle()
+      if (exErr) {
+        throw exErr
+      }
+      if (ex) {
+        return
+      }
+      const { error: insErr } = await supabase.from('task_equipment').insert({
+        task_id: taskId,
+        equipment_id: equipmentId,
+        attached_by: me.id,
+      })
+      if (insErr) {
+        throw insErr
+      }
+      return
+    }
+    const { error: delErr } = await supabase.from('task_equipment').delete().eq('task_id', taskId).eq('equipment_id', equipmentId)
+    if (delErr) {
+      throw delErr
+    }
+    return
+  }
   if (row.kind === 'issue_row') {
     const issueId = typeof p.issueId === 'string' ? p.issueId : ''
     const category = asIssueCategory(typeof p.category === 'string' ? p.category : undefined, 'PEST')

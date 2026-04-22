@@ -6,6 +6,7 @@ export type OutboxKind =
   | 'task_status'
   | 'task_reassign'
   | 'task_completion'
+  | 'task_equipment'
   | 'issue_row'
   | 'issue_photo'
   | 'issue_voice'

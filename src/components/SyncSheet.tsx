@@ -23,6 +23,12 @@ function kindLabel(kind: OutboxRow['kind']): string {
       return 'Görev bitiş'
     case 'task_reassign':
       return 'Aktar'
+    case 'task_equipment':
+      return 'Alet'
+    case 'issue_row':
+    case 'issue_photo':
+    case 'issue_voice':
+      return 'Sorun'
     default:
       return kind
   }

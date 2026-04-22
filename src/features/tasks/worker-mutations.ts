@@ -51,3 +51,15 @@ export async function queueTaskReassign(input: { taskId: string; newAssigneeId: 
   })
   await drainOutbox()
 }
+
+export async function queueTaskEquipmentChange(input: { taskId: string; equipmentId: string; op: 'attach' | 'detach' }): Promise<void> {
+  await enqueueOutbox({
+    kind: 'task_equipment',
+    payload: toJson({
+      taskId: input.taskId,
+      equipmentId: input.equipmentId,
+      op: input.op,
+    }),
+  })
+  await drainOutbox()
+}

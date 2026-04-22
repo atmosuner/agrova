@@ -1,11 +1,23 @@
 /* eslint-disable lingui/no-unlocalized-strings -- query keys / PostgREST */
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/lib/supabase'
-import type { Tables } from '@/types/db'
+import type { Enums, Tables } from '@/types/db'
 
 export type TaskDetail = Tables<'tasks'> & {
   fields: { id: string; name: string } | null
   assignee: { id: string; full_name: string } | null
+  task_equipment: TaskEquipmentRow[]
+}
+
+export type TaskEquipmentRow = {
+  equipment_id: string
+  attached_at: string
+  equipment: {
+    id: string
+    name: string
+    category: Enums<'equipment_category'>
+    active: boolean
+  } | null
 }
 
 export function useTaskDetailQuery(taskId: string | null) {
@@ -19,7 +31,8 @@ export function useTaskDetailQuery(taskId: string | null) {
       const { data, error } = await supabase
         .from('tasks')
         .select(
-          `*, fields ( id, name ), assignee:people!tasks_assignee_id_fkey ( id, full_name )`,
+          `*, fields ( id, name ), assignee:people!tasks_assignee_id_fkey ( id, full_name ),
+          task_equipment ( equipment_id, attached_at, equipment:equipment!task_equipment_equipment_id_fkey ( id, name, category, active ) )`,
         )
         .eq('id', taskId)
         .maybeSingle()
@@ -29,7 +42,11 @@ export function useTaskDetailQuery(taskId: string | null) {
       if (!data) {
         throw new Error('task not found')
       }
-      return data as TaskDetail
+      const row = data as TaskDetail & { task_equipment: TaskEquipmentRow[] | null }
+      return {
+        ...row,
+        task_equipment: row.task_equipment ?? [],
+      }
     },
   })
 }

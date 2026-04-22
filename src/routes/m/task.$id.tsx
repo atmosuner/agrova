@@ -1,6 +1,6 @@
 /* eslint-disable lingui/no-unlocalized-strings */
 import { msg, t } from '@lingui/macro'
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
 import { useTaskDetailQuery } from '@/features/tasks/useTaskDetailQuery'
@@ -13,6 +13,7 @@ import { i18n } from '@/lib/i18n'
 import { transitionTask } from '@/features/tasks/transition-task'
 import { CompletionFlow } from '@/features/tasks/CompletionFlow'
 import { ReassignSheetMobile } from '@/features/tasks/ReassignSheet.mobile'
+import { AttachSheetMobile } from '@/features/equipment/AttachSheet.mobile'
 
 export const Route = createFileRoute('/m/task/$id')({
   component: TaskDetailPage,
@@ -24,12 +25,17 @@ function TaskDetailPage() {
   const { data: task, isLoading, error, refetch } = useTaskDetailQuery(id)
   const [flow, setFlow] = useState(false)
   const [reassign, setReassign] = useState(false)
+  const [attach, setAttach] = useState(false)
   const [busy, setBusy] = useState(false)
   const [err, setErr] = useState<string | null>(null)
   const queryClient = useQueryClient()
 
   const assignee = task?.assignee_id
   const mine = me?.id && assignee && me.id === assignee
+  const attachedEquipmentIds = useMemo(
+    () => new Set((task?.task_equipment ?? []).map((r) => r.equipment_id)),
+    [task?.task_equipment],
+  )
   const aid = task ? activityIdFromDbValue(task.activity) : null
   const title = aid ? i18n._(ACTIVITY_LABEL[aid]) : (task?.activity ?? '—')
 
@@ -105,6 +111,17 @@ function TaskDetailPage() {
               {busy ? t`…` : t`Başla`}
             </WorkerButton>
           ) : null}
+          {task.status === 'TODO' ? (
+            <Button
+              type="button"
+              variant="outline"
+              className="mt-2 h-12 w-full rounded-full"
+              disabled={busy}
+              onClick={() => setAttach(true)}
+            >
+              {t`Alet`}
+            </Button>
+          ) : null}
           {task.status === 'IN_PROGRESS' ? (
             <>
               <WorkerButton
@@ -124,6 +141,15 @@ function TaskDetailPage() {
                 disabled={busy}
               >
                 {t`Aktar`}
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                className="mt-2 h-12 w-full rounded-full"
+                disabled={busy}
+                onClick={() => setAttach(true)}
+              >
+                {t`Alet`}
               </Button>
               <Button type="button" variant="outline" className="mt-2 h-12 w-full rounded-full" disabled={busy} asChild>
                 <Link
@@ -150,6 +176,9 @@ function TaskDetailPage() {
       ) : null}
       {reassign && me ? (
         <ReassignSheetMobile taskId={task.id} currentPersonId={me.id} onClose={() => setReassign(false)} />
+      ) : null}
+      {attach ? (
+        <AttachSheetMobile taskId={task.id} attachedIds={attachedEquipmentIds} onClose={() => setAttach(false)} />
       ) : null}
     </div>
   )
