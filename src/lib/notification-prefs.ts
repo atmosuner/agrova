@@ -23,25 +23,13 @@ export function readMutedEventActions(prefs: Json | null | undefined): string[] 
 }
 
 /**
- * Mirrors `supabase/functions/web-push-fanout` delivery rules for one owner row
- * (used in unit tests; keep in sync with the edge function).
+ * Per-recipient mute for Web Push (edge `web-push-fanout`). Who receives at all is decided by
+ * `supabase/functions/_shared/web-push-fanout-recipients.ts` (`resolveWebPushRecipientIds`).
+ * `issue.reported` cannot be muted (KPI); mirroring in UI: mute list excludes it.
  */
-export function shouldDeliverPushToOwner(input: {
-  activityAction: string
-  actorPersonId: string
-  ownerPersonId: string
-  ownerNotificationPrefs: Json | null | undefined
-}): boolean {
-  const { activityAction, actorPersonId, ownerPersonId, ownerNotificationPrefs } = input
-  const isOwnerIssueKpi = activityAction === 'issue.reported'
-  if (ownerPersonId === actorPersonId && !isOwnerIssueKpi) {
+export function isWebPushActionMutedByPrefs(activityAction: string, prefs: Json | null | undefined): boolean {
+  if (activityAction === 'issue.reported') {
     return false
   }
-  if (!isOwnerIssueKpi && readMutedEventActions(ownerNotificationPrefs).includes(activityAction)) {
-    return false
-  }
-  if (!activityAction.startsWith('issue.') && ownerPersonId === actorPersonId) {
-    return false
-  }
-  return true
+  return readMutedEventActions(prefs).includes(activityAction)
 }

@@ -1,48 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { shouldDeliverPushToOwner } from '@/lib/notification-prefs'
+import { isWebPushActionMutedByPrefs } from '@/lib/notification-prefs'
 
-describe('shouldDeliverPushToOwner', () => {
-  it('delivers issue.reported to owner even if they are the reporter', () => {
-    expect(
-      shouldDeliverPushToOwner({
-        activityAction: 'issue.reported',
-        actorPersonId: 'a',
-        ownerPersonId: 'a',
-        ownerNotificationPrefs: {},
-      }),
-    ).toBe(true)
+describe('isWebPushActionMutedByPrefs', () => {
+  it('does not treat issue.reported as muted even if listed (KPI)', () => {
+    expect(isWebPushActionMutedByPrefs('issue.reported', { muted_event_actions: ['issue.reported'] })).toBe(false)
   })
 
-  it('skips self-notification for non-issue actions', () => {
-    expect(
-      shouldDeliverPushToOwner({
-        activityAction: 'task.done',
-        actorPersonId: 'a',
-        ownerPersonId: 'a',
-        ownerNotificationPrefs: {},
-      }),
-    ).toBe(false)
-  })
-
-  it('respects muted_event_actions', () => {
-    expect(
-      shouldDeliverPushToOwner({
-        activityAction: 'task.started',
-        actorPersonId: 'worker',
-        ownerPersonId: 'owner',
-        ownerNotificationPrefs: { muted_event_actions: ['task.started'] },
-      }),
-    ).toBe(false)
-  })
-
-  it('does not allow muting issue.reported via prefs (KPI; filtering is in UI too)', () => {
-    expect(
-      shouldDeliverPushToOwner({
-        activityAction: 'issue.reported',
-        actorPersonId: 'w',
-        ownerPersonId: 'o',
-        ownerNotificationPrefs: { muted_event_actions: ['issue.reported'] },
-      }),
-    ).toBe(true)
+  it('honors muted_event_actions for other actions', () => {
+    expect(isWebPushActionMutedByPrefs('task.started', { muted_event_actions: ['task.started'] })).toBe(true)
+    expect(isWebPushActionMutedByPrefs('task.done', { muted_event_actions: ['task.started'] })).toBe(false)
   })
 })

@@ -25,6 +25,19 @@ If you skip the token, the script still writes `supabase/.vapid-generated.env` (
 
 Migrations: `20260422180000_m6_push_subscriptions.sql` (table + RLS).
 
+## Who receives in-app + Web Push (fan-out)
+
+Source of truth: `supabase/functions/_shared/web-push-fanout-recipients.ts` (`resolveWebPushRecipientIds`).
+
+| Event | Who gets a `notifications` row + push (if subscribed and not self-muted) |
+|--------|--------------------------------|
+| `task.created`, `task.duplicated` | The task **assignee**, unless the assignee is the **actor** (e.g. self-assigned / worker created for self). |
+| `task.reassigned` | **Previous** and **new** assignee (from the activity payload) plus all **OWNERS**, never the person who performed the **transfer** (actor). |
+| `task.started`, `task.done`, `task.blocked` (and other `task.*` not above) | All **OWNERS** except the **actor** (e.g. worker’s status change notifies owners, not the worker themself). |
+| `issue.*` | All **OWNERS** except the **actor** (e.g. reporter or resolver is not self-notified). `issue.reported` cannot be muted in prefs (KPI). |
+
+`people.notification_prefs.muted_event_actions` still applies per recipient when the action is mutable (see `src/lib/notification-prefs.ts`).
+
 ## 1. Generate a key pair
 
 From the repository root:
@@ -80,7 +93,7 @@ curl -sS "https://<PROJECT_REF>.supabase.co/functions/v1/get-vapid-public-key" \
 
 Expect `200` and JSON like `{"publicKey":"...","ok":true}`. A `503` with `vapid_not_configured` means `VAPID_PUBLIC_KEY` is missing in secrets or the function was not redeployed. `UNAUTHORIZED_NO_AUTH_HEADER` on **curl** means add the `apikey` + `Authorization` headers above. **401 from the in-app** `supabase.functions.invoke` while signed in means redeploy with **`--no-verify-jwt`** (ES256 / gateway; see above).
 
-**End-to-end:** log in as **owner**, grant notification permission in the browser, complete an action that logs to `activity_log` and calls `web-push-fanout` (e.g. task completion flow). The in-app bell can fill even if push delivery fails; OS notification requires permission + SW + a valid `push_subscriptions` row and successful send.
+**End-to-end (owner as actor on own task):** you may see `{ ok: true, sent: 0, reason: "no_recipients" }` when the only eligible recipient would be the actor (e.g. owner creates a self-assigned task). To see rows in `notifications` and a non-zero `sent`, use **two people**: e.g. owner creates a task for a **worker** assignee, or log in as **worker** and start a task (owners get the fan-out). Grant notification permission and ensure a `push_subscriptions` row for the person you expect to receive the push.
 
 ## Temporary notification debugging
 

@@ -4,6 +4,7 @@
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1?target=deno&no-check"
 import webpush from "https://esm.sh/web-push@3.6.6?target=deno&default"
+import { resolveWebPushRecipientIds } from "../_shared/web-push-fanout-recipients.ts"
 
 const cors = {
   "Access-Control-Allow-Origin": "*",
@@ -108,6 +109,12 @@ Deno.serve(async (req) => {
     return json({ error: "activity_not_found" }, 404)
   }
 
+  let taskRow = null
+  if (act.subject_type === "task") {
+    const { data: tr } = await admin.from("tasks").select("id, assignee_id").eq("id", act.subject_id).maybeSingle()
+    taskRow = tr
+  }
+
   const isOwner = me.role === "OWNER"
   const isActor = me.id === act.actor_id
   if (!isOwner && !isActor) {
@@ -126,41 +133,67 @@ Deno.serve(async (req) => {
   const ownerRows = owners ?? []
   if (ownerRows.length === 0) {
     fanoutLog("no owner rows; skipping")
-    return json({ ok: true, sent: 0, reason: "no_owners" })
   }
 
-  const isOwnerIssueKpi = act.action === "issue.reported"
+  const actForR = {
+    actor_id: act.actor_id,
+    action: act.action,
+    subject_type: act.subject_type,
+    subject_id: act.subject_id,
+    payload: act.payload && typeof act.payload === "object" && !Array.isArray(act.payload) ? act.payload : null,
+  }
+  const taskForR = taskRow && taskRow.assignee_id ? { assignee_id: taskRow.assignee_id } : null
+  const recipientIds = resolveWebPushRecipientIds(actForR, taskForR, ownerRows)
+
+  if (recipientIds.length === 0) {
+    fanoutLog("no recipients; skipping", { activityLogId, action: act.action })
+    return json({ ok: true, sent: 0, recipients: 0, reason: "no_recipients", function: "web-push-fanout" })
+  }
+
+  const { data: recPeople, error: rpErr } = await admin
+    .from("people")
+    .select("id, notification_prefs")
+    .in("id", recipientIds)
+  if (rpErr) return json({ error: rpErr.message }, 500)
+  const peopleById = new Map((recPeople ?? []).map((p) => [p.id, p]))
+  if (peopleById.size !== recipientIds.length) {
+    fanoutLog("some recipient ids not found; continuing with partial", { activityLogId, expected: recipientIds.length, found: peopleById.size })
+  }
+
+  const isIssueKpi = act.action === "issue.reported"
   const { title, body: msgBody, linkPath } = buildMessage(act)
-  const payload = { title, body: msgBody, data: { url: linkPath, activityLogId: act.id, action: act.action } }
+  const pushPayload = { title, body: msgBody, data: { url: linkPath, activityLogId: act.id, action: act.action } }
   let sent = 0
+  const notified: string[] = []
 
-  for (const o of ownerRows) {
-    if (o.id === act.actor_id && !isOwnerIssueKpi) continue
-    if (!isOwnerIssueKpi && readMutedActions(o.notification_prefs).includes(act.action)) continue
-    if (!act.action.startsWith("issue.") && o.id === act.actor_id) continue
+  for (const rid of recipientIds) {
+    const pRow = peopleById.get(rid)
+    if (!pRow) continue
+    if (!isIssueKpi && readMutedActions(pRow.notification_prefs).includes(act.action)) continue
 
-    const { error: nInsErr } = await admin.from("notifications").insert({ recipient_id: o.id, activity_log_id: act.id })
+    const { error: nInsErr } = await admin.from("notifications").insert({ recipient_id: pRow.id, activity_log_id: act.id })
     if (nInsErr) {
       if (nInsErr.code === "23505") continue
       return json({ error: nInsErr.message }, 500)
     }
+    notified.push(pRow.id)
 
-    const { data: subs, error: sErr } = await admin.from("push_subscriptions").select("endpoint, p256dh, auth").eq("person_id", o.id)
+    const { data: subs, error: sErr } = await admin.from("push_subscriptions").select("endpoint, p256dh, auth").eq("person_id", pRow.id)
     if (sErr) return json({ error: sErr.message }, 500)
     for (const s of subs ?? []) {
       try {
         const sub = { endpoint: s.endpoint, keys: { p256dh: s.p256dh, auth: s.auth } }
-        await webpush.sendNotification(sub, JSON.stringify(payload))
+        await webpush.sendNotification(sub, JSON.stringify(pushPayload))
         sent += 1
       } catch (e) {
-        fanoutLog("webpush send failed", { personId: o.id, err: String(e), statusCode: e?.statusCode })
+        fanoutLog("webpush send failed", { personId: pRow.id, err: String(e), statusCode: e?.statusCode })
         const code = e?.statusCode
         if (code === 410) {
-          await admin.from("push_subscriptions").delete().eq("person_id", o.id).eq("endpoint", s.endpoint)
+          await admin.from("push_subscriptions").delete().eq("person_id", pRow.id).eq("endpoint", s.endpoint)
         }
       }
     }
   }
-  fanoutLog("response", { sent, activityLogId, action: act.action })
-  return json({ ok: true, sent, function: "web-push-fanout" })
+  fanoutLog("response", { sent, activityLogId, action: act.action, notified: notified.length })
+  return json({ ok: true, sent, recipients: notified.length, function: "web-push-fanout" })
 })
