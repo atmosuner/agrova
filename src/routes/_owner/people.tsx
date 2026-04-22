@@ -2,6 +2,7 @@ import { msg, t } from '@lingui/macro'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { createTeamPersonWithAuth } from '@/features/people/create-team-person'
 import { buildSetupPageUrl, generateUrlSafeToken32 } from '@/features/people/generate-setup-token'
 import { mapPeopleMutationError } from '@/features/people/map-people-mutation-error'
 import { downloadPeopleCsv } from '@/features/people/csv'
@@ -9,7 +10,7 @@ import { teamPersonFormSchema, type TeamPersonFormValues } from '@/features/peop
 import { formFieldClassName } from '@/lib/form-field-class'
 import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
-import type { Json, Tables } from '@/types/db'
+import type { Tables } from '@/types/db'
 
 type Person = Tables<'people'>
 
@@ -115,18 +116,21 @@ function PeoplePage() {
     }
     setSaving(true)
     if (modalMode?.type === 'add') {
-      const { error } = await supabase.from('people').insert({
-        full_name: parsed.data.fullName,
-        phone: parsed.data.phone,
-        role: parsed.data.role,
-        active: true,
-        notification_prefs: {} as Json,
-      })
+      const created = await createTeamPersonWithAuth(parsed.data)
       setSaving(false)
-      if (error) {
-        setFormError(mapPeopleMutationError(error.message, error.code))
+      if (!created.ok) {
+        setFormError(created.message)
         return
       }
+      try {
+        await navigator.clipboard.writeText(created.value.setupUrl)
+        setSetupCopyMsg(t`Cihaz kurulum linki panoya kopyalandı. Çalışan telefonda açın.`)
+      } catch {
+        setLoadError(created.value.setupUrl)
+      }
+      closeModal()
+      await load()
+      return
     } else if (modalMode?.type === 'edit') {
       const { error } = await supabase
         .from('people')
@@ -201,7 +205,9 @@ function PeoplePage() {
       <div className="flex flex-wrap items-start justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Team`}</h1>
-          <p className="mt-2 text-fg-secondary">{t`Crew and roles. Turkish mobile +90; no SMS in MVP.`}</p>
+          <p className="mt-2 text-fg-secondary">
+            {t`Crew and roles. Adding someone creates their PWA sign-in and copies a one-time setup link; no e‑mail or password reset. Turkish mobile +90; no SMS in MVP.`}
+          </p>
         </div>
         <span className="inline-flex flex-wrap gap-2">
           <Button type="button" variant="outline" onClick={() => downloadPeopleCsv(rows)} disabled={loading}>
@@ -316,7 +322,7 @@ function PeoplePage() {
               {modalMode.type === 'add' ? t`New person` : t`Edit person`}
             </h2>
             <p id={descId} className="text-sm text-fg-secondary">
-              {t`TR mobile. Roles: foreman, agronomist, worker.`}
+              {t`E.164 mobile (+90 5…). Yeni ekip üyesi: hesap anında açılır, kurulum linki panoya kopyalanır. Roller: foreman, agronomist, worker.`}
             </p>
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium text-fg" htmlFor="p-name">

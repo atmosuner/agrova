@@ -22,6 +22,11 @@ out/
 
 # Cursor MCP config may contain API tokens — never commit
 .cursor/mcp.json
+# Ephemeral args for deploy_edge_function (supabase-functions MCP)
+.cursor/deploy-*.json
+.cursor/ctp-deploy.json
+.cursor/mcp-ctp-bundled.json
+ctp-ctp.json
 
 # ---------- Supabase local dev ----------
 supabase/.branches

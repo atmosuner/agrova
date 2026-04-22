@@ -399,7 +399,7 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 **Status:** ✅ **DONE**
 
 ### Task M1-03: People CRUD — list + add form (no outbound SMS)
-**Description:** `/people` page with list + "Yeni kişi" modal. Fields: full_name, phone (E.164 validation via Zod), role select. Creates `people` row. Setup **URL** copy for workers is M1-04 (MVP: no SMS/WhatsApp).
+**Description:** `/people` page with list + "New person" modal. Fields: full_name, phone (E.164 via Zod), role select. **Add** calls Edge Function `create-team-person` (owner JWT): inserts `people`, creates Supabase Auth user (`@device.agrova.app` worker account), sets `auth_user_id` + 7d `setup_token`, returns token — client copies **one-time** `/setup/{token}` to clipboard (no e-mail invites or password reset). M1-04 "Create setup link" still re-issues a token (e.g. new device) without a separate auth row.
 **Acceptance criteria:**
 - [x] Phone validates as +90xxxxxxxxxx via Zod (`^\+905[0-9]{9}$` after normalize)
 - [x] Duplicate phone → friendly error from unique constraint (mapped `23505` / message)
@@ -407,12 +407,12 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 - [x] Edit + archive: soft-delete via `people.active` + partial unique `people_one_owner_idx` (single OWNER)
 **Verification:** create 5 people via form; all appear in list; `select * from people` matches
 **Dependencies:** M1-01
-**Files likely touched:** `src/routes/_owner/people.tsx`, `src/features/people/*`, migration for `people.active` boolean
+**Files likely touched:** `src/routes/_owner/people.tsx`, `src/features/people/*`, `supabase/functions/create-team-person/`, `supabase/functions/claim-setup-token/`
 **Estimated scope:** M
-**Status:** ✅ **DONE** (migration `20260422000602_people_active_single_owner.sql` applied via MCP)
+**Status:** ✅ **DONE** (incl. `create-team-person` + pairing in `claim-setup-token` for pre-provisioned auth)
 
 ### Task M1-04: People — "Kurulum linki" (copy URL; no SMS in MVP)
-**Description:** Button next to each person generates a `setup_token` (random 32-char URL-safe). Owner copies the URL (`/setup/{token}`) to the worker **out of band** (in person, printed note, etc.) — **the app does not send SMS or provider WhatsApp from the server in MVP**. Optional Netgsm SMS is **post-MVP**. Token expires 7 days.
+**Description:** Button next to each person generates a `setup_token` (random 32-char URL-safe). If `auth_user_id` is already set (default after M1-03 add), `claim-setup-token` **pairs** the device (rotates password, issues session) instead of creating a new Auth user. Owner copies the URL (`/setup/{token}`) to the worker **out of band** — **no product SMS/WhatsApp in MVP**. Token expires 7 days.
 **Acceptance criteria:**
 - [x] `people.setup_token` + `setup_token_expires_at` columns (add migration)
 - [x] "Kurulum linki oluştur" (EN: Create setup link) button on person row copies URL to clipboard

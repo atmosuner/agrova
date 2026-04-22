@@ -8,6 +8,20 @@
 
 M0-14 RLS is split across five timestamped files (`20260422000402`–`20260422000406`) so each `apply_migration` payload stays small. **M0-15:** private bucket `issue-photos` + `storage.objects` policies in `20260422000500_storage_issue_photos_bucket.sql` (first path segment = `auth.uid()`). **M0-16:** `src/types/db.ts` is generated; refresh with **`pnpm supabase:gen-types`**, which reads `supabase/mcp_gentypes.json` (from Cursor `generate_typescript_types` MCP) or, if that file is missing, `npx supabase gen types` when `SUPABASE_ACCESS_TOKEN` and `SUPABASE_PROJECT_REF` are set (see root `.env.example`). **M0-17:** Edge function stubs — `web-push-fanout` (notifications) and `setup-link` (no SMS in MVP; owner shares URLs manually). Run locally: `pnpm supabase:functions:serve` (needs [Supabase CLI](https://supabase.com/docs/guides/cli) + linked project). See `farm-operations-app.plan.md`.
 
+### Provisioning: `create-team-person` + `claim-setup-token`
+
+- **`create-team-person`** (JWT on; owner only) — creates `people` + Auth user (`@device.agrova.app`) + 7d setup token. The owner **Team** form calls it from the browser.
+- **`claim-setup-token`** (JWT off; one-time `setup_token` in body) — legacy path: create Auth if missing; or **pairing** if auth already exists (after owner added via the function above). Deploy with **`--no-verify-jwt`**.
+
+With [Supabase CLI](https://supabase.com/docs/guides/cli) linked (`supabase login` / `link`) and the project ref from your Dashboard (or `VITE_SUPABASE_URL`):
+
+```bash
+npx -y supabase@2 functions deploy create-team-person --project-ref <PROJECT_REF>
+npx -y supabase@2 functions deploy claim-setup-token --no-verify-jwt --project-ref <PROJECT_REF>
+```
+
+Or use **Supabase Dashboard → Edge Functions** and paste from `supabase/functions/<name>/index.ts` after a push to your repo. Redeploy both whenever the TypeScript in this repo changes.
+
 ### Policy / schema checks (`db test`)
 
 - **SQL in** `supabase/tests/` (e.g. `rls.test.sql`) are intended for `pnpm supabase:test` (CLI `supabase db test` with a linked project / local database where migrations are applied). They are **not** in the default GitHub Actions quality job (requires a Supabase-linked environment).

@@ -51,7 +51,7 @@ msgstr "Açık"
 #: src/features/equipment/csv.ts:24
 #: src/features/equipment/csv.ts:31
 #: src/features/people/csv.ts:26
-#: src/routes/_owner/people.tsx:263
+#: src/routes/_owner/people.tsx:269
 msgid "Active"
 msgstr "Aktif"
 
@@ -80,8 +80,8 @@ msgid "Ağ yok. Bağlantı sağlandığında tekrar deneyin; Agrova çevrimdış
 msgstr "Ağ yok. Bağlantı sağlandığında tekrar deneyin; Agrova çevrimdışı önbelleğe dönüştüğü verileri eşitleyecektir."
 
 #: src/features/people/csv.ts:12
-#: src/routes/_owner/people.tsx:26
-#: src/routes/_owner/people.tsx:35
+#: src/routes/_owner/people.tsx:27
+#: src/routes/_owner/people.tsx:36
 msgid "Agronomist"
 msgstr "Ziraat mühendisi"
 
@@ -162,7 +162,7 @@ msgid "Araçlar"
 msgstr "Araçlar"
 
 #: src/routes/_owner/equipment.tsx:279
-#: src/routes/_owner/people.tsx:293
+#: src/routes/_owner/people.tsx:299
 msgid "Archive"
 msgstr "Arşivle"
 
@@ -170,7 +170,7 @@ msgstr "Arşivle"
 msgid "Archive this item?"
 msgstr "Bu öğe arşivlensin mi?"
 
-#: src/routes/_owner/people.tsx:156
+#: src/routes/_owner/people.tsx:160
 msgid "Archive this person? They can be shown again with “show archived”."
 msgstr "Bu kişi arşivlensin mi? “Arşivlenenleri göster” ile tekrar görülebilir."
 
@@ -180,7 +180,7 @@ msgstr "arşivde"
 
 #: src/features/equipment/csv.ts:31
 #: src/features/people/csv.ts:26
-#: src/routes/_owner/people.tsx:263
+#: src/routes/_owner/people.tsx:269
 msgid "Archived"
 msgstr "Arşivde"
 
@@ -403,7 +403,7 @@ msgstr "Bugünkü görev panosu"
 
 #: src/routes/_owner/equipment.tsx:327
 #: src/routes/_owner/fields.tsx:390
-#: src/routes/_owner/people.tsx:370
+#: src/routes/_owner/people.tsx:376
 msgid "Cancel"
 msgstr "İptal"
 
@@ -429,6 +429,10 @@ msgstr "Kimyasallar"
 #: src/routes/how-to-install.tsx:17
 msgid "Chrome’da agrova.app adresini açın."
 msgstr "Chrome’da agrova.app adresini açın."
+
+#: src/routes/_owner/people.tsx:127
+msgid "Cihaz kurulum linki panoya kopyalandı. Çalışan telefonda açın."
+msgstr "Cihaz kurulum linki panoya kopyalandı. Çalışan telefonda açın."
 
 #: src/routes/m/profile.tsx:156
 msgid "Çıkış yap"
@@ -464,7 +468,7 @@ msgstr "Hesap oluştur"
 msgid "Create owner account"
 msgstr "Sahip hesabı oluştur"
 
-#: src/routes/_owner/people.tsx:275
+#: src/routes/_owner/people.tsx:281
 msgid "Create setup link"
 msgstr "Kurulum linki oluştur"
 
@@ -472,9 +476,13 @@ msgstr "Kurulum linki oluştur"
 msgid "Created at"
 msgstr "Oluşturulma tarihi"
 
+#: src/routes/_owner/people.tsx:209
+msgid "Crew and roles. Adding someone creates their PWA sign-in and copies a one-time setup link; no e‑mail or password reset. Turkish mobile +90; no SMS in MVP."
+msgstr "Ekip ve roller. Yeni eklemede PWA girişi ve tek kullanımlık kurulum linki oluşturulur; e-posta veya parola sıfırlama yok. Cep: +90; MVP’de SMS yok."
+
 #: src/routes/_owner/people.tsx:204
-msgid "Crew and roles. Turkish mobile +90; no SMS in MVP."
-msgstr "Ekip ve roller. Cep: +90; MVP’de SMS yok."
+#~ msgid "Crew and roles. Turkish mobile +90; no SMS in MVP."
+#~ msgstr "Ekip ve roller. Cep: +90; MVP’de SMS yok."
 
 #: src/features/fields/csv.ts:27
 #: src/routes/_owner/fields.tsx:328
@@ -524,7 +532,7 @@ msgstr "Don koruma"
 #: src/features/fields/FieldChemicalLog.tsx:40
 #: src/routes/_owner/equipment.tsx:228
 #: src/routes/_owner/fields.tsx:264
-#: src/routes/_owner/people.tsx:208
+#: src/routes/_owner/people.tsx:214
 msgid "Download CSV"
 msgstr "CSV indir"
 
@@ -556,9 +564,13 @@ msgstr "Düşük"
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 
+#: src/routes/_owner/people.tsx:325
+msgid "E.164 mobile (+90 5…). Yeni ekip üyesi: hesap anında açılır, kurulum linki panoya kopyalanır. Roller: foreman, agronomist, worker."
+msgstr "E.164 cep (+90 5…). Yeni ekip üyesi: hesap anında açılır, kurulum linki panoya kopyalanır. Roller: foreman, agronomist, worker."
+
 #: src/routes/_owner/equipment.tsx:270
 #: src/routes/_owner/fields.tsx:442
-#: src/routes/_owner/people.tsx:284
+#: src/routes/_owner/people.tsx:290
 msgid "Edit"
 msgstr "Düzenle"
 
@@ -570,7 +582,7 @@ msgstr "Ekipmanı düzenle"
 msgid "Edit field"
 msgstr "Tarlayı düzenle"
 
-#: src/routes/_owner/people.tsx:316
+#: src/routes/_owner/people.tsx:322
 msgid "Edit person"
 msgstr "Kişiyi düzenle"
 
@@ -641,15 +653,15 @@ msgid "Fields"
 msgstr "Tarlalar"
 
 #: src/features/people/csv.ts:11
-#: src/routes/_owner/people.tsx:25
-#: src/routes/_owner/people.tsx:34
+#: src/routes/_owner/people.tsx:26
+#: src/routes/_owner/people.tsx:35
 msgid "Foreman"
 msgstr "Başçı"
 
 #: src/features/tasks/TaskCreateModal.tsx:116
 #: src/routes/_owner/equipment.tsx:130
 #: src/routes/_owner/fields.tsx:182
-#: src/routes/_owner/people.tsx:113
+#: src/routes/_owner/people.tsx:114
 #: src/routes/_owner/settings.tsx:48
 #: src/routes/login.tsx:56
 #: src/routes/signup.tsx:61
@@ -1045,7 +1057,7 @@ msgstr "Liste yüklenemedi."
 #: src/features/fields/FieldChemicalLog.tsx:43
 #: src/routes/_owner/equipment.tsx:244
 #: src/routes/_owner/fields.tsx:272
-#: src/routes/_owner/people.tsx:232
+#: src/routes/_owner/people.tsx:238
 #: src/routes/_owner/settings.tsx:97
 msgid "Loading…"
 msgstr "Yükleniyor…"
@@ -1091,8 +1103,8 @@ msgstr "Nakliye"
 #: src/features/fields/csv.ts:26
 #: src/routes/_owner/equipment.tsx:308
 #: src/routes/_owner/fields.tsx:318
-#: src/routes/_owner/people.tsx:237
-#: src/routes/_owner/people.tsx:323
+#: src/routes/_owner/people.tsx:243
+#: src/routes/_owner/people.tsx:329
 msgid "Name"
 msgstr "Ad soyad"
 
@@ -1109,12 +1121,12 @@ msgstr "Yeni ekipman"
 msgid "New field"
 msgstr "Yeni tarla"
 
-#: src/routes/_owner/people.tsx:211
-#: src/routes/_owner/people.tsx:316
+#: src/routes/_owner/people.tsx:217
+#: src/routes/_owner/people.tsx:322
 msgid "New person"
 msgstr "Yeni kişi"
 
-#: src/routes/_owner/people.tsx:248
+#: src/routes/_owner/people.tsx:254
 msgid "No people match."
 msgstr "Kayıt yok."
 
@@ -1184,7 +1196,7 @@ msgid "Oturum bulunamadı."
 msgstr "Oturum bulunamadı."
 
 #: src/features/people/csv.ts:10
-#: src/routes/_owner/people.tsx:24
+#: src/routes/_owner/people.tsx:25
 msgid "Owner"
 msgstr "Sahip"
 
@@ -1214,7 +1226,7 @@ msgid "Paylaş düğmesine basın"
 msgstr "Paylaş düğmesine basın"
 
 #: src/features/people/csv.ts:22
-#: src/routes/_owner/people.tsx:238
+#: src/routes/_owner/people.tsx:244
 msgid "Phone"
 msgstr "Telefon"
 
@@ -1222,7 +1234,7 @@ msgstr "Telefon"
 msgid "Phone (E.164)"
 msgstr "Telefon (E.164)"
 
-#: src/routes/_owner/people.tsx:336
+#: src/routes/_owner/people.tsx:342
 msgid "Phone (TR)"
 msgstr "Telefon (TR)"
 
@@ -1295,8 +1307,8 @@ msgid "Rol"
 msgstr "Rol"
 
 #: src/features/people/csv.ts:23
-#: src/routes/_owner/people.tsx:239
-#: src/routes/_owner/people.tsx:349
+#: src/routes/_owner/people.tsx:245
+#: src/routes/_owner/people.tsx:355
 msgid "Role"
 msgstr "Rol"
 
@@ -1322,7 +1334,7 @@ msgstr "Sahip hesapları cihaz kurulum linkiyle giriş yapamaz."
 
 #: src/routes/_owner/equipment.tsx:330
 #: src/routes/_owner/fields.tsx:387
-#: src/routes/_owner/people.tsx:373
+#: src/routes/_owner/people.tsx:379
 #: src/routes/_owner/settings.tsx:152
 msgid "Save"
 msgstr "Kaydet"
@@ -1331,7 +1343,7 @@ msgstr "Kaydet"
 msgid "Saved."
 msgstr "Kaydedildi."
 
-#: src/routes/_owner/people.tsx:373
+#: src/routes/_owner/people.tsx:379
 #: src/routes/_owner/settings.tsx:152
 msgid "Saving…"
 msgstr "Kaydediliyor…"
@@ -1370,7 +1382,7 @@ msgstr "Ayarlar"
 msgid "Settings → city"
 msgstr "Settings → city"
 
-#: src/routes/_owner/people.tsx:190
+#: src/routes/_owner/people.tsx:194
 msgid "Setup link copied to clipboard."
 msgstr "Kurulum linki panoya kopyalandı."
 
@@ -1379,7 +1391,7 @@ msgid "Seyreltme"
 msgstr "Seyreltme"
 
 #: src/routes/_owner/equipment.tsx:240
-#: src/routes/_owner/people.tsx:228
+#: src/routes/_owner/people.tsx:234
 msgid "Show archived"
 msgstr "Arşivlenenleri göster"
 
@@ -1456,7 +1468,7 @@ msgid "Sorunlar"
 msgstr "Sorunlar"
 
 #: src/features/people/csv.ts:24
-#: src/routes/_owner/people.tsx:240
+#: src/routes/_owner/people.tsx:246
 msgid "Status"
 msgstr "Durum"
 
@@ -1542,7 +1554,7 @@ msgstr "Task, field, people, and issue data belong to your operation; access is 
 msgid "Tasks"
 msgstr "Görevler"
 
-#: src/routes/_owner/people.tsx:203
+#: src/routes/_owner/people.tsx:207
 #: src/routes/_owner/route.tsx:39
 msgid "Team"
 msgstr "Ekip"
@@ -1578,8 +1590,8 @@ msgid "Toplam"
 msgstr "Toplam"
 
 #: src/routes/_owner/people.tsx:319
-msgid "TR mobile. Roles: foreman, agronomist, worker."
-msgstr "Cep: +90. Roller: başçı, ziraat mühendisi, işçi."
+#~ msgid "TR mobile. Roles: foreman, agronomist, worker."
+#~ msgstr "Cep: +90. Roller: başçı, ziraat mühendisi, işçi."
 
 #: src/routes/_owner/settings.tsx:156
 msgid "Tüm verilerimi indir"
@@ -1648,8 +1660,8 @@ msgid "Work email and password."
 msgstr "İş e-postası ve şifre."
 
 #: src/features/people/csv.ts:13
-#: src/routes/_owner/people.tsx:27
-#: src/routes/_owner/people.tsx:36
+#: src/routes/_owner/people.tsx:28
+#: src/routes/_owner/people.tsx:37
 msgid "Worker"
 msgstr "İşçi"
 

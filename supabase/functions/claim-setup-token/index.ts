@@ -70,9 +70,6 @@ Deno.serve(async (req) => {
   if (peopleRow.active === false) {
     return json({ error: "person_inactive" }, 403)
   }
-  if (peopleRow.auth_user_id) {
-    return json({ error: "already_claimed" }, 409)
-  }
   const exp = peopleRow.setup_token_expires_at
   if (exp) {
     const t = new Date(exp).getTime()
@@ -82,13 +79,47 @@ Deno.serve(async (req) => {
   }
 
   const email = `w${(peopleRow.id as string).replace(/-/g, "")}@device.agrova.app`
-  const password = randomPassword()
+  const sessionClient = createClient(supabaseUrl, anonKey, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  })
 
+  // Pre-provisioned: owner added person via create-team-person (auth already exists) — issue one-time session.
+  if (peopleRow.auth_user_id) {
+    const password = randomPassword()
+    const { error: upErr } = await admin.auth.admin.updateUserById(peopleRow.auth_user_id as string, { password: password })
+    if (upErr) {
+      console.error("updateUser (pairing)", upErr)
+      return json({ error: "create_user_failed", message: upErr.message }, 500)
+    }
+    const { data: sessionData, error: sErr } = await sessionClient.auth.signInWithPassword({ email, password })
+    if (sErr || !sessionData.session) {
+      console.error("signIn (pairing)", sErr)
+      return json({ error: "session_failed" }, 500)
+    }
+    const { error: clearErr } = await admin
+      .from("people")
+      .update({ setup_token: null, setup_token_expires_at: null })
+      .eq("id", peopleRow.id)
+    if (clearErr) {
+      console.error("clear setup token (pairing)", clearErr)
+    }
+    return json({
+      access_token: sessionData.session.access_token,
+      refresh_token: sessionData.session.refresh_token,
+      expires_in: sessionData.session.expires_in,
+      expires_at: sessionData.session.expires_at,
+      token_type: sessionData.session.token_type,
+      user: sessionData.user,
+    })
+  }
+
+  // Legacy: people row had no auth yet (create user + link).
+  const password = randomPassword()
   const { data: created, error: cErr } = await admin.auth.admin.createUser({
     email,
     password,
     email_confirm: true,
-    user_metadata: { person_id: peopleRow.id, full_name: peopleRow.full_name },
+    user_metadata: { person_id: peopleRow.id, full_name: peopleRow.full_name, phone: peopleRow.phone },
   })
   if (cErr || !created.user) {
     console.error("createUser", cErr)
@@ -104,9 +135,6 @@ Deno.serve(async (req) => {
     return json({ error: "link_person_failed" }, 500)
   }
 
-  const sessionClient = createClient(supabaseUrl, anonKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-  })
   const { data: sessionData, error: sErr } = await sessionClient.auth.signInWithPassword({ email, password })
   if (sErr || !sessionData.session) {
     console.error("signIn", sErr)
