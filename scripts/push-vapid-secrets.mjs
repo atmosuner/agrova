@@ -138,17 +138,23 @@ if (setSecrets.status !== 0) {
 
 console.log('Secrets updated. Redeploying functions…')
 
-const deployNames = ['get-vapid-public-key', 'web-push-fanout', 'daily-digest']
-for (const name of deployNames) {
-  const r = spawnSync(
-    'npx',
-    ['-y', 'supabase@2', 'functions', 'deploy', name, '--project-ref', ref],
-    {
-      cwd: root,
-      stdio: 'inherit',
-      env: { ...process.env, SUPABASE_ACCESS_TOKEN: token },
-    },
-  )
+// Hosted gateway `verify_jwt` rejects many user JWTs (e.g. ES256); we validate inside the
+// function. Same pattern as create-team-person / set-worker-password in supabase/README.md
+const deployTargets = [
+  { name: 'get-vapid-public-key', noVerifyJwt: true },
+  { name: 'web-push-fanout', noVerifyJwt: true },
+  { name: 'daily-digest', noVerifyJwt: false },
+]
+for (const { name, noVerifyJwt } of deployTargets) {
+  const args = ['-y', 'supabase@2', 'functions', 'deploy', name, '--project-ref', ref]
+  if (noVerifyJwt) {
+    args.push('--no-verify-jwt')
+  }
+  const r = spawnSync('npx', args, {
+    cwd: root,
+    stdio: 'inherit',
+    env: { ...process.env, SUPABASE_ACCESS_TOKEN: token },
+  })
   if (r.status !== 0) {
     console.error(`Deploy failed for ${name} (exit ${r.status})`)
     process.exit(1)

@@ -1,6 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings */
 import type { SupabaseClient } from '@supabase/supabase-js'
 import type { Database } from '@/types/db'
+import { notifyDebug } from '@/lib/notify-debug'
 
 function urlBase64ToUint8Array(base64String: string): BufferSource {
   const padding = '='.repeat((4 - (base64String.length % 4)) % 4)
@@ -25,10 +26,13 @@ export async function registerWebPushIfPossible(
   supabase: SupabaseClient<Database>,
   personId: string,
 ): Promise<void> {
+  notifyDebug('registerWebPush: start', { personId })
   if (typeof window === 'undefined' || !('serviceWorker' in navigator) || !('PushManager' in window)) {
+    notifyDebug('registerWebPush: abort', { reason: 'no sw or push api' })
     return
   }
   if (typeof Notification !== 'undefined' && Notification.permission === 'denied') {
+    notifyDebug('registerWebPush: abort', { reason: 'notification permission denied' })
     return
   }
   let perm: NotificationPermission = 'denied'
@@ -40,6 +44,7 @@ export async function registerWebPushIfPossible(
     }
   }
   if (perm !== 'granted') {
+    notifyDebug('registerWebPush: abort', { reason: 'permission not granted', perm })
     return
   }
   const { data: vapid, error: vErr } = await supabase.functions.invoke<{ publicKey?: string; ok?: boolean }>(
@@ -47,6 +52,7 @@ export async function registerWebPushIfPossible(
     { method: 'GET' },
   )
   if (vErr || !vapid?.publicKey) {
+    notifyDebug('registerWebPush: get-vapid failed', { vErr: vErr?.message, hasKey: Boolean(vapid?.publicKey) })
     return
   }
   const reg = await navigator.serviceWorker.ready
@@ -62,6 +68,7 @@ export async function registerWebPushIfPossible(
   const p256dh = json.keys?.p256dh
   const auth = json.keys?.auth
   if (!endpoint || !p256dh || !auth) {
+    notifyDebug('registerWebPush: abort', { reason: 'subscription json missing fields' })
     return
   }
   const { error } = await supabase.from('push_subscriptions').upsert(
@@ -74,6 +81,9 @@ export async function registerWebPushIfPossible(
     { onConflict: 'person_id,endpoint' },
   )
   if (error) {
+    notifyDebug('registerWebPush: push_subscriptions upsert failed', { message: error.message, code: error.code })
     console.warn('[push_subscriptions]', error.message)
+  } else {
+    notifyDebug('registerWebPush: ok', { personId, endpoint: endpoint.slice(0, 48) + '…' })
   }
 }

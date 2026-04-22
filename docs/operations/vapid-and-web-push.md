@@ -57,10 +57,13 @@ Do **not** add these to `.env` for Vite: the **private** key must not ship to th
 Secrets are injected at deploy/cold start. After changing secrets, redeploy the functions that read them:
 
 ```bash
-npx -y supabase@2 functions deploy get-vapid-public-key --project-ref <PROJECT_REF>
-npx -y supabase@2 functions deploy web-push-fanout --project-ref <PROJECT_REF>
+# Use --no-verify-jwt for the two user-invoked functions (ES256 / hosted gateway; see supabase/README.md)
+npx -y supabase@2 functions deploy get-vapid-public-key --no-verify-jwt --project-ref <PROJECT_REF>
+npx -y supabase@2 functions deploy web-push-fanout --no-verify-jwt --project-ref <PROJECT_REF>
 npx -y supabase@2 functions deploy daily-digest --project-ref <PROJECT_REF>
 ```
+
+If the browser shows **401** on `get-vapid-public-key` or `web-push-fanout` when the user is signed in, redeploy with **`--no-verify-jwt`**. The functions still read `Authorization` and validate the user in code where needed.
 
 (Use the same project ref as in `VITE_SUPABASE_URL`.)
 
@@ -75,9 +78,14 @@ curl -sS "https://<PROJECT_REF>.supabase.co/functions/v1/get-vapid-public-key" \
   -H "Authorization: Bearer <VITE_SUPABASE_ANON_KEY>"
 ```
 
-Expect `200` and JSON like `{"publicKey":"...","ok":true}`. A `503` with `vapid_not_configured` means `VAPID_PUBLIC_KEY` is missing in secrets or the function was not redeployed. `UNAUTHORIZED_NO_AUTH_HEADER` means add the `apikey` + `Authorization` headers above.
+Expect `200` and JSON like `{"publicKey":"...","ok":true}`. A `503` with `vapid_not_configured` means `VAPID_PUBLIC_KEY` is missing in secrets or the function was not redeployed. `UNAUTHORIZED_NO_AUTH_HEADER` on **curl** means add the `apikey` + `Authorization` headers above. **401 from the in-app** `supabase.functions.invoke` while signed in means redeploy with **`--no-verify-jwt`** (ES256 / gateway; see above).
 
 **End-to-end:** log in as **owner**, grant notification permission in the browser, complete an action that logs to `activity_log` and calls `web-push-fanout` (e.g. task completion flow). The in-app bell can fill even if push delivery fails; OS notification requires permission + SW + a valid `push_subscriptions` row and successful send.
+
+## Temporary notification debugging
+
+- **Browser (owner app / worker):** In dev, open DevTools → Console; filter for `[agrova:notify]`. Covers Web Push registration, `web-push-fanout` invoke responses, in-app inbox query, and Realtime channel status. In production, set `VITE_NOTIFY_DEBUG=1` in your **build** env and redeploy the site (remove after debugging).
+- **Edge `web-push-fanout`:** Add secret **`NOTIFY_DEBUG=1`** in Supabase, redeploy the function, then use **Project → Edge Functions → web-push-fanout → Logs** (or Log Explorer). Remove the secret and redeploy when done.
 
 ## Troubleshooting
 
@@ -87,5 +95,6 @@ Expect `200` and JSON like `{"publicKey":"...","ok":true}`. A `503` with `vapid_
 | `503` from `web-push-fanout` | Both `VAPID_PUBLIC_KEY` and `VAPID_PRIVATE_KEY` set. |
 | No OS notification, bell works | Push send failed; check function logs, subscription 410s, user permission. |
 | No rows in `push_subscriptions` | User denied permission, or PWA/HTTPS/SW not available (local dev must be `localhost` or HTTPS). |
+| **401** on get-vapid / web-push in browser (owner logged in) | Redeploy those functions with **`--no-verify-jwt`**. `pnpm vapid:push-secrets` does this for those two. |
 
 See also: `supabase/README.md` (M6 / M8 edge notes).

@@ -1,7 +1,9 @@
+/* eslint-disable lingui/no-unlocalized-strings -- dev-only debug labels */
 import { useEffect } from 'react'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import { supabase } from '@/lib/supabase'
 import { registerWebPushIfPossible } from '@/features/notifications/register-web-push'
+import { notifyDebug } from '@/lib/notify-debug'
 
 /**
  * Subscribes the current browser to Web Push for the owner account.
@@ -14,7 +16,11 @@ export function RegisterOwnerWebPush() {
     if (!isSuccess || me == null || me.role !== 'OWNER') {
       return
     }
-    void registerWebPushIfPossible(supabase, me.id)
+    notifyDebug('RegisterOwnerWebPush: scheduling register', { personId: me.id })
+    void registerWebPushIfPossible(supabase, me.id).then(
+      () => notifyDebug('RegisterOwnerWebPush: registerWebPushIfPossible finished'),
+      (e: unknown) => notifyDebug('RegisterOwnerWebPush: registerWebPushIfPossible rejected', e),
+    )
   }, [isSuccess, me])
 
   return null

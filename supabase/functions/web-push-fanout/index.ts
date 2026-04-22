@@ -1,4 +1,6 @@
 // @ts-nocheck — Deno edge; web-push types vary by CDN
+// Deploy with `--no-verify-jwt`: gateway JWT verify breaks ES256 user tokens; this function
+// uses createClient(anon) + getUser(Authorization) like create-team-person.
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2.49.1?target=deno&no-check"
 import webpush from "https://esm.sh/web-push@3.6.6?target=deno&default"
@@ -20,6 +22,13 @@ function readMutedActions(prefs) {
   if (!prefs || typeof prefs !== "object" || Array.isArray(prefs)) return []
   const a = prefs.muted_event_actions
   return Array.isArray(a) ? a.filter((x) => typeof x === "string") : []
+}
+
+/** Set NOTIFY_DEBUG=1 in Edge secrets to see logs in the function’s Log Explorer (remove when done). */
+function fanoutLog(...args) {
+  if (Deno.env.get("NOTIFY_DEBUG") === "1") {
+    console.log("[agrova:notify:fanout]", ...args)
+  }
 }
 
 function buildMessage(activity) {
@@ -84,23 +93,41 @@ Deno.serve(async (req) => {
     .select("id, role, notification_prefs")
     .eq("auth_user_id", userRes.user.id)
     .maybeSingle()
-  if (meErr || !me) return json({ error: "person_not_found" }, 403)
+  if (meErr || !me) {
+    fanoutLog("person not found or db error", { meErr: meErr?.message })
+    return json({ error: "person_not_found" }, 403)
+  }
 
   const { data: act, error: aErr } = await admin
     .from("activity_log")
     .select("id, actor_id, action, subject_type, subject_id, payload")
     .eq("id", activityLogId)
     .maybeSingle()
-  if (aErr || !act) return json({ error: "activity_not_found" }, 404)
+  if (aErr || !act) {
+    fanoutLog("activity row missing", { aErr: aErr?.message, activityLogId })
+    return json({ error: "activity_not_found" }, 404)
+  }
 
   const isOwner = me.role === "OWNER"
   const isActor = me.id === act.actor_id
-  if (!isOwner && !isActor) return json({ error: "forbidden" }, 403)
+  if (!isOwner && !isActor) {
+    fanoutLog("forbidden: caller is not owner and not actor", {
+      meId: me.id,
+      actorId: act.actor_id,
+      action: act.action,
+    })
+    return json({ error: "forbidden" }, 403)
+  }
+
+  fanoutLog("fanout", { activityLogId, action: act.action, actorId: act.actor_id, caller: me.id, role: me.role })
 
   const { data: owners, error: oErr } = await admin.from("people").select("id, notification_prefs").eq("role", "OWNER")
   if (oErr) return json({ error: oErr.message }, 500)
   const ownerRows = owners ?? []
-  if (ownerRows.length === 0) return json({ ok: true, sent: 0, reason: "no_owners" })
+  if (ownerRows.length === 0) {
+    fanoutLog("no owner rows; skipping")
+    return json({ ok: true, sent: 0, reason: "no_owners" })
+  }
 
   const isOwnerIssueKpi = act.action === "issue.reported"
   const { title, body: msgBody, linkPath } = buildMessage(act)
@@ -126,6 +153,7 @@ Deno.serve(async (req) => {
         await webpush.sendNotification(sub, JSON.stringify(payload))
         sent += 1
       } catch (e) {
+        fanoutLog("webpush send failed", { personId: o.id, err: String(e), statusCode: e?.statusCode })
         const code = e?.statusCode
         if (code === 410) {
           await admin.from("push_subscriptions").delete().eq("person_id", o.id).eq("endpoint", s.endpoint)
@@ -133,5 +161,6 @@ Deno.serve(async (req) => {
       }
     }
   }
+  fanoutLog("response", { sent, activityLogId, action: act.action })
   return json({ ok: true, sent, function: "web-push-fanout" })
 })

@@ -1,3 +1,4 @@
+// Deploy with `--no-verify-jwt` (ES256 / hosted gateway; same as web-push-fanout).
 import "jsr:@supabase/functions-js/edge-runtime.d.ts"
 
 const cors: Record<string, string> = {

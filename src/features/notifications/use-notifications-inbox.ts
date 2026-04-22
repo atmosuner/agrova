@@ -3,6 +3,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import { supabase } from '@/lib/supabase'
+import { notifyDebug } from '@/lib/notify-debug'
 
 export const notificationsInboxKey = (recipientId: string | undefined) => ['notifications-inbox', recipientId] as const
 
@@ -41,8 +42,10 @@ export function useNotificationsInbox() {
         .order('created_at', { ascending: false })
         .limit(50)
       if (error) {
+        notifyDebug('notifications inbox query error', { message: error.message, code: error.code })
         throw error
       }
+      notifyDebug('notifications inbox query ok', { count: (data ?? []).length, recipientId })
       return (data ?? []) as InboxRow[]
     },
   })
@@ -56,18 +59,22 @@ export function useNotificationsInbox() {
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'notifications', filter: `recipient_id=eq.${recipientId}` },
-        () => {
+        (payload) => {
+          notifyDebug('notifications INSERT realtime', { eventType: payload.eventType, recipientId })
           void qc.invalidateQueries({ queryKey: notificationsInboxKey(recipientId) })
         },
       )
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'notifications', filter: `recipient_id=eq.${recipientId}` },
-        () => {
+        (payload) => {
+          notifyDebug('notifications UPDATE realtime', { eventType: payload.eventType, recipientId })
           void qc.invalidateQueries({ queryKey: notificationsInboxKey(recipientId) })
         },
       )
-      .subscribe()
+      .subscribe((status, err) => {
+        notifyDebug('notifications channel subscribe', { status, err: err?.message, recipientId })
+      })
     return () => {
       void supabase.removeChannel(ch)
     }
