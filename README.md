@@ -18,6 +18,7 @@
 | [`.cursor/rules/`](./.cursor/rules/) | Always-applied rules (TDD, incremental-implementation, language-boundary, design-system, code-review, do's-and-don'ts) |
 | [`.cursor/MCP-SETUP.md`](./.cursor/MCP-SETUP.md) | How to wire the GitHub + Supabase MCP servers the agent uses |
 | [`.cursor/AGENTS.md`](./.cursor/AGENTS.md) | Agent-facing guide (skills, personas, commands) |
+| [`docs/decisions/`](./docs/decisions/) | Architecture Decision Records (ADRs) — e.g. [ADR-001: worker device auth + offline sync](./docs/decisions/001-worker-device-auth-and-offline-sync.md) |
 
 ## Tech stack (per spec §4)
 
@@ -68,11 +69,11 @@ Quality (match CI):
 ```bash
 pnpm typecheck
 pnpm lint
-pnpm test:run
+pnpm test:coverage
 pnpm build
 ```
 
-Watch-mode tests: `pnpm test` (Vitest).
+Fast test run without coverage thresholds: `pnpm test:run`. Watch mode: `pnpm test` (Vitest).
 
 **shadcn/ui (M0-04):** use non-interactive flags — see [`docs/shadcn-init.md`](./docs/shadcn-init.md).
 
