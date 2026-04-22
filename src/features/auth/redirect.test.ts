@@ -13,4 +13,8 @@ describe('safePostAuthPath', () => {
   it('rejects protocol-relative URLs', () => {
     expect(safePostAuthPath('//evil.com')).toBe('/today')
   })
+
+  it('defaults to /m/tasks in worker mode', () => {
+    expect(safePostAuthPath(undefined, { mode: 'worker' })).toBe('/m/tasks')
+  })
 })

@@ -1,12 +1,13 @@
 /**
  * Prevent open redirects: only same-origin paths are allowed after login.
  */
-export function safePostAuthPath(redirect: string | undefined): string {
+export function safePostAuthPath(redirect: string | undefined, opts?: { mode?: 'owner' | 'worker' }): string {
+  const fallback = opts?.mode === 'worker' ? '/m/tasks' : '/today'
   if (!redirect || typeof redirect !== 'string') {
-    return '/today'
+    return fallback
   }
   if (!redirect.startsWith('/') || redirect.startsWith('//')) {
-    return '/today'
+    return fallback
   }
   return redirect
 }

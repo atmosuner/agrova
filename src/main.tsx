@@ -8,8 +8,10 @@ import { routeTree } from '@/routeTree.gen'
 import '@/index.css'
 import { db } from '@/lib/db'
 import { i18n } from '@/lib/i18n'
+import { applyThemeToDocument, getStoredAgrovaTheme } from '@/lib/theme'
 import { supabase } from '@/lib/supabase'
 
+applyThemeToDocument(getStoredAgrovaTheme())
 void registerSW({ immediate: true })
 
 if (import.meta.env.DEV) {

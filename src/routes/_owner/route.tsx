@@ -15,7 +15,7 @@ export const Route = createFileRoute('/_owner')({
       const returnTo = `${location.pathname}${defaultStringifySearch(location.search)}`
       throw redirect({
         to: '/login',
-        search: { redirect: returnTo },
+        search: { redirect: returnTo, worker: false },
       })
     }
   },

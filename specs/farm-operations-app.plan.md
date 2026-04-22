@@ -9,7 +9,9 @@
 >
 > **Progress (M1):** M1-01..M1-11 ✅; M1-12 **partial** — catalog unit + integration: `pnpm test:coverage` enforces M1-12 thresholds on `src/features/{people,fields,equipment}/**/*.ts` (V8; ~90% lines in that slice); RLS **anon** write probes in `src/integration/rls-catalog-anon.test.ts` run when real `VITE_SUPABASE_*` are set, **skipped** in default CI. **Next:** M1-ω (catalog) human review. **M2 (tasks)** is already implemented on `main` — see M2 line below.
 >
-> **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** (unit tests + SQL presence check; full `src/features/tasks/**` in coverage thresholds and pgTAP RLS suite not in default CI). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3.
+> **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** (unit tests + SQL presence check; full `src/features/tasks/**` in coverage thresholds and pgTAP RLS suite not in default CI). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
+>
+> **Progress (M3):** M3-01 ⏸️ **DEFERRED**; M3-02a–M3-02b `claim-setup-token` **deployed** via **Supabase MCP** `deploy_edge_function` (verify_jwt: false; CORS; mints `*@device.agrova.app` user + `setSession`); M3-03..M3-15 **implemented** in repo — `/setup/:token` → `/m/tasks`, `/m` auth guard, `InstallPrompt` + `pwa.ts`, `MobileShell` (72px / 4.5rem tabs + greeting + `SyncIndicator`), `useMyTodayTasksQuery` + `TaskCardMobile`, task detail + `WorkerButton` + `CompletionFlow` + `ReassignSheet.mobile`, Dexie v2 + `bootstrapReadCachesForWorker`, outbox + `drainOutbox` in `src/lib/sync.ts`, `SyncSheet`, history, profile (prefs + theme + logout), Playwright `e2e/offline-sync.spec.ts` + `pnpm test:e2e` (run with dev server: `http://localhost:5173` default `baseURL`). M3-ω **open:** raise `src/lib/sync.ts` + `db.ts` coverage to spec §11 / human review. **E2E:** start Vite first (`pnpm dev`); if port differs, set `PLAYWRIGHT_BASE_URL` (e.g. `http://localhost:5174`).
 >
 > **Local dev (Supabase):** Keep a **gitignored** `.env` at the repo root with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the Dashboard (**Project Settings → API**) or, in Cursor, **Supabase MCP** `get_project_url` + `get_publishable_keys` (use the **legacy anon** JWT for `@supabase/supabase-js` unless you migrate to publishable keys). For schema changes, prefer MCP **`apply_migration`** (or local `supabase db push` / linked CLI) so the hosted project and `list_migrations` stay in sync with `supabase/migrations/`. If those vars are unset, the client still boots using a **non-resolving placeholder host** and `signInWithPassword` will fail (`ERR_NAME_NOT_RESOLVED`); `src/lib/supabase.ts` emits a **dev-only** `console.warn` when either var is missing. **Restart the Vite dev server** after editing `.env`.
 >
@@ -26,6 +28,14 @@
 | M2-01..M2-04 | M2-05 | M2-06 | M2-07 | M2-08 | M2-09 | M2-ω |
 |------|------|------|------|------|------|------|
 | ✅ | ✅ | ✅ | ✅ | ✅ | 🟨 | ⬜ |
+
+**M3 slice tracker:**
+
+| M3-01 | M3-02 | M3-03..04 | M3-05..08 | M3-09..12 | M3-13..15 | M3-ω |
+|------|------|------|------|------|------|------|
+| ⏸️ | ✅ | ✅ | ✅ | 🟨 | ✅ | ⬜ |
+
+*M3-09..12: Dexie v2, outbox, sync + indicator land in repo; M3-ω asks higher test coverage on `sync.ts`/`db.ts` and human review.*
 
 ---
 

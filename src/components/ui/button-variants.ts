@@ -28,6 +28,9 @@ export const buttonVariants = cva(
         "icon-sm":
           "size-7 rounded-[min(var(--radius-md),12px)] in-data-[slot=button-group]:rounded-lg",
         "icon-lg": "size-9",
+        /** Worker PWA — DESIGN.md: 72px touch primary */
+        worker:
+          "h-[72px] min-h-[72px] w-full min-w-0 justify-center gap-2 rounded-full px-6 text-base font-medium active:scale-[0.98] has-data-[icon=inline-end]:pr-4 has-data-[icon=inline-start]:pl-4",
       },
     },
     defaultVariants: {

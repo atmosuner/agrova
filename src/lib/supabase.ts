@@ -12,6 +12,18 @@ const FALLBACK = {
 const url = import.meta.env.VITE_SUPABASE_URL?.trim() || FALLBACK.url
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || FALLBACK.anon
 
+if (import.meta.env.DEV) {
+  const missing = [
+    !import.meta.env.VITE_SUPABASE_URL?.trim() && 'VITE_SUPABASE_URL',
+    !import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() && 'VITE_SUPABASE_ANON_KEY',
+  ].filter(Boolean)
+  if (missing.length > 0) {
+    console.warn(
+      `[agrova] Missing ${missing.join(' and ')}. Copy .env.example to .env, set values from Supabase Dashboard → Project Settings → API, then restart the dev server. Until then, auth/API calls will fail (unresolvable host).`
+    )
+  }
+}
+
 export const supabase: SupabaseClient<Database> = createClient<Database>(url, anonKey, {
   auth: {
     persistSession: true,

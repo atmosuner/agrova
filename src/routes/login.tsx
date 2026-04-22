@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { safePostAuthPath } from '@/features/auth/redirect'
 import { loginFormSchema, type LoginFormValues } from '@/features/auth/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
+import { isWorkerUser } from '@/lib/auth-worker'
 import { supabase } from '@/lib/supabase'
 
 /* eslint-disable lingui/no-unlocalized-strings -- map raw provider messages to Turkish for display */
@@ -22,22 +23,26 @@ function mapAuthErrorToTr(message: string): string {
 /* eslint-enable lingui/no-unlocalized-strings */
 
 export const Route = createFileRoute('/login')({
-  beforeLoad: async () => {
+  beforeLoad: async ({ search }) => {
     const {
       data: { session },
     } = await supabase.auth.getSession()
     if (session) {
-      throw redirect({ to: '/today' })
+      if (isWorkerUser(session.user)) {
+        throw redirect({ to: safePostAuthPath(search.redirect, { mode: 'worker' }) })
+      }
+      throw redirect({ to: safePostAuthPath(search.redirect) })
     }
   },
   validateSearch: (s: Record<string, unknown>) => ({
     redirect: typeof s.redirect === 'string' ? s.redirect : undefined,
+    worker: s.worker === '1' || s.worker === 1 || s.worker === true,
   }),
   component: LoginPage,
 })
 
 function LoginPage() {
-  const { redirect: redirectTo } = Route.useSearch()
+  const { redirect: redirectTo, worker: workerLanding } = Route.useSearch()
   const navigate = useNavigate()
   const [submitting, setSubmitting] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
@@ -67,6 +72,25 @@ function LoginPage() {
     }
     const target = safePostAuthPath(redirectTo)
     void navigate({ to: target, replace: true })
+  }
+
+  if (workerLanding) {
+    return (
+      <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-8">
+        <div>
+          <h1 className="text-2xl font-semibold text-fg">{t`Worker device`}</h1>
+          <p className="mt-2 text-sm text-fg-secondary">
+            {t`Kurulum linki işletme sahibiniz veya ekip sorumlunuz tarafından paylaşılır. SMS veya e-posta ile şifre yok; linkle tek seferlik cihaz eşleştirmesi yapılır.`}
+          </p>
+        </div>
+        <p className="text-sm text-fg-secondary">
+          {t`Sahip hesabıyla giriş:`}{' '}
+          <a href="/login" className="font-medium text-orchard-500 underline-offset-2 hover:underline">
+            {t`Sign in (owner)`}
+          </a>
+        </p>
+      </div>
+    )
   }
 
   return (
