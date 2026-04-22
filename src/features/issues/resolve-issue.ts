@@ -1,3 +1,4 @@
+/* eslint-disable lingui/no-unlocalized-strings -- PostgREST column names */
 import { supabase } from '@/lib/supabase'
 
 export async function resolveIssue(input: { issueId: string; resolverPersonId: string }): Promise<void> {

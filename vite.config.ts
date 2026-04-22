@@ -12,9 +12,35 @@ const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 // https://vite.dev/config/
 export default defineConfig({
   test: {
+    maxWorkers: 1,
     environment: 'node',
     passWithNoTests: false,
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+    /** Run explicitly: `pnpm vitest run src/integration` (requires real Supabase env). */
+    exclude: ['**/node_modules/**', '**/dist/**', 'src/integration/**'],
+    coverage: {
+      provider: 'v8',
+      reporter: ['text', 'html'],
+      include: [
+        'src/features/people/**/*.ts',
+        'src/features/fields/**/*.ts',
+        'src/features/equipment/**/*.ts',
+        'src/features/issues/**/*.ts',
+      ],
+      exclude: [
+        '**/*.test.ts',
+        '**/*.test.tsx',
+        '**/types/**',
+        /** Hook-only module; covered indirectly via UI / integration. */
+        'src/features/people/useMyPersonQuery.ts',
+      ],
+      thresholds: {
+        lines: 80,
+        statements: 80,
+        branches: 70,
+        functions: 75,
+      },
+    },
   },
   plugins: [
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),

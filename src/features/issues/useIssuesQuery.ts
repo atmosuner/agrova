@@ -1,5 +1,5 @@
 /* eslint-disable lingui/no-unlocalized-strings -- PostgREST */
-import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useQuery, useQueryClient, type QueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
 import type { Enums } from '@/types/db'
@@ -21,14 +21,11 @@ export type IssueListRow = {
 
 export const issuesListQueryKey = ['owner', 'issues'] as const
 
-export function useIssuesListQuery() {
-  return useQuery({
-    queryKey: issuesListQueryKey,
-    queryFn: async (): Promise<IssueListRow[]> => {
-      const { data, error } = await supabase
-        .from('issues')
-        .select(
-          `
+export async function fetchIssuesList(): Promise<IssueListRow[]> {
+  const { data, error } = await supabase
+    .from('issues')
+    .select(
+      `
           id,
           category,
           created_at,
@@ -42,29 +39,37 @@ export function useIssuesListQuery() {
           resolver:people!issues_resolved_by_fkey ( full_name ),
           field:fields!issues_field_id_fkey ( name )
         `,
-        )
-        .order('created_at', { ascending: false })
-      if (error) {
-        throw error
-      }
-      return (data ?? []) as IssueListRow[]
-    },
+    )
+    .order('created_at', { ascending: false })
+  if (error) {
+    throw error
+  }
+  return (data ?? []) as IssueListRow[]
+}
+
+export function useIssuesListQuery() {
+  return useQuery({
+    queryKey: issuesListQueryKey,
+    queryFn: fetchIssuesList,
   })
+}
+
+/** Subscribe to `issues` changes; returns unsubscribe (remove channel). */
+export function subscribeIssuesFeed(qc: QueryClient): () => void {
+  const channel = supabase
+    .channel('issues-owner-feed')
+    .on(
+      'postgres_changes',
+      { event: '*', schema: 'public', table: 'issues' },
+      () => void qc.invalidateQueries({ queryKey: issuesListQueryKey }),
+    )
+    .subscribe()
+  return () => {
+    void supabase.removeChannel(channel)
+  }
 }
 
 export function useIssuesRealtime() {
   const qc = useQueryClient()
-  useEffect(() => {
-    const channel = supabase
-      .channel('issues-owner-feed')
-      .on(
-        'postgres_changes',
-        { event: '*', schema: 'public', table: 'issues' },
-        () => void qc.invalidateQueries({ queryKey: issuesListQueryKey }),
-      )
-      .subscribe()
-    return () => {
-      void supabase.removeChannel(channel)
-    }
-  }, [qc])
+  useEffect(() => subscribeIssuesFeed(qc), [qc])
 }

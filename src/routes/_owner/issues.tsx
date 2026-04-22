@@ -3,7 +3,12 @@ import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { IssuesFeed } from '@/features/issues/IssuesFeed'
 import { resolveIssue } from '@/features/issues/resolve-issue'
-import { issuesListQueryKey, useIssuesListQuery, useIssuesRealtime } from '@/features/issues/useIssuesQuery'
+import {
+  issuesListQueryKey,
+  type IssueListRow,
+  useIssuesListQuery,
+  useIssuesRealtime,
+} from '@/features/issues/useIssuesQuery'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 
 export const Route = createFileRoute('/_owner/issues')({
@@ -22,7 +27,7 @@ function IssuesPage() {
           const now = new Date().toISOString()
           const resolverId = me.id
           const resolverName = me.full_name
-          qc.setQueryData(issuesListQueryKey, (prev) =>
+          qc.setQueryData<IssueListRow[]>(issuesListQueryKey, (prev) =>
             (prev ?? []).map((r) =>
               r.id === issueId
                 ? {
