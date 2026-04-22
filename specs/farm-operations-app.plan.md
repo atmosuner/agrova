@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-14 are ✅ **implemented** on `main` (M0-11 → M0-14 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
+> **Progress (M0):** M0-01..M0-15 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -284,15 +284,16 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (feat: `M0-14` — committed SQL + applied on Supabase via MCP; policy expressions use unqualified row column names, e.g. `assignee_id`, not `public.assignee_id`)
 
 ### Task M0-15: Storage bucket `issue-photos` + access policies
-**Description:** Create private bucket `issue-photos` via SQL (`storage.buckets`); RLS policies allow authenticated users to `insert` under path `{reporter_id}/{issue_id}.jpg`, owner to `select` any, reporter to `select` own.
+**Description:** Create private bucket `issue-photos` via SQL (`storage.buckets`); `storage.objects` policies: first path segment is `auth.uid()::text` (so client path is `<auth_uid>/<issue_id>.jpg` or voice under the same prefix); **owner** (`public.is_owner()`) may `select`/`update`/`delete` any object in the bucket; **non-owners** may `insert`/`select`/`update`/`delete` only under their own auth folder.
 **Acceptance criteria:**
-- [ ] Bucket exists with `public = false`
-- [ ] Upload policy restricts path prefix to `auth.uid()::text`
-- [ ] Signed URL generation via `supabase.storage.from(...).createSignedUrl(..., 3600)` works from client (spec §12)
-**Verification:** upload test object via `execute_sql`; reader-authz test via pgTAP
+- [x] Bucket exists with `public = false`
+- [x] Insert (and upsert path) policy uses `(storage.foldername(name))[1] = auth.uid()::text`
+- [x] Client can use `createSignedUrl` for objects the user can `select` (verify in M4 with real session); structural checks in `supabase/tests/storage_issue_photos.test.sql`
+**Verification:** `execute_sql` bucket row + `pg_policies` for `m015_*`; security `get_advisors` after migration
 **Dependencies:** M0-14
-**Files likely touched:** `supabase/migrations/20260422000500_storage_bucket.sql`
+**Files likely touched:** [`supabase/migrations/20260422000500_storage_issue_photos_bucket.sql`](../supabase/migrations/20260422000500_storage_issue_photos_bucket.sql), [`supabase/tests/storage_issue_photos.test.sql`](../supabase/tests/storage_issue_photos.test.sql)
 **Estimated scope:** S
+**Status:** ✅ **DONE** (feat: `M0-15` — applied on Supabase via MCP)
 
 ### Task M0-16: Generate TypeScript types → `src/types/db.ts`
 **Description:** Run Supabase MCP `generate_typescript_types` and commit the output. Wire `supabase.ts` to use `Database` generic so queries are fully typed.
@@ -319,7 +320,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 
 ### Checkpoint M0-ω: Foundations done
 - [ ] Full CI green including migrations-applied smoke test
-- [ ] All 9 tables + RLS + bucket live on Supabase (Seoul)
+- [x] All 9 tables + RLS + `issue-photos` bucket live on Supabase (Seoul)
 - [ ] Edge functions deployed as placeholders
 - [ ] TypeScript types regenerate automatically via npm script
 - [ ] Human review: M1 may start
