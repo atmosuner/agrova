@@ -3,6 +3,7 @@ import { defaultStringifySearch, Link, Outlet, createFileRoute, redirect } from 
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { OperationSettingsProvider } from '@/features/settings/operation-settings-context'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
+import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
 import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
 
@@ -18,6 +19,10 @@ export const Route = createFileRoute('/_owner')({
         to: '/login',
         search: { redirect: returnTo, worker: false },
       })
+    }
+    const shell = await resolveAppShellForUser(session.user)
+    if (shell === 'worker') {
+      throw redirect({ to: '/m/tasks' })
     }
   },
   component: OwnerLayout,

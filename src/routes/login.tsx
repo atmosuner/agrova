@@ -3,9 +3,9 @@ import { useState } from 'react'
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { safePostAuthPath } from '@/features/auth/redirect'
+import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
 import { loginFormSchema, type LoginFormValues } from '@/features/auth/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
-import { isWorkerUser } from '@/lib/auth-worker'
 import { supabase } from '@/lib/supabase'
 
 /* eslint-disable lingui/no-unlocalized-strings -- map raw provider messages to Turkish for display */
@@ -28,7 +28,8 @@ export const Route = createFileRoute('/login')({
       data: { session },
     } = await supabase.auth.getSession()
     if (session) {
-      if (isWorkerUser(session.user)) {
+      const shell = await resolveAppShellForUser(session.user)
+      if (shell === 'worker') {
         throw redirect({ to: safePostAuthPath(search.redirect, { mode: 'worker' }) })
       }
       throw redirect({ to: safePostAuthPath(search.redirect) })
@@ -70,7 +71,8 @@ function LoginPage() {
       setFormError(t`Oturum açılamadı. Yeniden deneyin.`)
       return
     }
-    const target = safePostAuthPath(redirectTo)
+    const shell = await resolveAppShellForUser(data.session.user)
+    const target = safePostAuthPath(redirectTo, { mode: shell })
     void navigate({ to: target, replace: true })
   }
 

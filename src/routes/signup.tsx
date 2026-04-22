@@ -3,6 +3,7 @@ import { useState } from 'react'
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { safePostAuthPath } from '@/features/auth/redirect'
+import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
 import { signUpFormSchema, type SignUpFormValues } from '@/features/auth/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
 import { supabase } from '@/lib/supabase'
@@ -29,7 +30,10 @@ export const Route = createFileRoute('/signup')({
       data: { session },
     } = await supabase.auth.getSession()
     if (session) {
-      throw redirect({ to: '/today' })
+      const shell = await resolveAppShellForUser(session.user)
+      throw redirect({
+        to: safePostAuthPath(undefined, { mode: shell === 'worker' ? 'worker' : 'owner' }),
+      })
     }
   },
   validateSearch: (s: Record<string, unknown>) => ({

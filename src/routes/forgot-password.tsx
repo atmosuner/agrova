@@ -2,7 +2,7 @@ import { t } from '@lingui/macro'
 import { useState } from 'react'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
-import { isWorkerUser } from '@/lib/auth-worker'
+import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
 import { getSiteUrl } from '@/lib/site-url'
 import { supabase } from '@/lib/supabase'
 import { formFieldClassName } from '@/lib/form-field-class'
@@ -19,7 +19,8 @@ export const Route = createFileRoute('/forgot-password')({
       data: { session },
     } = await supabase.auth.getSession()
     if (session) {
-      if (isWorkerUser(session.user)) {
+      const shell = await resolveAppShellForUser(session.user)
+      if (shell === 'worker') {
         throw redirect({ to: '/m/tasks' })
       }
       throw redirect({ to: '/today' })
