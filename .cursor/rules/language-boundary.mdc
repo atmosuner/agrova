@@ -1,0 +1,301 @@
+---
+description: Agrova Language Boundary. Use when writing any code, route, database object, or user-facing string. Enforces English for all engineering artifacts and Turkish for all user-facing content.
+alwaysApply: true
+---
+
+# Agrova — Language Boundary
+
+## Overview
+
+Agrova is a Turkish-only product built by a Turkish solo developer. To keep the codebase maintainable, searchable, and friendly to AI agents trained on English corpora, we draw a hard line:
+
+- **Code is English.** Everything an engineer reads or writes.
+- **UI is Turkish.** Everything a user reads or writes.
+
+No mixing. No exceptions without a recorded justification.
+
+## When to Use
+
+Every time you write code, name a symbol, create a file, add a database column, define a route path, author a test description, or display text to a user.
+
+**When NOT to use:** Never; this rule has no opt-out.
+
+## The Two Zones
+
+```
+┌──────────────────────────────────────┐        ┌──────────────────────────────────────┐
+│         ENGINEERING ZONE             │        │          USER ZONE                   │
+│             (English)                │        │            (Turkish)                 │
+├──────────────────────────────────────┤        ├──────────────────────────────────────┤
+│ • File and folder names              │        │ • Button labels, headings, copy      │
+│ • Variable, function, class names    │        │ • Form field labels & placeholders   │
+│ • Type / interface / enum names      │        │ • Error messages shown to the user   │
+│ • Route paths (/tasks, /fields)      │        │ • Toast / banner text                │
+│ • Database table & column names      │        │ • Push notification payloads         │
+│ • Enum values (TODO, IN_PROGRESS)    │        │ • SMS and email content              │
+│ • Git branches and commit messages   │        │ • Alt text, aria-labels              │
+│ • Code comments                      │        │ • Empty states, loading states       │
+│ • Test descriptions (`describe`,`it`)│        │ • Page titles in <title>             │
+│ • Log messages                       │        │                                      │
+│ • Env variable names                 │        │                                      │
+│ • JSDoc / TSDoc                      │        │                                      │
+└──────────────────────────────────────┘        └──────────────────────────────────────┘
+```
+
+## Engineering Zone Rules (English)
+
+### File and folder naming
+
+```
+✅ src/routes/_owner/tasks.tsx
+✅ src/features/issues/report-issue.ts
+✅ src/components/task-card.tsx
+
+❌ src/routes/_owner/gorevler.tsx
+❌ src/features/sorunlar/sorun-bildir.ts
+❌ src/components/gorev-karti.tsx
+```
+
+### Identifiers
+
+```ts
+// ✅ English identifiers
+function completeTask(taskId: string) { ... }
+const activeFields = fields.filter(f => f.active)
+enum TaskStatus { TODO, IN_PROGRESS, DONE, BLOCKED, CANCELLED }
+
+// ❌ Turkish identifiers
+function gorevBitir(gorevId: string) { ... }
+const aktifTarlalar = tarlalar.filter(t => t.aktif)
+enum GorevDurumu { YAPILACAK, SURUYOR, BITTI }
+```
+
+### Route paths
+
+```
+✅ /tasks            /fields            /issues            /people
+✅ /setup/:token     /login             /reports           /equipment
+
+❌ /gorevler         /tarlalar          /sorunlar          /ekip
+❌ /kurulum/:token   /giris             /raporlar          /ekipman
+```
+
+The **URL is English**; the **page title shown to the user is Turkish**:
+
+```tsx
+// src/routes/_owner/tasks.tsx
+export function TasksPage() {
+  return (
+    <>
+      <PageTitle>Görevler</PageTitle>  {/* Turkish — user sees this */}
+      <TaskBoard />
+    </>
+  )
+}
+```
+
+### Database objects
+
+Table names, column names, enum values — all English `snake_case`.
+
+```sql
+-- ✅ Good
+CREATE TABLE tasks (
+  id uuid PRIMARY KEY,
+  activity text NOT NULL,
+  field_id uuid REFERENCES fields(id),
+  assignee_id uuid REFERENCES people(id),
+  status text NOT NULL CHECK (status IN ('TODO','IN_PROGRESS','DONE','BLOCKED','CANCELLED')),
+  due_date date,
+  created_at timestamptz DEFAULT now()
+);
+
+-- ❌ Bad
+CREATE TABLE gorevler (
+  id uuid PRIMARY KEY,
+  aktivite text NOT NULL,
+  tarla_id uuid REFERENCES tarlalar(id),
+  durum text NOT NULL CHECK (durum IN ('YAPILACAK','SURUYOR','BITTI'))
+);
+```
+
+### Enum values
+
+Enum codes are English. Their **display labels** are Turkish and live in the i18n catalog, never in the enum itself.
+
+```ts
+// ✅ English enum codes
+type IssueCategory =
+  | 'PEST'
+  | 'EQUIPMENT'
+  | 'INJURY'
+  | 'IRRIGATION'
+  | 'WEATHER'
+  | 'THEFT'
+  | 'SUPPLY'
+
+// Display label lookup (from i18n catalog)
+const labels: Record<IssueCategory, string> = t({
+  PEST: 'Zararlı / Hastalık',
+  EQUIPMENT: 'Bozuk Alet',
+  INJURY: 'Yaralanma',
+  IRRIGATION: 'Sulama Sorunu',
+  WEATHER: 'Hava Hasarı',
+  THEFT: 'Hırsızlık',
+  SUPPLY: 'Eksik Malzeme',
+})
+```
+
+### Test descriptions
+
+```ts
+// ✅ English test descriptions
+describe('completeTask', () => {
+  it('sets status to DONE and records completedAt', ...)
+  it('rejects completion of an already-completed task', ...)
+})
+
+// ❌ Turkish test descriptions
+describe('gorevBitir', () => {
+  it('durumu BITTI yapar ve bitisTarihi kaydeder', ...)
+})
+```
+
+### Git commit messages
+
+English, imperative mood.
+
+```
+✅ feat(tasks): add reassignment flow
+✅ fix(sync): retry outbox on transient failures
+❌ özellik(görevler): atama aktarma ekle
+```
+
+### Logs
+
+Logs are read by engineers. English.
+
+```ts
+// ✅
+logger.info({ taskId, actorId }, 'task completed')
+
+// ❌
+logger.info({ taskId, actorId }, 'görev tamamlandı')
+```
+
+## User Zone Rules (Turkish)
+
+### Every visible string goes through i18n
+
+No hardcoded Turkish strings in JSX. All user-facing text routes through Lingui (or whichever i18n library the project settles on), even though there's only one active locale today. This keeps the boundary enforceable by tooling and makes future locales cheap.
+
+```tsx
+// ✅ Externalized
+import { t } from '@lingui/macro'
+
+<button>{t`Bitir`}</button>
+<h1>{t`Bugün Açık Görevler`}</h1>
+<p>{t`${count} tarlada dağılmış`}</p>
+
+// ❌ Hardcoded
+<button>Bitir</button>
+<h1>Bugün Açık Görevler</h1>
+```
+
+### Turkish quality bar
+
+- Use full diacritics (ş ç ğ ı İ ö ü) — never ASCII-only substitutes like "s c g i" or "Cifltik".
+- Prefer the imperative for actions in short buttons: **Başla · Bitir · İptal · Gönder · Aktar · Kaydet**.
+- Formal register for owner-facing screens; friendly register for worker screens, but never slangy.
+- Capitalization: Turkish sentence case for buttons and headings (only the first word capitalized). Exception: proper nouns.
+- Numbers and dates in Turkish locale via `date-fns/locale/tr`. Decimal comma, thousand separator dot.
+
+### aria-labels and alt text
+
+These are user-facing even though invisible — they're read aloud by screen readers. **Turkish.**
+
+```tsx
+// ✅
+<button aria-label="Görevi bitir">
+  <CheckIcon />
+</button>
+
+// ❌
+<button aria-label="Complete task">
+  <CheckIcon />
+</button>
+```
+
+### Notifications, SMS, emails
+
+User-facing content → Turkish. The template code, variable names, and logs are English.
+
+```ts
+// ✅
+async function sendSetupSms(phone: string, token: string) {
+  const body = t`Agrova kurulumu için bağlantınız: ${buildLink(token)}`
+  await smsClient.send({ to: phone, body })
+  logger.info({ phone }, 'setup sms sent')
+}
+```
+
+## User-Generated Content
+
+Anything the owner or a worker types (field names, task notes, issue descriptions, people names) is **their content in their language** — naturally Turkish. We store it verbatim in the database without translation. Never mangle case or diacritics on input or display.
+
+```
+Field name entered by user: "Akpetek Çiftliği – 3. Parsel"
+Stored in DB: "Akpetek Çiftliği – 3. Parsel"
+Displayed to user: "Akpetek Çiftliği – 3. Parsel"
+```
+
+## Allowed Exceptions (Rare)
+
+These are the only places where the zones may meet; each requires a comment explaining the choice:
+
+- **Turkish proper nouns in code** when they're the canonical name of a real-world thing that has no English translation (e.g., a migration seeding district names: `const mahalleler = [...]` — but prefer `const neighborhoods = [...]` if the English translation is natural).
+- **SQL migrations that seed user-visible Turkish data** — the content is Turkish but the column names, function names, and comments remain English.
+
+When exceptions are unavoidable, add a `// justified:` comment with one sentence explaining why.
+
+## Working With Existing Violations
+
+Old code that mixes languages is technical debt. When you touch a file that contains Turkish identifiers or route paths:
+
+1. Rename within the same PR if the scope is contained.
+2. Update the spec to reflect the rename.
+3. Add a test that confirms the new name works end-to-end.
+
+Do not expand the violation. Adding one more Turkish identifier to a file that already has some is not acceptable.
+
+## Common Rationalizations
+
+| Rationalization | Reality |
+|---|---|
+| "It's a single-language app, English code is just overhead" | The language boundary lets AI agents, libraries, and future contributors read the code without a Turkish dictionary. Your tools speak English. |
+| "The domain word is more natural in Turkish" | Domain words like `field`, `task`, `crew`, `chemical` translate cleanly. If a word truly has no English equivalent, use a `// justified:` comment. |
+| "I'll rename later" | Renames grow quadratically. Do it now. |
+| "Just this one place" | One place becomes twenty. The rule has no exceptions to protect its integrity. |
+| "Turkish in tests makes them readable for me" | Tests are read by your tools (coverage, CI) and future agents, not just you. Turkish `it()` names fragment search. |
+
+## Red Flags
+
+- A `grep` that returns Turkish identifiers in `src/**/*.ts`
+- A route path containing Turkish characters (`ş ç ğ ı İ ö ü`)
+- An SQL file with column names like `durum`, `aktivite`, `tarla_id`
+- A log line written in Turkish
+- A hardcoded Turkish string in JSX that bypasses i18n
+- An English string rendered to the user
+- An enum value that is a Turkish word (e.g., `status: 'BITTI'`)
+
+## Verification
+
+Before opening a PR:
+
+- [ ] `rg -n '[şçğıİöüŞÇĞÖÜ]' src --glob '!**/locales/**'` returns zero hits (no Turkish characters in code outside i18n catalogs)
+- [ ] All new route paths are English
+- [ ] All new database columns and enum values are English
+- [ ] All new user-facing strings go through `t\`...\`` (Lingui) or the project's i18n macro
+- [ ] All new `describe`/`it` names are English
+- [ ] Every `aria-label` and `alt` attribute is Turkish
+- [ ] No `// TODO(i18n)` placeholder text ships to users

@@ -1,0 +1,27 @@
+{
+  "$schema": "https://cursor.sh/schemas/mcp.json",
+  "//": "Agrova — MCP configuration template. Copy to .cursor/mcp.json (gitignored) and fill in real values. Restart Cursor after changes.",
+
+  "mcpServers": {
+    "github": {
+      "//": "Remote GitHub MCP server. No Docker needed — uses a GitHub Personal Access Token (classic) with full scopes. Create at: https://github.com/settings/tokens",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer REPLACE_WITH_GITHUB_PERSONAL_ACCESS_TOKEN"
+      }
+    },
+
+    "supabase": {
+      "//": "Official Supabase MCP via npx. Uses a Personal Access Token from https://supabase.com/dashboard/account/tokens and a project ref from the Supabase project URL (e.g., 'abcdefghijklmnop').",
+      "command": "npx",
+      "args": [
+        "-y",
+        "@supabase/mcp-server-supabase@latest",
+        "--project-ref=REPLACE_WITH_SUPABASE_PROJECT_REF"
+      ],
+      "env": {
+        "SUPABASE_ACCESS_TOKEN": "REPLACE_WITH_SUPABASE_PERSONAL_ACCESS_TOKEN"
+      }
+    }
+  }
+}

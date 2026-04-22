@@ -1,0 +1,261 @@
+---
+description: Agrova Design System. Use when building, reviewing, or modifying any user interface. Enforces DESIGN.md tokens, accessibility floor, adaptive density for low-literacy workers, and the worker/owner surface distinction.
+alwaysApply: true
+---
+
+# Agrova — Design System
+
+## Overview
+
+Agrova is used by two very different people on two very different surfaces:
+
+1. A low-literacy field worker, one-handed, outdoors, possibly wearing gloves, on a $100 Android phone.
+2. An owner, at a desk, scanning 500 fields and dozens of open tasks across a wide screen.
+
+The design system unifies them behind a shared token set but enforces **adaptive density**: worker screens get double the whitespace and 1.5× the type size of owner screens. Every UI decision is tested against both personas.
+
+`DESIGN.md` at the repo root is the single source of truth for visual tokens and component specs. This rule tells you when and how to consult it.
+
+## When to Use
+
+- Building any new screen, component, or UI primitive
+- Modifying any existing UI
+- Reviewing a PR that touches visual code
+- Deciding whether a design decision needs a spec update
+- Debugging a visual regression
+
+**When NOT to use:** Pure backend, data-model, or tooling changes with no UI surface.
+
+## The Design Loop
+
+```
+  READ DESIGN.md   ──→   IMPLEMENT  ──→   VERIFY
+       │                     │              │
+       ▼                     ▼              ▼
+  Know the token        Use the token   Check both surfaces,
+  before you reach      directly, not   contrast, touch
+  for a hex code        a one-off       targets, Turkish
+                        value           diacritics
+```
+
+### Step 1: Read DESIGN.md First
+
+Before writing a single line of JSX, open `DESIGN.md` and locate the relevant section:
+
+- Section 2 — Color tokens
+- Section 3 — Typography scale
+- Section 4 — Component specs (buttons, cards, chips, inputs, activity icons)
+- Section 5 — Layout + adaptive density rules
+- Section 8 — Accessibility floor
+- Section 11 — Quick reference snippets
+
+If what you need isn't in `DESIGN.md`, that's a signal — either you're building something truly new (propose a spec addition) or you're about to duplicate a pattern that already exists under a different name (search first).
+
+### Step 2: Implement With Tokens
+
+Never hardcode a color, spacing, radius, font size, or weight. Use the token.
+
+```tsx
+// ✅ Good — tokens from DESIGN.md § 2 and § 4
+<button className="
+  w-full h-[72px] rounded-full px-6
+  bg-orchard-500 hover:bg-orchard-700 active:scale-[0.97]
+  text-white text-xl font-semibold
+  transition-all duration-150
+  focus-visible:ring-2 focus-visible:ring-orchard-500 focus-visible:ring-offset-2
+">
+  {t`Bitir`}
+</button>
+
+// ❌ Bad — arbitrary values, wrong weight, no focus ring, raw label
+<button className="
+  w-full h-[60px] rounded-lg px-4
+  bg-[#4CAF50] hover:bg-[#388E3C]
+  text-white text-lg font-bold
+">
+  Bitir
+</button>
+```
+
+### Step 3: Verify On Both Surfaces
+
+Every component you build or change must be checked against:
+
+- **Worker surface:** 375×667 viewport (iPhone SE baseline), touch targets ≥ 72px primary and ≥ 56px otherwise, base font ≥ 18px, no text inputs.
+- **Owner surface:** 1440×900 viewport, sidebar navigation, dense tables allowed, Cmd+K accessible.
+
+Run the built-in theme and locale checks:
+
+- Light mode + dark mode (system toggle)
+- Turkish diacritics rendering (`İçeri`, `Öğlen`, `Şeftali`, `Çapa`, `Güneş`, `Ülkü`)
+- `prefers-reduced-motion: reduce` collapses animations
+
+## The Non-Negotiables
+
+These come from `DESIGN.md §8` and `§10`. Every PR that violates them is a blocker.
+
+### Accessibility floor
+
+- WCAG AA minimum (4.5:1 text, 3:1 UI) everywhere
+- WCAG AAA (7:1) on worker primary action buttons
+- Worker primary actions: **≥ 72px tall**, full-width
+- All interactive elements: **≥ 56px** on mobile, **≥ 40px** on desktop
+- Worker screens: base font **≥ 18px**
+- Every interactive element has a visible focus ring (`ring-2 ring-orchard-500 ring-offset-2`)
+- No free-text keyboard input on worker screens — use pickers, numpads, photo, voice
+- Every icon has an `aria-label` in Turkish
+- All action-confirmation flows use a second-screen confirm (prevents mis-taps with gloves)
+- Respect `prefers-reduced-motion` and `prefers-color-scheme`
+
+### Typography discipline
+
+- Inter Variable with `"cv11","ss01","calt"` set globally
+- Only three weights: **400, 500, 600**. Never 700+, never 300.
+- Never `#FFF` or `#000` on text — use `text-primary` / `text-secondary` tokens
+- Tabular numerals on any number that could be compared (counts, IDs, prices)
+
+### Color discipline
+
+- `orchard-500` is the only chromatic accent in UI chrome
+- `harvest-500` is for highlights only — never on a primary CTA
+- Status colors appear only in status chips and progress indicators, never as general accents
+- No drop shadows — depth via surface steps + hairline borders
+- Dark mode uses the tokens from `DESIGN.md §2`, not inverted light mode
+
+### Motion discipline
+
+- 150ms for state transitions
+- 250ms for page fades
+- Primary CTAs: `scale(1.02)` hover, `scale(0.97)` active. Nothing more dramatic.
+- Worker mobile: **no** route-change animations (motion sickness risk for outdoor users)
+- Collapse all motion to 0ms when `prefers-reduced-motion: reduce`
+
+## Adaptive Density — The Core Rule
+
+Worker and owner screens share tokens but apply different step values.
+
+```
+                 OWNER WEB        WORKER MOBILE
+Card padding     16px             24px  (×1.5)
+Stack gap        12px             20px  (×1.67)
+Base font        16px             18px  (×1.13)
+Primary CTA      36px tall        72px tall (×2)
+Icon chrome      20px             28px  (×1.4)
+Max text width   ~720px           viewport width
+```
+
+Never copy an owner component into a worker screen without re-tuning the spacing. The easiest test: if the worker screen feels "crowded", it is — you skipped the step-up.
+
+## Component Library Protocol
+
+Agrova uses **shadcn/ui** as the primitive layer. When you need a new component:
+
+1. Check if `shadcn` already has it (`Button`, `Dialog`, `Select`, etc.)
+2. Install it via the shadcn CLI into `src/components/ui/`
+3. Immediately re-skin it to match `DESIGN.md` tokens — do not ship the default shadcn look
+4. Add a worker-density variant if the component will be used on mobile
+5. Document which sections of `DESIGN.md` it implements in a top-of-file comment
+
+```tsx
+// src/components/ui/button.tsx
+// Implements: DESIGN.md §4 Buttons (Primary CTA — both surfaces)
+// Worker variant: size="lg" (72px tall, pill)
+// Owner variant:  size="md" (36px tall, rounded-8)
+
+export const buttonVariants = cva(
+  'inline-flex items-center justify-center font-semibold transition-all ...',
+  {
+    variants: {
+      size: {
+        md: 'h-9 rounded-lg px-4 text-sm',
+        lg: 'h-[72px] rounded-full px-6 text-xl',
+      },
+      variant: { primary: '...', secondary: '...', ghost: '...' },
+    },
+  },
+)
+```
+
+## When DESIGN.md Is Incomplete
+
+If you hit a design decision that `DESIGN.md` doesn't cover:
+
+1. **Stop.** Don't invent a token on the fly.
+2. Propose an addition: write the token / rule in a PR against `DESIGN.md` first.
+3. Get it reviewed separately from the feature PR, even if it's a one-line addition.
+4. Then use the new token in the feature PR.
+
+This prevents token sprawl and keeps the system coherent.
+
+## Visual Regression Protocol
+
+For any UI change:
+
+- Capture before/after screenshots at both worker (375px) and owner (1440px) widths
+- Capture light and dark mode
+- Check Turkish diacritics in every headline size (40/32/24/18px)
+- Post the screenshots in the PR description
+
+## Icon Protocol
+
+- UI chrome: Lucide React, stroke 1.75px
+- Activity icons: custom SVG components in `src/components/icons/activities/`, same line-weight as Lucide
+- Sizes: 16 / 20 / 24 / 28 / 32 for Lucide; 24 inline + 96 for worker task cards
+- Never mix icon sets inside a single component — if Lucide doesn't have it, either design a custom icon in the same style or pick a close-enough Lucide icon
+
+## Do
+
+- Read `DESIGN.md` **before** writing UI
+- Use tokens for every color, spacing, radius, font size, and weight
+- Apply adaptive density — worker screens breathe, owner screens pack
+- Ship with keyboard focus rings on every interactive element
+- Test Turkish diacritics at every type size before merging
+- Use semantic HTML first (`<button>`, `<a>`, `<label>`) before reaching for `<div role=...>`
+- Confirm destructive actions on a second screen on worker surfaces
+- Include screenshots in PR descriptions for UI changes
+
+## Don't
+
+- Don't hardcode colors, spacings, or radii
+- Don't use weight 700 or higher
+- Don't use drop shadows on cards
+- Don't put text inputs on worker screens without explicit spec approval
+- Don't animate route changes on worker mobile
+- Don't copy an owner component into mobile without re-tuning density
+- Don't ship raw shadcn default styling — always re-skin
+- Don't introduce a new color or size that isn't in `DESIGN.md`
+
+## Common Rationalizations
+
+| Rationalization | Reality |
+|---|---|
+| "I just need a slightly different green here" | That's how systems die. Use `orchard-500` or propose an extension to `DESIGN.md`. |
+| "One-off shadow won't hurt" | It will. The no-shadow rule is how the system feels coherent. Use surface steps. |
+| "56px is tall enough, we don't really need 72" | Workers wear gloves. 72px is the floor for primary actions. Non-negotiable. |
+| "Turkish fits fine, no need to test all diacritics" | Test `İ`, `ı`, `ğ`, `ş` at every type size. `İ` at 40px is where Inter most often fails without `ss01`. |
+| "The dark mode will look fine if I just invert" | It won't. Dark mode has its own surface and text tokens. Use them. |
+
+## Red Flags
+
+- Any hex color or arbitrary Tailwind value in JSX (`bg-[#...]`, `text-[#...]`, `p-[13px]`)
+- `font-bold` or weight ≥ 700 anywhere
+- `shadow-*` utilities in UI chrome (allowed only on modal backdrops)
+- A worker screen with a `<input type="text">` or `<textarea>`
+- An interactive element without `focus-visible:ring-2 focus-visible:ring-orchard-500`
+- A component with one codepath and two call sites (owner and worker) with no density variant
+- An `aria-label` in English
+- A headline with ASCII-only text where it should have Turkish diacritics (`Cifltik` instead of `Çiftlik`)
+
+## Verification
+
+Before opening a PR for any UI change:
+
+- [ ] Tokens from `DESIGN.md` used for every color, spacing, radius, font size, weight
+- [ ] Accessibility floor met (contrast, touch targets, focus rings, keyboard paths)
+- [ ] Worker surface and owner surface both visually verified
+- [ ] Light and dark mode both verified
+- [ ] Turkish diacritics render correctly at every size shown
+- [ ] `prefers-reduced-motion` path verified
+- [ ] `aria-label` and `alt` attributes are Turkish
+- [ ] Screenshots attached to PR
+- [ ] No new tokens invented without a companion `DESIGN.md` update
