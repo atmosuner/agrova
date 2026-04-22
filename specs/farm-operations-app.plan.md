@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-11 (SQL in repo) are ✅ **implemented** on `main`; M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
+> **Progress (M0):** M0-01..M0-12 are ✅ **implemented** on `main` (M0-11 + M0-12 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -250,13 +250,14 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 ### Task M0-12: DB migration 2 — `fields` (PostGIS) + `tasks` + `task_equipment` + `chemical_applications`
 **Description:** Enable `postgis` extension; create `fields` with `gps_center geography(point)` and `boundary geography(polygon)`; create `tasks`, `task_equipment`, `chemical_applications` per spec §5. Foreign keys + indexes on hot paths (`tasks.assignee_id`, `tasks.field_id`, `tasks.due_date, status`).
 **Acceptance criteria:**
-- [ ] PostGIS installed; `SELECT postgis_version()` works
-- [ ] `ST_Within` query on a sample polygon works
-- [ ] `tasks` row insert validates FK + enum constraints
+- [x] PostGIS installed; `SELECT postgis_version()` works
+- [x] `ST_Within` query on a sample polygon works (`execute_sql` smoke)
+- [x] `tasks` row insert validates FK + enum constraints (smoke: transactional insert in `execute_sql` + `rollback` returned a task id)
 **Verification:** sample polygon round-trips via `execute_sql`; constraint violations return 23503/23514
 **Dependencies:** M0-11
 **Files likely touched:** `supabase/migrations/20260422000200_fields_tasks_equipment_chemicals.sql`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (feat: `M0-12` — committed SQL + applied on Supabase via MCP)
 
 ### Task M0-13: DB migration 3 — `issues` + `activity_log` + `notifications`
 **Description:** Remaining tables from spec §5. `activity_log.action` accepts the event strings from §14. `notifications` has `(recipient_id, activity_log_id)` unique index. Partition or index-by-`created_at DESC` on `activity_log`.
