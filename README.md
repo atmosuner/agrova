@@ -29,6 +29,12 @@ See [`specs/farm-operations-app.md §16`](./specs/farm-operations-app.md#16-deli
 
 `M0 Foundations → M1 Catalogs → M2 Tasks (owner) → M3 Worker MVP → M4 Issues + photos → M5 Equipment + chemicals → M6 Notifications → M7 Owner home → M8 Polish + launch`
 
+## Routing
+
+- **TanStack Router** (file-based under `src/routes/`, tree in `src/routeTree.gen.ts`).
+- **Owner shell** — pathless `_owner/` → URLs like `/today`, `/tasks`, …
+- **Worker PWA shell** — under `/m/…` (e.g. `/m/tasks`) so it does not clash with owner `/tasks`. Revisit when role-based routing lands.
+
 ## Running locally
 
 ```bash
