@@ -1,3 +1,4 @@
+import { t } from '@lingui/macro'
 import { createFileRoute } from '@tanstack/react-router'
 
 export const Route = createFileRoute('/m/history')({
@@ -7,8 +8,8 @@ export const Route = createFileRoute('/m/history')({
 function HistoryPage() {
   return (
     <div className="px-4 pt-6">
-      <h1 className="text-xl font-semibold text-fg">Geçmiş</h1>
-      <p className="mt-2 text-fg-secondary">Placeholder.</p>
+      <h1 className="text-xl font-semibold text-fg">{t`History`}</h1>
+      <p className="mt-2 text-fg-secondary">{t`Placeholder.`}</p>
     </div>
   )
 }

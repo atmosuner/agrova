@@ -1,27 +1,29 @@
+import { msg } from '@lingui/macro'
 import { Link, Outlet, createFileRoute } from '@tanstack/react-router'
+import { i18n } from '@/lib/i18n'
 
 export const Route = createFileRoute('/_owner')({
   component: OwnerLayout,
 })
 
-const nav = [
-  { to: '/today', label: 'Bugün' },
-  { to: '/fields', label: 'Tarlalar' },
-  { to: '/tasks', label: 'Görevler' },
-  { to: '/issues', label: 'Sorunlar' },
-  { to: '/people', label: 'Ekip' },
-  { to: '/equipment', label: 'Ekipman' },
-  { to: '/reports', label: 'Raporlar' },
-  { to: '/settings', label: 'Ayarlar' },
+const ownerNav = [
+  { to: '/today', label: msg`Today` },
+  { to: '/fields', label: msg`Fields` },
+  { to: '/tasks', label: msg`Tasks` },
+  { to: '/issues', label: msg`Issues` },
+  { to: '/people', label: msg`Team` },
+  { to: '/equipment', label: msg`Equipment` },
+  { to: '/reports', label: msg`Reports` },
+  { to: '/settings', label: msg`Settings` },
 ] as const
 
 function OwnerLayout() {
   return (
     <div className="flex min-h-dvh">
       <aside className="flex w-60 flex-col border-r border-border bg-surface-0 px-3 py-4 text-sm">
-        <div className="mb-6 font-medium text-orchard-500">Agrova</div>
+        <div className="mb-6 font-medium text-orchard-500">{i18n._(msg`Agrova`)}</div>
         <nav className="flex flex-col gap-1">
-          {nav.map((item) => (
+          {ownerNav.map((item) => (
             <Link
               key={item.to}
               to={item.to}
@@ -32,7 +34,7 @@ function OwnerLayout() {
               }}
               inactiveProps={{ className: 'rounded-md px-2 py-2' }}
             >
-              {item.label}
+              {i18n._(item.label)}
             </Link>
           ))}
         </nav>

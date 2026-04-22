@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
+import { lingui } from '@lingui/vite-plugin'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'vite'
@@ -11,7 +12,8 @@ const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 export default defineConfig({
   plugins: [
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
-    react(),
+    react({ babel: { plugins: ['@lingui/babel-plugin-lingui-macro'] } }),
+    lingui(),
     tailwindcss(),
   ],
   resolve: {

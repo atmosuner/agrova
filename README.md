@@ -35,6 +35,12 @@ See [`specs/farm-operations-app.md §16`](./specs/farm-operations-app.md#16-deli
 - **Owner shell** — pathless `_owner/` → URLs like `/today`, `/tasks`, …
 - **Worker PWA shell** — under `/m/…` (e.g. `/m/tasks`) so it does not clash with owner `/tasks`. Revisit when role-based routing lands.
 
+## i18n (Lingui)
+
+- **Source strings** in code use Lingui `msg` / `t` template macros in English; **Turkish copy** lives in `src/locales/tr/messages.po` (and English in `en/`). **Default locale** is `tr` (`src/lib/i18n.ts`).
+- **Extract / compile:** `pnpm i18n:extract` → `pnpm i18n:compile` (or rely on `pnpm build`, which compiles catalogs first). Commit both `.po` and generated `src/locales/*/messages.ts`.
+- **Vite:** `@lingui/vite-plugin` + Babel — `@vitejs/plugin-react` is **pinned to v5** (v6 no longer exposes `babel` options; Lingui still needs the macro transform).
+
 ## Running locally
 
 ```bash
