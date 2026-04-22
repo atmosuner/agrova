@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-16 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL on Supabase; `src/types/db.ts` from M0-16 + `pnpm supabase:gen-types`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
+> **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -63,7 +63,7 @@ M1 Catalogs (owner) — people, fields, equipment, CSV export
 M2 Task creation (owner) — schema verified, modal, list, kanban, reassign
               │
               ▼
-M3 Worker mobile MVP — SMS setup, session, today list, start/done, outbox, sync
+M3 Worker mobile MVP — setup link (in-app / copy URL; no SMS in MVP), session, today list, start/done, outbox, sync
               │         (depends on M1 for people+fields; M2 for task rows)
               ▼
 M4 Issues & photos — 7-cat flow, required photo, storage upload + retry
@@ -308,21 +308,22 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Estimated scope:** S
 **Status:** ✅ **DONE** (feat: `M0-16` — types + gen script; stub `app-database` + pre-m0-16 check removed)
 
-### Task M0-17: Scaffold edge functions — `sms-setup-link` + `web-push-fanout`
-**Description:** Create Deno-based edge functions in `supabase/functions/`. Both return `{ ok: true, placeholder: true }` for now; real logic lands in M3-01 and M6-03. Deploy via MCP `deploy_edge_function`.
+### Task M0-17: Scaffold edge functions — `web-push-fanout` + `setup-link`
+**Description:** **MVP has no SMS or WhatsApp** (notifications = **Web Push** only). Deploy two Deno stubs: **`web-push-fanout`** (real fan-out in M6-03) and **`setup-link`** (replaces a former SMS-sending name — owner shares URLs manually per M1-04; token claim in M3-02). Both return `{ ok: true, placeholder: true }`. Deploy via MCP `deploy_edge_function`.
 **Acceptance criteria:**
-- [ ] Both functions appear in `list_edge_functions`
-- [ ] Invoking each returns 200 with `{ ok: true, placeholder: true }`
-- [ ] Local `pnpm supabase:functions:serve` runs them
-**Verification:** `curl` both deployed endpoints
+- [x] Both functions appear in `list_edge_functions`
+- [x] Invoking each returns 200 with JSON including `ok: true`, `placeholder: true`
+- [x] `pnpm supabase:functions:serve` script exists (requires Supabase CLI / linked project for local run)
+**Verification:** `curl` both `/functions/v1/...` URLs; `list_edge_functions`
 **Dependencies:** M0-16
-**Files likely touched:** `supabase/functions/sms-setup-link/index.ts`, `supabase/functions/web-push-fanout/index.ts`
+**Files likely touched:** `supabase/functions/web-push-fanout/index.ts`, `supabase/functions/setup-link/index.ts`, `package.json`
 **Estimated scope:** S
+**Status:** ✅ **DONE** (MVP policy: push only; SMS/WhatsApp deferred to v1.1+)
 
 ### Checkpoint M0-ω: Foundations done
 - [ ] Full CI green including migrations-applied smoke test
 - [x] All 9 tables + RLS + `issue-photos` bucket live on Supabase (Seoul)
-- [ ] Edge functions deployed as placeholders
+- [x] Edge function stubs deployed (`web-push-fanout`, `setup-link`)
 - [x] TypeScript types regenerate via `pnpm supabase:gen-types` (MCP or CLI; see `supabase/README.md`)
 - [ ] Human review: M1 may start
 
@@ -355,8 +356,8 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 **Files likely touched:** `src/routes/_owner/settings.tsx`, `src/features/settings/*`, `supabase/migrations/...operation_settings.sql`
 **Estimated scope:** S
 
-### Task M1-03: People CRUD — list + add form (no SMS yet)
-**Description:** `/people` page with list + "Yeni kişi" modal. Fields: full_name, phone (E.164 validation via Zod), role select. Creates `people` row. SMS invite comes in M1-04.
+### Task M1-03: People CRUD — list + add form (no outbound SMS)
+**Description:** `/people` page with list + "Yeni kişi" modal. Fields: full_name, phone (E.164 validation via Zod), role select. Creates `people` row. Setup **URL** copy for workers is M1-04 (MVP: no SMS/WhatsApp).
 **Acceptance criteria:**
 - [ ] Phone validates as +90xxxxxxxxxx via Zod
 - [ ] Duplicate phone → friendly error from unique constraint
@@ -367,8 +368,8 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 **Files likely touched:** `src/routes/_owner/people.tsx`, `src/features/people/*`, migration for `people.active` boolean
 **Estimated scope:** M
 
-### Task M1-04: People — "Kurulum linki gönder" (SMS setup link generation)
-**Description:** Button next to each person generates a `setup_token` (random 32-char URL-safe). Owner copies the URL (`/setup/{token}`) manually for now; actual SMS comes in M3-01 after Netgsm wiring. Token expires 7 days.
+### Task M1-04: People — "Kurulum linki" (copy URL; no SMS in MVP)
+**Description:** Button next to each person generates a `setup_token` (random 32-char URL-safe). Owner copies the URL (`/setup/{token}`) to the worker **out of band** (in person, printed note, etc.) — **the app does not send SMS or provider WhatsApp from the server in MVP**. Optional Netgsm SMS is **post-MVP**. Token expires 7 days.
 **Acceptance criteria:**
 - [ ] `people.setup_token` + `setup_token_expires_at` columns (add migration)
 - [ ] "Kurulum linki oluştur" button on person row copies URL to clipboard
@@ -585,28 +586,24 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 
 ## M3 — Worker mobile MVP
 
-Goal: worker receives an SMS link, sets up once, sees today's tasks, starts + finishes them offline, syncs on reconnect.
+Goal: worker opens a **setup link** (from owner), sets up once, sees today's tasks, starts + finishes them offline, syncs on reconnect. **No product-sent SMS in MVP.**
 
-### Task M3-01: Edge function — real `sms-setup-link` with Netgsm
-**Description:** Replace placeholder. Integrate Netgsm HTTP API; function receives `{ person_id }`, creates/refreshes `setup_token`, sends SMS with short URL (`agrova.app/s/{token}` via a simple redirect on the same PWA origin).
-**Acceptance criteria:**
-- [ ] Function takes `person_id`, returns `{ ok, sent_at }`
-- [ ] Netgsm credentials via Supabase Secrets (not in code)
-- [ ] SMS delivered to a real Turkish number in ≤ 5s (manual test)
-- [ ] Rate limit: 1 SMS per person per minute
-**Verification:** real SMS received on a test number; token in DB matches link
-**Dependencies:** M1-04, M0-17
-**Files likely touched:** `supabase/functions/sms-setup-link/index.ts`, Supabase Secrets
-**Estimated scope:** M
+### Task M3-01: ~~Netgsm SMS for setup link~~ **DEFERRED (v1.1+ / optional)**
+**Description:** **Not in MVP.** If we add carrier SMS later, integrate Netgsm (or similar), `person_id` → send short URL, secrets in Supabase, rate limits. Until then, owners use M1-04 copy-URL only; `supabase/functions/setup-link` (M0-17) remains a non-SMS placeholder.
+**Acceptance criteria:** N/A (deferred)
+**Dependencies:** — 
+**Files likely touched:** TBD when un-deferred
+**Estimated scope:** — 
+**Status:** ⏸️ **DEFERRED** (MVP: no SMS from product)
 
 ### Task M3-02: `/setup/:token` route — claim token + mint session
-**Description:** Worker taps SMS link → PWA opens on `/setup/{token}`. Client calls edge function `claim-setup-token` which validates token, creates a Supabase auth user if missing (phone-based), links `people.auth_user_id`, returns a session. Client stores session and redirects to `/tasks`.
+**Description:** Worker opens the setup link → PWA on `/setup/{token}`. Client calls edge function `claim-setup-token` which validates token, creates a Supabase auth user if missing (e.g. phone-based or email-less flow per M3-02a design), links `people.auth_user_id`, returns a session. Client stores session and redirects to `/tasks`.
 **Acceptance criteria:**
 - [ ] Valid token → session stored → `/tasks` loads
 - [ ] Expired/claimed token → friendly error page
 - [ ] After claim: `people.setup_token` cleared; `auth_user_id` set
-**Verification:** end-to-end: owner generates link → opens on phone → `/tasks` loads with worker session
-**Dependencies:** M3-01
+**Verification:** end-to-end: owner copies link from M1-04 → opens on phone → `/tasks` loads with worker session
+**Dependencies:** M1-04, M0-17
 **Files likely touched:** `src/routes/setup.$token.tsx`, `supabase/functions/claim-setup-token/index.ts`
 **Estimated scope:** L — **SPLIT** into M3-02a (edge function), M3-02b (route + UI)
 
@@ -755,7 +752,7 @@ Goal: worker receives an SMS link, sets up once, sees today's tasks, starts + fi
 **Estimated scope:** M
 
 ### Checkpoint M3-ω: Worker MVP
-- [ ] Worker receives SMS → installs PWA → sees 3 tasks → completes them offline → syncs on reconnect
+- [ ] Worker opens setup link (from owner) → installs PWA → sees 3 tasks → completes them offline → syncs on reconnect
 - [ ] Coverage on `src/lib/sync.ts` + `src/lib/db.ts` ≥ 95% (spec §11 requirement)
 - [ ] E2E offline-sync test green
 - [ ] Human review
@@ -1274,14 +1271,14 @@ Goal: accessibility, Lighthouse, i18n completeness, KVKK, data export, productio
 
 | Risk | Impact | Mitigation |
 |---|---|---|
-| **SMS setup link flow is fragile on low-end devices** | Workers can't install → entire mobile track stuck | M3-01 ships with extensive logging + fallback "manual setup code" path |
+| **Setup link flow is fragile on low-end devices** | Workers can't install → entire mobile track stuck | M3-02 ships with extensive logging + fallback "manual setup code" path |
 | **Offline sync produces data divergence** | Worker thinks task done, server doesn't — trust collapses | Spec defines last-write-wins + client-UUID idempotency (M3-10/11); ≥ 95% coverage required |
 | **Supabase Seoul latency from Turkey (~280ms RTT)** | Dashboard feels sluggish | Every query has a local cache; Realtime fills in; measured in M7-09 |
 | **iOS PWA limitations (push on iOS 16.4+; limited storage)** | Older iOS users can't install or don't receive push | Detect + show fallback instructions; bell-badge path keeps working |
 | **Turkish diacritic rendering** (ş ç ğ ı İ) | UX defects hard to spot for non-Turkish reviewers | Test at every type size per spec §17; Lingui lint catches accidental English |
 | **Worker literacy assumptions wrong** | Some workers DO want to type notes | Not a blocker for MVP — spec says icons only; collect feedback in M8-12 |
 | **Leaflet + ESRI tile quota** | Rate limits on heavy-usage days | Tile cache via service worker (Workbox CacheFirst 7d); monitor; swap to Mapbox (paid) if needed |
-| **Netgsm API reliability for SMS setup** | Setup flow broken | Keep manual fallback; evaluate alternative (İleti Merkezi) if failure rate > 5% |
+| **Netgsm / carrier SMS (if added post-MVP)** | Optional v1.1 channel | MVP relies on copy-URL only; evaluate provider if SMS is enabled |
 | **RLS misconfiguration** | Data leak between workers | pgTAP suite in M0-14 + M2-09 + M4-08; advisor scan in every migration |
 | **Scope creep from "just one more thing"** | MVP never ships | Strict adherence to `.cursor/rules/incremental-implementation.mdc` Rule 0.5 (Scope Discipline) |
 
@@ -1293,7 +1290,7 @@ Captured during planning — flagged for human decision, **not blocking** the im
 
 1. **Completion photos storage.** Spec §3 says completion photo is optional on task Done, but §5 only defines a bucket for issue photos. Decision needed: reuse `issue-photos` bucket with path prefix `task-completions/` OR new bucket `task-photos`. _Default unless overridden: reuse `issue-photos` with prefix, since it's a rare write path._
 2. **Operation settings table.** Spec §3 says "owner sets the city once in settings" but §5 doesn't list an `operation_settings` table. M1-02 assumes we add one. _Default: yes, add it._
-3. **`auth_user_id` vs phone-based Supabase Auth.** Spec §4 says SMS magic link; Supabase Auth's phone-OTP flow is one option but requires Twilio/MessageBird. Netgsm (spec §14) is Turkish; does not integrate with Supabase Auth directly. _Default path: implement our own token claim flow via edge function (M3-01/02); skip Supabase Phone Auth._
+3. **`auth_user_id` vs phone-based Supabase Auth.** Spec §4 now assumes **in-app / copied setup URL in MVP** (no product SMS). _Default: custom `claim-setup-token` + `people` link (M3-02); add Supabase Phone Auth or Netgsm only if v1.1+._
 4. **`people.active` soft-delete.** Not in spec §5 but needed for M1-03 archive UX and M8-08. _Default: add column in M1-03 migration._
 5. **Completion confirmation required even without photo?** Spec §3 worker flow says "second screen confirm". Current plan (M3-07) always shows confirm. _Confirm default._
 6. **Voice note recording format.** Some browsers default to `audio/webm`; iOS Safari can't record WebM. _Default: `audio/mp4` (m4a) where supported; feature-detect and gracefully disable recording on iOS < 14._
@@ -1315,7 +1312,7 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
   - All sync/outbox work (M3-09 → 10 → 11 → 12)
   - Generated types (M0-16) blocks all typed queries above it
 - **Needs coordination (define contract first):**
-  - Edge functions (M3-01, M6-03) — agree on request/response JSON before splitting server/client work
+  - Edge functions (M3-02a claim, M6-03 web-push) — agree on request/response JSON before splitting server/client work
 
 ---
 

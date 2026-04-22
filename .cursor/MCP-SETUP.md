@@ -68,7 +68,7 @@ After saving `mcp.json`, restart Cursor (or at least reload the window) so it pi
 - Generate and apply migrations
 - Manage Row-Level Security policies
 - Create Storage buckets (for issue photos)
-- Write and deploy Edge Functions (for Web Push fan-out, SMS setup links)
+- Write and deploy Edge Functions (e.g. Web Push fan-out, setup-link placeholder — **MVP: no product SMS**; see `farm-operations-app.plan.md`)
 - Read the project configuration and connection strings
 - Generate TypeScript types from the schema
 

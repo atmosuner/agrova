@@ -14,7 +14,8 @@
     "i18n:extract": "lingui extract",
     "i18n:compile": "lingui compile --typescript",
     "preview": "vite preview",
-    "supabase:gen-types": "node scripts/supabase-gen-types.mjs"
+    "supabase:gen-types": "node scripts/supabase-gen-types.mjs",
+    "supabase:functions:serve": "npx -y supabase@2 functions serve"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",

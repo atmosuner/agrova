@@ -45,7 +45,7 @@ Explicitly not building: accounting, invoicing, inventory valuation, harvest yie
 - I can see current weather for my city on the dashboard.
 
 **Foreman / Agronomist / Worker**
-- I install the PWA to my home screen. Once set up (via an SMS link from the owner), I never log in again — the session persists.
+- I install the PWA to my home screen. Once set up (via a one-time setup link the owner shares with me), I never log in again — the session persists.
 - I open the app: I see today's tasks assigned to me as a short icon-driven list.
 - I tap a task: the next screen shows the activity icon, the field name, and 3 buttons: **Start · Block · Cancel**.
 - Tapping **Start** flips the task to In Progress. Tapping it again shows **Done · Block**. Tapping **Done** asks me (optionally) to attach a photo, then a big green **Confirm** on a second screen.
@@ -187,7 +187,7 @@ Designed as a **split dashboard** — a layout that scans quickly in the morning
 | **Icons** | **Lucide React** + custom activity SVGs | See `DESIGN.md §9` |
 | **Backend** | **Supabase** (Postgres 15 + Auth + Storage + Realtime + RLS) | Removes 90% of backend work; solo dev win |
 | **Region** | **Supabase Cloud — Northeast Asia (Seoul)** | User-selected |
-| **Mobile auth** | **SMS magic-link setup → persistent session** (Supabase Auth with custom phone-OTP flow, then never expires on device) | Workers can't type passwords; one-time friction only |
+| **Mobile auth** | **One-time setup URL → persistent session** (owner shares link manually; no SMS/WhatsApp in MVP) | Workers can't type passwords; one-time friction only; SMS deferred to v1.1+ |
 | **Owner auth** | **Email + password** (Supabase Auth) | Standard |
 | **Offline storage** | **Dexie (IndexedDB wrapper)** — caches fields, today's tasks, issue categories, activities; **outbox** pattern for writes | Battle-tested; small; works inside service worker |
 | **Service worker** | **Vite PWA plugin (Workbox)** | Standard PWA tooling |
@@ -339,8 +339,8 @@ Built on the design system in `DESIGN.md`. Screens below.
 ### Worker PWA (mobile, bottom-tab nav: Görevler / Geçmiş / Profil)
 
 **1. Setup (one-time)**
-- Owner creates a person → clicks "Kurulum linki gönder" → Supabase edge function sends SMS with a magic link
-- Worker taps the link → opens the PWA → prompted to install to home screen → signed in → never prompted again
+- Owner creates a person → gets a **setup URL** (copy/QR) — **no SMS or WhatsApp in MVP**; in-product delivery only
+- Worker opens the link → PWA → prompted to install to home screen → signed in → never prompted again
 
 **2. Görevler (Tasks) — the home**
 - Big header "Merhaba, {name}" + today's date in Turkish (e.g., "Salı, 22 Nisan")
@@ -515,7 +515,7 @@ agrova/
 │   └── farm-operations-app.md        # this file
 ├── supabase/
 │   ├── migrations/                   # SQL migrations
-│   ├── functions/                    # edge functions (sms setup, web-push)
+│   ├── functions/                    # edge functions (web-push, setup-link; no product SMS in MVP)
 │   └── seed.sql                      # seed data for local dev
 ├── src/
 │   ├── main.tsx                      # app entry
@@ -534,7 +534,7 @@ agrova/
 │   │   │   ├── report-issue.tsx      # UI title: "Sorun Bildir"
 │   │   │   ├── history.tsx           # UI title: "Geçmiş"
 │   │   │   └── profile.tsx           # UI title: "Profil"
-│   │   ├── setup.$token.tsx          # one-time SMS setup link
+│   │   ├── setup.$token.tsx          # one-time setup link (URL from owner; no product SMS in MVP)
 │   │   └── login.tsx                 # owner login
 │   ├── features/                     # feature-scoped code
 │   │   ├── tasks/
