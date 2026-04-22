@@ -33,6 +33,9 @@ export default defineConfig({
         '**/types/**',
         /** Hook-only module; covered indirectly via UI / integration. */
         'src/features/people/useMyPersonQuery.ts',
+        'src/features/equipment/useActiveEquipmentQuery.ts',
+        'src/features/equipment/useEquipmentUsage.ts',
+        'src/features/fields/useFieldChemicalApplicationsQuery.ts',
       ],
       thresholds: {
         lines: 80,
