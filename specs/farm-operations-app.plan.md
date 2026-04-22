@@ -11,7 +11,7 @@
 >
 > **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** (unit tests + SQL presence check; full `src/features/tasks/**` in coverage thresholds and pgTAP RLS suite not in default CI). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
 >
-> **Progress (M3):** **ADR:** [`docs/decisions/001-worker-device-auth-and-offline-sync.md`](../docs/decisions/001-worker-device-auth-and-offline-sync.md) (why: claim function, synthetic email, outbox, conflicts). M3-01 ⏸️ **DEFERRED**; M3-02a–M3-02b `claim-setup-token` **deployed** via **Supabase MCP** `deploy_edge_function` (verify_jwt: false; CORS; mints `*@device.agrova.app` user + `setSession`); M3-03..M3-15 **implemented** in repo — `/setup/:token` → `/m/tasks`, `/m` auth guard, `InstallPrompt` + `pwa.ts`, `MobileShell` (72px / 4.5rem tabs + greeting + `SyncIndicator`), `useMyTodayTasksQuery` + `TaskCardMobile`, task detail + `WorkerButton` + `CompletionFlow` + `ReassignSheet.mobile`, Dexie v2 + `bootstrapReadCachesForWorker`, outbox + `drainOutbox` in `src/lib/sync.ts`, `SyncSheet`, history, profile (prefs + theme + logout), Playwright `e2e/offline-sync.spec.ts` + `pnpm test:e2e` (run with dev server: `http://localhost:5173` default `baseURL`). M3-ω **open:** raise `src/lib/sync.ts` + `db.ts` coverage to spec §11 / human review. **E2E:** start Vite first (`pnpm dev`); if port differs, set `PLAYWRIGHT_BASE_URL` (e.g. `http://localhost:5174`).
+> **Progress (M3):** **ADR:** [`docs/decisions/001-worker-device-auth-and-offline-sync.md`](../docs/decisions/001-worker-device-auth-and-offline-sync.md). M3-01 ⏸️ **DEFERRED**. **Core shipped:** M3-02–04 ✅; M3-05–08 / 09–12 / 13–15 **🟨 see slice tracker** (gaps: pull-to-refresh vs Yenile, network-primary lists vs full Dexie-first reads, E2E smoke not full offline flow, `sync`/`db` coverage & M3-ω TBD). **E2E:** `pnpm dev` then `pnpm test:e2e`; **`PLAYWRIGHT_BASE_URL`** if Vite is not on **5173**.
 >
 > **Local dev (Supabase):** Keep a **gitignored** `.env` at the repo root with `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` from the Dashboard (**Project Settings → API**) or, in Cursor, **Supabase MCP** `get_project_url` + `get_publishable_keys` (use the **legacy anon** JWT for `@supabase/supabase-js` unless you migrate to publishable keys). For schema changes, prefer MCP **`apply_migration`** (or local `supabase db push` / linked CLI) so the hosted project and `list_migrations` stay in sync with `supabase/migrations/`. If those vars are unset, the client still boots using a **non-resolving placeholder host** and `signInWithPassword` will fail (`ERR_NAME_NOT_RESOLVED`); `src/lib/supabase.ts` emits a **dev-only** `console.warn` when either var is missing. **Restart the Vite dev server** after editing `.env`.
 >
@@ -33,9 +33,12 @@
 
 | M3-01 | M3-02 | M3-03..04 | M3-05..08 | M3-09..12 | M3-13..15 | M3-ω |
 |------|------|------|------|------|------|------|
-| ⏸️ | ✅ | ✅ | ✅ | 🟨 | ✅ | ⬜ |
+| ⏸️ | ✅ | ✅ | 🟨 | 🟨 | 🟨 | ⬜ |
 
-*M3-09..12: Dexie v2, outbox, sync + indicator land in repo; M3-ω asks higher test coverage on `sync.ts`/`db.ts` and human review.*
+* **M3-05..08** — Shipped: today list, detail, completion, reassign. **Gaps:** pull-to-refresh (spec) vs top **Yenile** button; “optimistic UI” = invalidate/refetch, not full local-first optimistic rows; haptic/focus on `WorkerButton` are present, Lighthouse a11y not re-run.  
+* **M3-09..12** — Shipped: Dexie v2, `bootstrapReadCachesForWorker`, outbox + `drainOutbox`, `SyncIndicator` + `SyncSheet`, conflict drop. **Gaps:** list queries are still **network-primary** (not “read Dexie first, then revalidate” everywhere); `sync.test.ts` is placeholder-level; M3-11 Vitest “simulated conflict” not exhaustive.  
+* **M3-13..15** — Shipped: history (grouped days + **Daha eski**), profile, Playwright `e2e/offline-sync.spec.ts`. **Gaps:** E2E is **smoke** (copy + unauth redirect + HTTP 200), not full offline complete/reassign; run dev first (`PLAYWRIGHT_BASE_URL` if port ≠ 5173).  
+* **M3-ω** — **Open:** coverage on `src/lib/sync.ts` + `src/lib/db.ts` to spec §11, human review, full offline E2E if desired.
 
 ---
 
@@ -647,165 +650,180 @@ Goal: worker opens a **setup link** (from owner), sets up once, sees today's tas
 **Status:** ⏸️ **DEFERRED** (MVP: no SMS from product)
 
 ### Task M3-02: `/setup/:token` route — claim token + mint session
-**Description:** Worker opens the setup link → PWA on `/setup/{token}`. Client calls edge function `claim-setup-token` which validates token, creates a Supabase auth user if missing (e.g. phone-based or email-less flow per M3-02a design), links `people.auth_user_id`, returns a session. Client stores session and redirects to `/tasks`.
+**Description:** Worker opens the setup link → PWA on `/setup/{token}`. Client calls edge function `claim-setup-token` which validates token, creates a Supabase auth user if missing (e.g. phone-based or email-less flow per M3-02a design), links `people.auth_user_id`, returns a session. Client stores session and redirects to **worker** tasks (**`/m/tasks`**).
 **Acceptance criteria:**
-- [ ] Valid token → session stored → `/tasks` loads
-- [ ] Expired/claimed token → friendly error page
-- [ ] After claim: `people.setup_token` cleared; `auth_user_id` set
-**Verification:** end-to-end: owner copies link from M1-04 → opens on phone → `/tasks` loads with worker session
+- [x] Valid token → session stored → worker task list loads (`/m/tasks`)
+- [x] Expired/claimed token → friendly error page
+- [x] After claim: `people.setup_token` cleared; `auth_user_id` set
+**Verification:** end-to-end: owner copies link from M1-04 → opens on phone → `/m/tasks` loads with worker session
 **Dependencies:** M1-04, M0-17
-**Files likely touched:** `src/routes/setup.$token.tsx`, `supabase/functions/claim-setup-token/index.ts`
+**Files likely touched:** `src/routes/setup.$token.tsx`, `supabase/functions/claim-setup-token/index.ts` (MCP: `deploy_edge_function`)
 **Estimated scope:** L — **SPLIT** into M3-02a (edge function), M3-02b (route + UI)
+**Status:** ✅ **implemented** (redirect `/m/tasks`; synthetic `*@device.agrova.app` — see [ADR-001](../docs/decisions/001-worker-device-auth-and-offline-sync.md))
 
 ### Task M3-03: Install-to-home-screen prompt + iOS hint
 **Description:** After session lands, detect `beforeinstallprompt` (Android) and show a "Ana ekrana ekle" CTA. On iOS (where the event doesn't fire), show a one-time hint with Share → Add to Home Screen illustration.
 **Acceptance criteria:**
-- [ ] Android: prompt shows; install launches a standalone PWA
-- [ ] iOS Safari 16.4+: illustrated hint shows once
-- [ ] After install, prompt doesn't re-appear
+- [x] Code: `beforeinstallprompt` captured; Android CTA; iOS one-time hint (`localStorage`); install dismissals persisted
+- [ ] **Manual:** Android: install → standalone; iOS 16.4+: hint once; no spam after install
 **Verification:** manual test on Android Chrome and iOS Safari 17
 **Dependencies:** M3-02, M0-07
-**Files likely touched:** `src/components/InstallPrompt.tsx`, `src/lib/pwa.ts`
+**Files likely touched:** `src/components/InstallPrompt.tsx`, `src/lib/pwa.ts` (rendered from `MobileShell` on `/m/*`)
 **Estimated scope:** M
+**Status:** ✅ **implemented** (in-app; device verification ⬜)
 
 ### Task M3-04: Mobile layout shell — bottom tabs + top bar
-**Description:** `_mobile` route group wraps content in bottom-tab nav (Görevler / Geçmiş / Profil) and sticky top bar (greeting + sync indicator). 72px tab bar, 28px icons per DESIGN.md.
+**Description:** Worker routes under **`/m/*`** (not a `_mobile` pathless group) use bottom-tab nav (Görevler / Geçmiş / Profil) and sticky top bar (greeting + **live** `SyncIndicator`). **72px** tab bar = `h-[4.5rem]`; **~28px** tab icons (Lucide `h-7 w-7`) per DESIGN.md.
 **Acceptance criteria:**
-- [ ] Tab bar sticky at bottom; active tab highlighted with `orchard-500`
-- [ ] Top bar shows "Merhaba, {firstName}" + Turkish date
-- [ ] Sync indicator dot (static for now — wires up in M3-10)
+- [x] Tab bar fixed bottom; active tab highlighted with `orchard-500`
+- [x] Top bar: “Merhaba, {firstName}” + Turkish date (`Europe/Istanbul` / `Intl`)
+- [x] Sync indicator (wired — pending count + offline tint; tappable → sheet)
 **Verification:** visual check on a 375×667 viewport; lighthouse mobile a11y ≥ 95
 **Dependencies:** M3-02
-**Files likely touched:** `src/components/layout/MobileShell.tsx`, `src/routes/_mobile/*`
+**Files likely touched:** `src/components/layout/MobileShell.tsx`, `src/routes/m/*`, `src/routes/m/route.tsx` (`beforeLoad` auth)
 **Estimated scope:** M
+**Status:** ✅ **implemented** (Lighthouse / a11y score not re-asserted in CI ⬜)
 
 ### Task M3-05: Today's tasks list (mobile)
-**Description:** `/tasks` for mobile: cards with 96×96 activity icon, activity name, field, due time, status chip, priority dot. Fetched from Supabase (server state via TanStack Query) filtered by `assignee_id = me AND due_date = today`.
+**Description:** **`/m/tasks`**: cards with **96×96** activity area, activity name, field, status chip, priority dot. Fetched via TanStack Query: `assignee_id = me` and `due_date = today` (**`Europe/Istanbul`** — `useMyTodayTasksQuery`).
 **Acceptance criteria:**
-- [ ] Empty state: "Bugün için görev yok" illustration
-- [ ] Pull-to-refresh
-- [ ] Tap card → `/task/{id}`
+- [x] Empty state: “Bugün için görev yok” (text + dashed card; spec “illustration” = copy, not asset)
+- [ ] **Pull-to-refresh** — not implemented; **workaround:** header **Yenile** (`RefreshCw`) refetches
+- [x] Tap card → **`/m/task/{id}`**
 **Verification:** owner creates 3 tasks assigned to test worker; worker sees all 3
 **Dependencies:** M3-04, M2-03
-**Files likely touched:** `src/routes/_mobile/tasks.tsx`, `src/features/tasks/useMyTodayTasks.ts`, `src/features/tasks/TaskCard.mobile.tsx`
+**Files likely touched:** `src/routes/m/tasks.tsx`, `src/features/tasks/useMyTodayTasksQuery.ts`, `src/features/tasks/TaskCard.mobile.tsx`
 **Estimated scope:** M
+**Status:** 🟨 **partial** (refresh UX differs from spec; list is network-first)
 
 ### Task M3-06: Task detail screen (mobile) — Start / Bitir buttons
-**Description:** `/task/{id}`. Top: activity icon + name + field. Middle: notes, assignee, due. Sticky bottom: 72px pill button. TODO → "Başla" (becomes `IN_PROGRESS`); IN_PROGRESS → "Bitir" (becomes `DONE`).
+**Description:** **`/m/task/{id}`**. Top: activity icon + name + field. Middle: **notes** (if present). Bottom: `WorkerButton` (TODO → **Başla** = `IN_PROGRESS`; IN_PROGRESS → **Bitir** opens completion flow, not direct DONE in one tap).
 **Acceptance criteria:**
-- [ ] Button state reflects status
-- [ ] Tapping triggers optimistic update (UI flips immediately)
-- [ ] Haptic feedback on tap (`navigator.vibrate(10)`)
-- [ ] Visible focus ring on button
-**Verification:** start a task → list shows IN_PROGRESS; finish → DONE
+- [x] Button visibility reflects status (not assignee: guard if not mine)
+- [ ] **Optimistic** — uses **invalidate/refetch** after `transitionTask` / outbox, not row-level optimistic list mirror
+- [x] Haptic: `WorkerButton` → `navigator.vibrate(10)` when supported
+- [x] Focus ring: `focus-visible:ring` on `WorkerButton`
+**Verification:** start a task → list shows IN_PROGRESS; finish (via M3-07) → DONE
 **Dependencies:** M3-05
-**Files likely touched:** `src/routes/_mobile/task.$id.tsx`, `src/features/tasks/transition-task.ts`, `src/components/ui/WorkerButton.tsx`
+**Files likely touched:** `src/routes/m/task.$id.tsx`, `src/features/tasks/transition-task.ts` / `worker-mutations.ts`, `src/components/ui/WorkerButton.tsx` (`size="worker"` / 72px)
 **Estimated scope:** M
+**Status:** 🟨 **partial** (optimism story differs from spec wording)
 
 ### Task M3-07: Completion flow — photo + confirm screen
-**Description:** After "Bitir", show optional "Fotoğraf ekle?" screen (camera icon button). If user attaches, photo goes to Cache Storage first. Then confirmation screen: "Bu görev bitti mi?" with `[Evet, bitir]` + `[İptal]`. Animation ✓ → back to list.
+**Description:** After **Bitir**, `CompletionFlow`: optional photo (file input `capture="environment"`) → optional blob in **Dexie `blobs`**, then **confirm** → `queueTaskCompletionWithOptionalPhoto` (outbox). ✓ state → redirect **`/m/tasks`**. `prefers-reduced-motion` short-circuits extra delay.
 **Acceptance criteria:**
-- [ ] Photo capture via `<input type="file" accept="image/*" capture="environment">`
-- [ ] Skip → confirm without photo
-- [ ] Confirm only → writes DONE status + optional `completion_photo_url` (via outbox if offline)
-- [ ] 300ms ✓ animation respects `prefers-reduced-motion`
+- [x] Photo capture via `<input type="file" accept="image/*" capture="environment">`
+- [x] Skip path → confirm without photo
+- [x] Confirm → `DONE` + optional **`issue-photos`** path in `completion_photo_url` (private; sign on read) via outbox
+- [x] `prefers-reduced-motion` respected for success animation
 **Verification:** complete a task with and without photo; both paths reach list
-**Dependencies:** M3-06, M0-15 (bucket exists but photos won't be routed here — completion photos use a separate bucket created inline; note added to Open Questions)
-**Files likely touched:** `src/features/tasks/CompletionFlow.tsx`, `src/features/tasks/complete-task.ts`
+**Dependencies:** M3-06, M0-15 (uses existing **`issue-photos`** bucket)
+**Files likely touched:** `src/features/tasks/CompletionFlow.tsx`, `src/features/tasks/complete-task.ts` (re-export) / `worker-mutations.ts`
 **Estimated scope:** M
+**Status:** ✅ **implemented** (photo staged in **IndexedDB blob table**, not Cache Storage — same “offline-first” intent)
 
 ### Task M3-08: Reassign action (worker can reassign their own task)
-**Description:** "Aktar" button on task detail. Opens a bottom-sheet person picker. On select, task.assignee_id updates + `activity_log` row `task.reassigned`. New assignee sees it on their list.
+**Description:** **Aktar** on task detail → `ReassignSheetMobile` → `reassign_task` RPC via **`queueTaskReassign`** (outbox + drain). Trigger still writes **`task.reassigned`** in `activity_log`.
 **Acceptance criteria:**
-- [ ] Current worker not in picker list
-- [ ] Optimistic update: task disappears from my list
-- [ ] Reassignment queued via outbox if offline
+- [x] Current assignee **excluded** from picker (`useAssignablePeopleQuery` filtered)
+- [ ] **Optimistic** list removal — on success, **navigate to `/m/tasks` + refetch** (not silent row remove)
+- [x] Reassign enqueued; offline → drain when online
 **Verification:** reassign from worker A to worker B; A's list no longer shows it; B's does
 **Dependencies:** M3-06
-**Files likely touched:** `src/features/tasks/ReassignSheet.mobile.tsx`, shared `reassign-task.ts`
+**Files likely touched:** `src/features/tasks/ReassignSheet.mobile.tsx`, `reassign-task.ts` (unchanged RPC), `worker-mutations.ts`
 **Estimated scope:** S
+**Status:** 🟨 **partial** (no strict optimistic “task row vanishes” before RTT)
 
 ### Task M3-09: Dexie schema + read cache (fields, people, today's tasks)
-**Description:** Define Dexie v1 schema: `fields`, `people`, `equipment`, `activities`, `issue_categories`, `tasks_today`, `outbox`. On app load, populate read caches from Supabase. Queries read cache first, then revalidate via network.
+**Description:** **Dexie v2** stores: `fields`, `people`, `equipment`, `activities`, `issue_categories`, `tasks_today`, `outbox`, `blobs`. On load, **`bootstrapReadCachesForWorker`** fills caches from Supabase. **List/detail queries** still use **PostgREST + TanStack Query** (network-primary); full “read Dexie first, then revalidate” is **not** applied to all queries yet.
 **Acceptance criteria:**
-- [ ] `db.fields.count()` > 0 after first load
-- [ ] Offline app still shows cached fields/people
-- [ ] Dexie schema versioned; upgrade hooks in place
-**Verification:** airplane mode → cached data still renders on `/tasks`
+- [x] `db.version(2)`; stores above; v1 → v2 upgrade path
+- [x] After first load with network, `bootstrapReadCachesForWorker` populates (e.g. `db.fields` non-empty)
+- [ ] **Strict:** Airplane mode → today list still populated from **Dexie** alone ⬜ (current: may empty if no prior cache session)
+- [ ] `src/lib/cache.ts` **not** added — logic lives in `bootstrap-cache.ts` + `db.ts`
+**Verification:** airplane mode → cached data still renders on `/m/tasks` (target; partial today)
 **Dependencies:** M3-08
-**Files likely touched:** `src/lib/db.ts`, `src/lib/cache.ts`, `src/features/bootstrap/bootstrap-cache.ts`
+**Files likely touched:** `src/lib/db.ts`, `src/features/bootstrap/bootstrap-cache.ts` (called from `MobileShell`)
 **Estimated scope:** L — **SPLIT** into M3-09a (schema), M3-09b (read cache population)
+**Status:** 🟨 **partial** (schema + bootstrap; query path still mostly network)
 
 ### Task M3-10: Outbox pattern — enqueue mutations offline
-**Description:** All writes (start task, done, reassign) go through `outbox.enqueue({ kind, payload, client_uuid })` BEFORE hitting Supabase. Sync worker drains outbox on reconnect. Each outbox item has idempotency via client UUID.
+**Description:** Worker writes use **`enqueueOutbox` + `drainOutbox`** (`src/lib/sync.ts`) after **TanStack** mutations from `worker-mutations.ts`. Kinds: `task_status`, `task_completion`, `task_reassign`. **Online:** drain runs after enqueue; **`online` event** + mount also drain.
 **Acceptance criteria:**
-- [ ] `outbox` Dexie table with `id, kind, payload, client_uuid, enqueued_at, attempts, last_error`
-- [ ] `enqueue()` always succeeds locally
-- [ ] Sync indicator shows pending count from `outbox`
+- [x] `outbox` table: `id, kind, payload, client_uuid, enqueued_at, attempts, last_error` (as implemented)
+- [x] Local enqueue before server apply (per worker flows)
+- [x] `SyncIndicator` uses **`useLiveQuery`** on `db.outbox.count()`
 **Verification:** offline → complete a task → outbox count = 1; back online → count = 0; task is DONE on server
 **Dependencies:** M3-09
-**Files likely touched:** `src/lib/sync.ts`, `src/lib/db.ts`, `src/features/tasks/*`
+**Files likely touched:** `src/lib/sync.ts`, `src/lib/db.ts`, `src/features/tasks/worker-mutations.ts`
 **Estimated scope:** L — **SPLIT** into M3-10a (enqueue), M3-10b (drain + retry)
+**Status:** ✅ **implemented** (start/complete/reassign from worker go through outbox; owner UI unchanged)
 
 ### Task M3-11: Sync reconciliation + conflict rules (last-write-wins)
-**Description:** Sync worker drains outbox serially. On conflict (server status > local's intended transition), log conflict and drop local mutation. On network error, exponential backoff (5s, 30s, 2m, 10m, cap 15m).
+**Description:** Drain **serial**; on apply, re-read `tasks.status` vs `fromStatus` — **mismatch → delete outbox row** (no throw). On transport error, **attempts/last_error** update + **exponential-ish backoff** array with cap in `drainOutbox`.
 **Acceptance criteria:**
-- [ ] Conflict scenario (two workers complete same task) → second completer's mutation is no-op, no crash
-- [ ] `last_error` column populated on failure
-- [ ] Backoff respects cap
+- [x] Mismatch: row dropped (treat as **no-op**)
+- [x] `last_error` on outbox row after failure
+- [x] Backoff **steps** present (5s… cap); **exhaustive Vitest** for edge cases ⬜
 **Verification:** simulated conflict test passes in Vitest
 **Dependencies:** M3-10
-**Files likely touched:** `src/lib/sync.ts`, `src/lib/sync.test.ts`
+**Files likely touched:** `src/lib/sync.ts`, `src/lib/sync.test.ts` (current: smoke + `resetSyncBackoffForTests` only)
 **Estimated scope:** M
+**Status:** 🟨 **partial** (runtime behavior; deep tests and “two workers” simulation not in `sync.test.ts` yet)
 
 ### Task M3-12: Sync indicator UI (top-right, tappable)
-**Description:** Top-right dot with colors: green (synced), orange (N pending), gray (offline). Tap opens a sheet listing outstanding outbox items.
+**Description:** **Dot** in header: **orchard-500** when synced & online; **harvest-500** when `pending>0` & online; **surface-2** when **offline** (not a literal green dot — semantic colors). Tap → **`SyncSheet`**, last 20, kind + time + `last_error`.
 **Acceptance criteria:**
-- [ ] Reactive to outbox count changes (Dexie liveQuery)
-- [ ] Offline event (`navigator.onLine`) flips to gray
-- [ ] Sheet lists last 20 items with kind + field + timestamp
-**Verification:** toggle airplane mode → indicator color changes; open sheet → shows items
+- [x] `useLiveQuery` for count
+- [x] `useSyncExternalStore` on `online` / `offline`
+- [x] Sheet: last 20, reverse `enqueued_at` (field column not denormalized in outbox ⬜)
+**Verification:** toggle airplane mode → indicator changes; open sheet → shows items
 **Dependencies:** M3-11
 **Files likely touched:** `src/components/SyncIndicator.tsx`, `src/components/SyncSheet.tsx`
 **Estimated scope:** M
+**Status:** ✅ **implemented** (sheet row copy is `kind + id slice`, not per-field label)
 
 ### Task M3-13: History screen (Geçmiş) — my tasks this week
-**Description:** `/history` mobile route. List grouped by day, my tasks this week (status chip next to each). Infinite scroll backward.
+**Description:** **`/m/history`**. `useMyTaskHistoryQuery`: `due_date` between sliding window from **`thisWeekStart − daysBack`** through **end of current week**; **grouped by `due_date`**; **`formatDayMonthTr`** (weekday + day + month). **Daha eski** (load older) increases **`daysBack`** (7d steps), not true infinite list cursor.
 **Acceptance criteria:**
-- [ ] Days have Turkish labels ("Salı, 22 Nisan")
-- [ ] Completed tasks show checkmark; blocked tasks red dot
-- [ ] Scroll loads previous week
+- [x] Turkish day headers via `formatDayMonthTr` / `tr-TR` `Intl`
+- [x] DONE → **Check** icon; BLOCKED → red **dot**
+- [x] **Load older** extends range (not spec “infinite scroll” on a single list — same intent)
 **Verification:** complete 3 tasks on 3 different days → history shows them grouped correctly
 **Dependencies:** M3-06
-**Files likely touched:** `src/routes/_mobile/history.tsx`, `src/features/tasks/useMyTaskHistory.ts`
+**Files likely touched:** `src/routes/m/history.tsx`, `src/features/tasks/useMyTaskHistoryQuery.ts`, `src/lib/date-istanbul.ts`
 **Estimated scope:** M
+**Status:** 🟨 **partial** (UX: button “Daha eski” vs infinite scroll; window math via `addDaysToISODate`)
 
 ### Task M3-14: Profile screen (Profil) — mute toggles + logout
-**Description:** `/profile` shows name, phone, role (read-only). Notification mute toggles (stored in `people.notification_prefs` JSONB). Theme picker (system/light/dark). Logout button (rarely used).
+**Description:** **`/m/profile`**. Read-only name, phone, role. **`push_muted`** (and **theme** key) in **`people.notification_prefs`** via `mergeNotificationPrefs`. Theme: **`src/lib/theme.ts`** → `.dark` on **`<html>`** + `localStorage` + `applyThemeOn load` in **`main.tsx`**. Logout: **`supabase.auth.signOut`**, **`db.delete()`**, navigate **`/login?redirect=…&worker=true`**.
 **Acceptance criteria:**
-- [ ] Toggles persist to DB
-- [ ] Theme changes apply live (Tailwind dark mode class on `<html>`)
-- [ ] Logout clears Dexie cache + session; redirects to `/login` (but worker has no password — shows "Yeni kurulum linki iste" link)
+- [x] Toggles + theme **persist** to `people` JSON
+- [x] Theme live + stored (`getStoredAgrovaTheme` / profile merge)
+- [x] Logout wipes **IndexedDB (Dexie)** and session; worker **login** = `/login?worker=1` copy (Lingui)
 **Verification:** toggle mutes; reload; still off; theme changes visibly
 **Dependencies:** M3-04
-**Files likely touched:** `src/routes/_mobile/profile.tsx`, `src/features/profile/*`
+**Files likely touched:** `src/routes/m/profile.tsx`, `src/lib/theme.ts` (no separate `src/features/profile/*` package)
 **Estimated scope:** M
+**Status:** ✅ **implemented** (worker redirect uses `worker: true` in app router **search** types)
 
 ### Task M3-15: Integration tests — offline → online sync
-**Description:** Playwright test: throttle network to offline, complete a task, reconnect, verify sync.
+**Description:** Playwright **`e2e/offline-sync.spec.ts`**: (1) worker **login** landing copy, (2) unauthenticated **`/m/tasks`** → **`/login`**, (3) HTTP 200 on worker login URL. **Not** a full throttled **offline complete task** flow in CI.
 **Acceptance criteria:**
-- [ ] Test covers: online baseline → offline → complete → online → sync → server state correct
-- [ ] Covers reassignment offline too
-**Verification:** `pnpm test:e2e -- --grep offline-sync` green
+- [x] `pnpm test:e2e` can pass with **dev server** running (`playwright.config.ts` — no auto `webServer`; default **`http://localhost:5173`**, override **`PLAYWRIGHT_BASE_URL`**)
+- [ ] **Full** scenario: online → offline → complete → online → assert server **⬜** (out of scope for current spec file)
+- [ ] Reassign offline E2E **⬜**
+**Verification:** `pnpm test:e2e` / `--grep offline-sync` — ensure dev is up; see README / plan
 **Dependencies:** M3-12
-**Files likely touched:** `e2e/offline-sync.spec.ts`
+**Files likely touched:** `e2e/offline-sync.spec.ts`, `playwright.config.ts`
 **Estimated scope:** M
+**Status:** 🟨 **partial** (smoke E2E; heavy offline test deferred)
 
 ### Checkpoint M3-ω: Worker MVP
-- [ ] Worker opens setup link (from owner) → installs PWA → sees 3 tasks → completes them offline → syncs on reconnect
-- [ ] Coverage on `src/lib/sync.ts` + `src/lib/db.ts` ≥ 95% (spec §11 requirement)
-- [ ] E2E offline-sync test green
-- [ ] Human review
+- [ ] **End-to-end (manual/QA):** setup link → PWA install hint → 3 tasks → **offline** complete → **reconnect** sync (not fully automated)
+- [ ] **Coverage** `src/lib/sync.ts` + `src/lib/db.ts` **≥ 95%** (spec §11) — **⬜**
+- [x] E2E **`offline-sync`** spec file exists; smoke tests **can** be green (dev + `PLAYWRIGHT_BASE_URL` as needed)
+- [ ] **Human review** ⬜
 
 ---
 
