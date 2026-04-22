@@ -13,7 +13,7 @@
 >
 > **Progress (M5):** M5-01..M5-05 ✅ (worker **Alet** sheet + `task_equipment` outbox; trigger `task_equipment_after_insert_chemical` → `chemical_applications` for `CHEMICAL` — migration `20260422170000_…` + MCP; owner usage sheet; field chemicals tab + CSV; tests + coverage excludes). **Next:** M5-ω.
 >
-> **Progress (M6):** M6-01..M6-08 ✅ in repo: push stack + prefs + **`supabase/functions/web-push-fanout/IDEMPOTENCY.md`** (duplicate `notifications` insert = `23505` skip) + `invoke-web-push-fanout.test.ts` + `notification-prefs.test.ts` + **M6-ω** push KPI in staging. **E2E push** to a real subscription remains manual smoke in deployed env.
+> **Progress (M6):** M6-01..M6-08 ✅ in repo: push stack + prefs + **`docs/operations/vapid-and-web-push.md`** (`pnpm vapid:keys`, Supabase secrets, redeploy) + **`supabase/functions/web-push-fanout/IDEMPOTENCY.md`** (duplicate `notifications` insert = `23505` skip) + `invoke-web-push-fanout.test.ts` + `notification-prefs.test.ts` + **M6-ω** push KPI in staging. **E2E push** to a real subscription remains manual smoke in deployed env.
 >
 > **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **Lighthouse:** `pnpm lh:report` → `docs/lighthouse/m7-ω.html` (unauth `/today`); KPI sign-off for logged-in + human M7-ω.
 >
@@ -1011,12 +1011,13 @@ Goal: owner receives a push within 10s of any issue report; notifications fan ou
 ### Task M6-01: VAPID keys + `push_subscriptions` table
 **Description:** Generate VAPID keys (stored in Supabase Secrets). New table `push_subscriptions(id, person_id, endpoint, p256dh, auth, created_at)`. RLS: user can insert/delete own rows.
 **Acceptance criteria:**
-- [ ] Keys generated and stored; public key exposed via edge function `get-vapid-public-key`
-- [ ] Table + RLS + migration present
-**Verification:** `list_tables` shows `push_subscriptions`; `execute_sql` subscription round-trip works
+- [x] Keys generated and stored; public key exposed via edge function `get-vapid-public-key` — **operational runbook:** `docs/operations/vapid-and-web-push.md`, `pnpm vapid:keys`
+- [x] Table + RLS + migration present (`20260422180000_m6_push_subscriptions.sql`)
+**Verification:** `list_tables` shows `push_subscriptions`; `execute_sql` subscription round-trip works; `curl` to `get-vapid-public-key` returns `200` after secrets + redeploy
 **Dependencies:** M5-ω
 **Files likely touched:** `supabase/migrations/...push_subscriptions.sql`, `supabase/functions/get-vapid-public-key/index.ts`
 **Estimated scope:** S
+**Status:** ✅ **implemented in repo**; per-environment VAPID secrets are operator setup (see runbook)
 
 ### Task M6-02: Client — subscribe to push + persist subscription
 **Description:** On first login after notification permission granted, register SW push subscription and POST to Supabase. Re-register on subscription expiry.

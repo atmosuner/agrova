@@ -32,6 +32,8 @@ Or use **Supabase Dashboard → Edge Functions** and paste from `supabase/functi
 
 ### M6 / M8 Edge functions & secrets
 
+**VAPID (generate keys, set secrets, redeploy, verify):** see [`docs/operations/vapid-and-web-push.md`](../docs/operations/vapid-and-web-push.md). Quick key generation: `pnpm vapid:keys` from the repo root.
+
 - **`web-push-fanout`** — requires `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` in project secrets.
 - **`get-vapid-public-key`** — public key for the browser (no JWT by default).
 - **`daily-digest`** — `POST` with header `Authorization: Bearer <DAILY_DIGEST_CRON_SECRET>` (set the same value in Edge secrets). Intended to be triggered by **pg_cron** + **pg_net** after `20260422220000_m8_anonymize_and_cron_ext.sql` (extensions enabled). Schedule in the **SQL Editor** (replace project ref and secret), e.g. daily at 15:00 UTC (= 18:00 Europe/Istanbul year-round):

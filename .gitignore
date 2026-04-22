@@ -32,6 +32,8 @@ ctp-ctp.json
 supabase/.branches
 supabase/.temp
 supabase/.env
+# Ephemeral VAPID bundle from scripts/push-vapid-secrets.mjs (before successful upload)
+supabase/.vapid-generated.env
 supabase/config.local.toml
 supabase/.mcp_m*.json
 

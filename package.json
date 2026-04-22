@@ -21,7 +21,9 @@
     "preview": "vite preview",
     "gh-pages:emit-fallback": "node scripts/emit-github-pages-spa.mjs",
     "supabase:gen-types": "node scripts/supabase-gen-types.mjs",
-    "supabase:functions:serve": "npx -y supabase@2 functions serve"
+    "supabase:functions:serve": "npx -y supabase@2 functions serve",
+    "vapid:keys": "npx -y web-push@3.6.6 generate-vapid-keys",
+    "vapid:push-secrets": "node scripts/push-vapid-secrets.mjs"
   },
   "dependencies": {
     "@fontsource-variable/inter": "^5.2.8",
@@ -82,6 +84,7 @@
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.9",
     "vite-plugin-pwa": "^1.2.0",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.5",
+    "web-push": "3.6.6"
   }
 }
