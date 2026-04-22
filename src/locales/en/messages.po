@@ -17,6 +17,10 @@ msgstr ""
 msgid "—"
 msgstr "—"
 
+#: src/features/tasks/TaskCreateModal.tsx:102
+msgid "1. Aktivite seçin"
+msgstr "1. Aktivite seçin"
+
 #: src/features/equipment/csv.ts:24
 #: src/features/equipment/csv.ts:31
 #: src/features/people/csv.ts:26
@@ -38,10 +42,14 @@ msgstr "Address"
 msgid "Agronomist"
 msgstr "Agronomist"
 
-#: src/routes/_owner/route.tsx:45
-#: src/routes/_owner/route.tsx:53
+#: src/routes/_owner/route.tsx:47
+#: src/routes/_owner/route.tsx:55
 msgid "Agrova"
 msgstr "Agrova"
+
+#: src/features/tasks/TaskCreateModal.tsx:103
+msgid "Aktiviteler"
+msgstr "Aktiviteler"
 
 #: src/routes/signup.tsx:185
 msgid "Already have an account? Sign in"
@@ -78,19 +86,39 @@ msgstr "Area"
 msgid "Area (ha)"
 msgstr "Area (ha)"
 
+#: src/features/tasks/activities.ts:33
+msgid "Aşılama"
+msgstr "Aşılama"
+
 #: src/routes/signup.tsx:155
 msgid "At least 8 characters, including one number."
 msgstr "At least 8 characters, including one number."
 
+#: src/features/tasks/TaskCreateModal.tsx:135
+msgid "Atanan kişi ve tarih — M2-03"
+msgstr "Atanan kişi ve tarih — M2-03"
+
 #: src/routes/login.tsx:13
 #~ msgid "Authentication form ships in a later milestone."
 #~ msgstr "Authentication form ships in a later milestone."
+
+#: src/features/tasks/activities.ts:36
+msgid "Biçme"
+msgstr "Biçme"
+
+#: src/features/tasks/activities.ts:25
+msgid "Budama"
+msgstr "Budama"
 
 #: src/routes/_owner/equipment.tsx:315
 #: src/routes/_owner/fields.tsx:384
 #: src/routes/_owner/people.tsx:370
 msgid "Cancel"
 msgstr "Cancel"
+
+#: src/features/tasks/activities.ts:31
+msgid "Çapalama"
+msgstr "Çapalama"
 
 #: src/features/equipment/csv.ts:21
 msgid "Category"
@@ -147,6 +175,18 @@ msgstr "Delete field"
 msgid "Device setup"
 msgstr "Device setup"
 
+#: src/features/tasks/activities.ts:38
+msgid "Diğer"
+msgstr "Diğer"
+
+#: src/features/tasks/activities.ts:32
+msgid "Dikim"
+msgstr "Dikim"
+
+#: src/features/tasks/activities.ts:35
+msgid "Don koruma"
+msgstr "Don koruma"
+
 #: src/routes/_owner/equipment.tsx:226
 #: src/routes/_owner/fields.tsx:258
 #: src/routes/_owner/people.tsx:208
@@ -193,12 +233,12 @@ msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "Enter your work email and a phone in international format (E.164)."
 
 #: src/routes/_owner/equipment.tsx:203
-#: src/routes/_owner/route.tsx:37
+#: src/routes/_owner/route.tsx:39
 msgid "Equipment"
 msgstr "Equipment"
 
 #: src/routes/_owner/fields.tsx:248
-#: src/routes/_owner/route.tsx:33
+#: src/routes/_owner/route.tsx:35
 msgid "Fields"
 msgstr "Fields"
 
@@ -222,20 +262,52 @@ msgstr "Formu kontrol edin."
 msgid "Full name"
 msgstr "Full name"
 
+#: src/features/tasks/TaskCreateModal.tsx:151
+msgid "Geri"
+msgstr "Geri"
+
+#: src/features/tasks/activities.ts:34
+msgid "Gözlem"
+msgstr "Gözlem"
+
+#: src/features/tasks/activities.ts:28
+msgid "Gübreleme"
+msgstr "Gübreleme"
+
 #: src/routes/_owner/fields.tsx:300
 #: src/routes/_owner/fields.tsx:403
 msgid "ha"
 msgstr "ha"
+
+#: src/features/tasks/activities.ts:30
+msgid "Hasat"
+msgstr "Hasat"
 
 #: src/routes/m/history.tsx:11
 #: src/routes/m/route.tsx:12
 msgid "History"
 msgstr "History"
 
+#: src/features/tasks/activities.ts:26
+msgid "İlaçlama"
+msgstr "İlaçlama"
+
+#: src/features/tasks/TaskCreateModal.tsx:168
+msgid "İleri"
+msgstr "İleri"
+
 #: src/routes/_owner/issues.tsx:11
-#: src/routes/_owner/route.tsx:35
+#: src/routes/_owner/route.tsx:37
 msgid "Issues"
 msgstr "Issues"
+
+#: src/features/tasks/TaskCreateModal.tsx:97
+msgid "Kapat"
+msgstr "Kapat"
+
+#: src/features/tasks/TaskCreateModal.tsx:28
+msgid "Kaydedilmemiş değişiklikler var. Pencereyi kapatılsın mı?"
+msgstr "Kaydedilmemiş değişiklikler var. Pencereyi kapatılsın mı?"
 
 #: src/features/fields/csv.ts:30
 msgid "Latitude"
@@ -263,6 +335,10 @@ msgstr "Longitude"
 #: src/features/fields/FieldsMap.tsx:179
 msgid "Map of fields"
 msgstr "Map of fields"
+
+#: src/features/tasks/activities.ts:37
+msgid "Nakliye"
+msgstr "Nakliye"
 
 #: src/features/equipment/csv.ts:22
 #: src/features/fields/csv.ts:26
@@ -351,12 +427,15 @@ msgstr "Phone (TR)"
 
 #: src/routes/_owner/issues.tsx:12
 #: src/routes/_owner/reports.tsx:12
-#: src/routes/_owner/tasks.tsx:12
 #: src/routes/m/history.tsx:12
 #: src/routes/m/profile.tsx:12
 #: src/routes/m/report-issue.tsx:12
 msgid "Placeholder."
 msgstr "Placeholder."
+
+#: src/routes/_owner/tasks.tsx:21
+msgid "Plan and assign work across fields."
+msgstr "Plan and assign work across fields."
 
 #: src/features/fields/csv.ts:32
 msgid "Plant count"
@@ -385,7 +464,7 @@ msgid "Report an issue"
 msgstr "Report an issue"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:38
+#: src/routes/_owner/route.tsx:40
 msgid "Reports"
 msgstr "Reports"
 
@@ -411,7 +490,7 @@ msgstr "Saved."
 msgid "Saving…"
 msgstr "Saving…"
 
-#: src/routes/_owner/route.tsx:39
+#: src/routes/_owner/route.tsx:41
 #: src/routes/_owner/settings.tsx:74
 #: src/routes/_owner/settings.tsx:82
 msgid "Settings"
@@ -420,6 +499,10 @@ msgstr "Settings"
 #: src/routes/_owner/people.tsx:190
 msgid "Setup link copied to clipboard."
 msgstr "Setup link copied to clipboard."
+
+#: src/features/tasks/activities.ts:29
+msgid "Seyreltme"
+msgstr "Seyreltme"
 
 #: src/routes/_owner/equipment.tsx:238
 #: src/routes/_owner/people.tsx:228
@@ -447,19 +530,27 @@ msgstr "Signing up…"
 msgid "Status"
 msgstr "Status"
 
+#: src/features/tasks/activities.ts:27
+msgid "Sulama"
+msgstr "Sulama"
+
+#: src/features/tasks/TaskCreateModal.tsx:130
+msgid "Tarlalar — bir sonraki adımda (M2-02) yüklenecek."
+msgstr "Tarlalar — bir sonraki adımda (M2-02) yüklenecek."
+
 #: src/routes/m/task.$id.tsx:12
 msgid "Task"
 msgstr "Task"
 
-#: src/routes/_owner/route.tsx:34
-#: src/routes/_owner/tasks.tsx:11
+#: src/routes/_owner/route.tsx:36
+#: src/routes/_owner/tasks.tsx:19
 #: src/routes/m/route.tsx:11
 #: src/routes/m/tasks.tsx:11
 msgid "Tasks"
 msgstr "Tasks"
 
 #: src/routes/_owner/people.tsx:203
-#: src/routes/_owner/route.tsx:36
+#: src/routes/_owner/route.tsx:38
 msgid "Team"
 msgstr "Team"
 
@@ -467,7 +558,7 @@ msgstr "Team"
 msgid "Time zone"
 msgstr "Time zone"
 
-#: src/routes/_owner/route.tsx:32
+#: src/routes/_owner/route.tsx:34
 #: src/routes/_owner/today.tsx:11
 msgid "Today"
 msgstr "Today"
@@ -524,3 +615,8 @@ msgstr "Worker"
 #: src/routes/m/tasks.tsx:13
 msgid "Worker PWA task list — /m URL prefix until role-based routing."
 msgstr "Worker PWA task list — /m URL prefix until role-based routing."
+
+#: src/features/tasks/TaskCreateModal.tsx:90
+#: src/routes/_owner/tasks.tsx:24
+msgid "Yeni görev"
+msgstr "Yeni görev"
