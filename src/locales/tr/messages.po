@@ -88,8 +88,8 @@ msgstr "Ağ yok. Bağlantı sağlandığında tekrar deneyin; Agrova çevrimdı�
 msgid "Agronomist"
 msgstr "Ziraat mühendisi"
 
-#: src/routes/_owner/route.tsx:53
-#: src/routes/_owner/route.tsx:61
+#: src/routes/_owner/route.tsx:90
+#: src/routes/_owner/route.tsx:123
 msgid "Agrova"
 msgstr "Agrova"
 
@@ -473,6 +473,11 @@ msgstr "Cihaz hesapları (@device) için e-posta ile sıfırlama yok. İşletme 
 msgid "Çıkış yap"
 msgstr "Çıkış yap"
 
+#: src/routes/_owner/route.tsx:130
+#: src/routes/_owner/route.tsx:135
+msgid "Collapse navigation"
+msgstr "Kenar çubuğunu daralt"
+
 #: src/routes/_owner/people.tsx:614
 #: src/routes/_owner/settings.tsx:223
 #: src/routes/m/profile.tsx:122
@@ -710,7 +715,7 @@ msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "İş e-postanızı ve telefonu uluslararası (E.164) formatta girin."
 
 #: src/routes/_owner/equipment.tsx:205
-#: src/routes/_owner/route.tsx:45
+#: src/routes/_owner/route.tsx:63
 msgid "Equipment"
 msgstr "Ekipman"
 
@@ -726,8 +731,13 @@ msgstr "Eşleşen tarla yok."
 msgid "Evet, bitir"
 msgstr "Evet, bitir"
 
+#: src/routes/_owner/route.tsx:110
+#: src/routes/_owner/route.tsx:115
+msgid "Expand navigation"
+msgstr "Kenar çubuğunu genişlet"
+
 #: src/routes/_owner/fields.tsx:254
-#: src/routes/_owner/route.tsx:41
+#: src/routes/_owner/route.tsx:59
 msgid "Fields"
 msgstr "Tarlalar"
 
@@ -1334,6 +1344,10 @@ msgstr "Sahip"
 #~ msgid "Owner home placeholder — M0-03 smoke; routing in M0-05."
 #~ msgstr "Sahip ana ekran yer tutucu — M0-03 duman testi; yönlendirme M0-05."
 
+#: src/routes/_owner/route.tsx:100
+msgid "Owner navigation"
+msgstr "Sahip menüsü"
+
 #: src/routes/login.tsx:101
 #~ msgid "Owner sign-in"
 #~ msgstr "Giriş (sahip)"
@@ -1434,7 +1448,7 @@ msgstr "Sınırı yeniden çiz"
 #~ msgstr "Sorun bildir"
 
 #: src/routes/_owner/reports.tsx:11
-#: src/routes/_owner/route.tsx:46
+#: src/routes/_owner/route.tsx:64
 msgid "Reports"
 msgstr "Raporlar"
 
@@ -1550,7 +1564,7 @@ msgstr "Set a new sign-in password. They keep the same device e-mail; tell them 
 msgid "Set password"
 msgstr "Set password"
 
-#: src/routes/_owner/route.tsx:47
+#: src/routes/_owner/route.tsx:65
 #: src/routes/_owner/settings.tsx:130
 #: src/routes/_owner/settings.tsx:138
 msgid "Settings"
@@ -1657,7 +1671,7 @@ msgid "Sorun raporu"
 msgstr "Sorun raporu"
 
 #: src/routes/_owner/issues.tsx:61
-#: src/routes/_owner/route.tsx:43
+#: src/routes/_owner/route.tsx:61
 msgid "Sorunlar"
 msgstr "Sorunlar"
 
@@ -1756,13 +1770,13 @@ msgstr "Task id"
 msgid "Task, field, people, and issue data belong to your operation; access is enforced with Row Level Security."
 msgstr "Task, field, people, and issue data belong to your operation; access is enforced with Row Level Security."
 
-#: src/routes/_owner/route.tsx:42
+#: src/routes/_owner/route.tsx:60
 #: src/routes/_owner/tasks.tsx:73
 msgid "Tasks"
 msgstr "Görevler"
 
 #: src/routes/_owner/people.tsx:337
-#: src/routes/_owner/route.tsx:44
+#: src/routes/_owner/route.tsx:62
 msgid "Team"
 msgstr "Ekip"
 
@@ -1782,7 +1796,7 @@ msgstr "This page describes how Agrova processes personal and operational data. 
 msgid "Time zone"
 msgstr "Saat dilimi"
 
-#: src/routes/_owner/route.tsx:40
+#: src/routes/_owner/route.tsx:58
 #: src/routes/_owner/today.tsx:70
 msgid "Today"
 msgstr "Bugün"
