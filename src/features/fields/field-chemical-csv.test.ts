@@ -28,4 +28,25 @@ describe('downloadFieldChemicalsCsv', () => {
     expect(data[0]?.length).toBeGreaterThan(0)
     expect(data[1]?.[2]).toBe('ilaçlama')
   })
+
+  it('passes through invalid date string in formatApplied', () => {
+    const rows: FieldChemicalRow[] = [
+      {
+        id: 'c1',
+        task_id: 't1',
+        applied_at: 'not-a-date',
+        task_activity: 'x',
+        applicator_name: null,
+      },
+    ]
+    downloadFieldChemicalsCsv('A', rows)
+    const [data] = downloadUnparse.mock.calls[0]!
+    expect((data[1] as string[])[0]).toBe('not-a-date')
+  })
+
+  it('uses field filename fallback when name is only whitespace or slashes', () => {
+    downloadFieldChemicalsCsv('   ', [])
+    const [, p] = downloadUnparse.mock.calls[0]!
+    expect(p).toBe('field-chemicals-field')
+  })
 })

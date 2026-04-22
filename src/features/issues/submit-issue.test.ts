@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { afterEach, describe, expect, it, vi, beforeEach } from 'vitest'
 import { submitIssueDraft } from '@/features/issues/submit-issue'
 
 const mockBlobsAdd = vi.fn()
@@ -24,6 +24,11 @@ describe('submitIssueDraft', () => {
     mockEnqueue.mockClear()
     mockDrain.mockClear()
     mockEnqueue.mockResolvedValue('outbox-id')
+    vi.stubGlobal('crypto', { randomUUID: () => 'cccccccc-cccc-cccc-cccc-cccccccccccc' })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   it('enqueues issue_row before issue_photo with ordered timestamps', async () => {
@@ -71,5 +76,39 @@ describe('submitIssueDraft', () => {
     const t2 = mockEnqueue.mock.calls[2]?.[0]?.enqueued_at as number
     const t1 = mockEnqueue.mock.calls[1]?.[0]?.enqueued_at as number
     expect(t2).toBeGreaterThan(t1)
+  })
+
+  it('omits task/field/gps from row payload when undefined or NaN', async () => {
+    await submitIssueDraft({
+      category: 'EQUIP',
+      photoJpeg: new Blob(['x'], { type: 'image/jpeg' }),
+      reporterId: '11111111-1111-1111-1111-111111111111',
+      gpsLat: Number.NaN,
+      gpsLng: Number.NaN,
+    })
+    const payload = mockEnqueue.mock.calls[0]?.[0]?.payload as Record<string, unknown>
+    expect(payload['taskId']).toBeUndefined()
+    expect(payload['fieldId']).toBeUndefined()
+    expect(payload['gpsLat']).toBeUndefined()
+    expect(payload['gpsLng']).toBeUndefined()
+  })
+
+  it('uses non-crypto id fallbacks when randomUUID is unavailable', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(globalThis as any).crypto = undefined
+    const before = performance.now()
+    await submitIssueDraft({
+      category: 'PEST',
+      photoJpeg: new Blob(['x'], { type: 'image/jpeg' }),
+      reporterId: '11111111-1111-1111-1111-111111111111',
+      voiceBlob: new Blob(['v'], { type: 'audio/webm' }),
+    })
+    const rowPayload = mockEnqueue.mock.calls[0]?.[0]?.payload as { issueId: string }
+    const photoPayload = mockEnqueue.mock.calls[1]?.[0]?.payload as { blobId: string }
+    expect(rowPayload.issueId).toMatch(/^issue-/)
+    expect(photoPayload.blobId).toMatch(/^blob-/)
+    const voiceCall = mockEnqueue.mock.calls[2]?.[0] as { kind: string; payload: { blobId: string } }
+    expect(voiceCall.kind).toBe('issue_voice')
+    expect(voiceCall.payload.blobId).toMatch(/^voice-/)
   })
 })

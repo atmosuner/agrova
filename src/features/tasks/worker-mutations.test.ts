@@ -1,4 +1,4 @@
-import { describe, expect, it, vi, beforeEach } from 'vitest'
+import { afterEach, describe, expect, it, vi, beforeEach } from 'vitest'
 import {
   queueTaskStatusChange,
   queueTaskReassign,
@@ -29,6 +29,11 @@ describe('worker-mutations (outbox contract)', () => {
     mockEnqueue.mockReset()
     mockDrain.mockReset()
     mockEnqueue.mockResolvedValue('ob')
+    vi.stubGlobal('crypto', { randomUUID: () => 'bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb' })
+  })
+
+  afterEach(() => {
+    vi.unstubAllGlobals()
   })
 
   it('queueTaskStatusChange enqueues task_status then drains', async () => {
@@ -59,10 +64,33 @@ describe('worker-mutations (outbox contract)', () => {
     expect(call.payload['blobId']).toBeTypeOf('string')
   })
 
+  it('queueTaskCompletionWithOptionalPhoto omits blobId in payload when no file', async () => {
+    await queueTaskCompletionWithOptionalPhoto({ taskId: 't0', fromStatus: 'IN_PROGRESS', file: null })
+    expect(mockBlobsAdd).not.toHaveBeenCalled()
+    const call = mockEnqueue.mock.calls[0]?.[0] as { kind: string; payload: { blobId?: string } }
+    expect(call.payload.blobId).toBeUndefined()
+  })
+
+  it('uses timestamp blob id when crypto.randomUUID is unavailable', async () => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(globalThis as any).crypto = undefined
+    const file = new File(['x'], 'p2.jpg', { type: 'image/jpeg' })
+    await queueTaskCompletionWithOptionalPhoto({ taskId: 't1', fromStatus: 'IN_PROGRESS', file })
+    const addedId = mockBlobsAdd.mock.calls[0]?.[0] as { id: string }
+    expect(addedId.id).toMatch(/^blob-/)
+  })
+
   it('queueTaskEquipmentChange enqueues task_equipment', async () => {
     await queueTaskEquipmentChange({ taskId: 't1', equipmentId: 'e1', op: 'detach' })
     expect(mockEnqueue).toHaveBeenCalledWith(
       expect.objectContaining({ kind: 'task_equipment', payload: { taskId: 't1', equipmentId: 'e1', op: 'detach' } }),
+    )
+  })
+
+  it('queueTaskEquipmentChange enqueues attach', async () => {
+    await queueTaskEquipmentChange({ taskId: 't2', equipmentId: 'e2', op: 'attach' })
+    expect(mockEnqueue).toHaveBeenCalledWith(
+      expect.objectContaining({ kind: 'task_equipment', payload: { taskId: 't2', equipmentId: 'e2', op: 'attach' } }),
     )
   })
 })

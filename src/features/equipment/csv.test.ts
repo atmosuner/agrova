@@ -28,4 +28,21 @@ describe('downloadEquipmentCsv', () => {
     expect(data[1]?.[0]).toBeDefined()
     expect(data[1]?.[1]).toBe('Testere')
   })
+
+  it('covers all categories and archived row', () => {
+    const cats: Tables<'equipment'>['category'][] = ['VEHICLE', 'TOOL', 'CHEMICAL', 'CRATE']
+    const rows: Tables<'equipment'>[] = cats.map((category, i) => ({
+      id: `e${i}`,
+      name: `n${i}`,
+      category,
+      notes: null,
+      active: i % 2 === 0,
+      created_at: '2020-01-01T00:00:00Z',
+      updated_at: '2020-01-01T00:00:00Z',
+    }))
+    downloadEquipmentCsv(rows)
+    expect(downloadUnparse).toHaveBeenCalledOnce()
+    const [data] = downloadUnparse.mock.calls[0]!
+    expect(data).toHaveLength(5)
+  })
 })

@@ -45,6 +45,14 @@ describe('fieldBoundaryToGeometry', () => {
     expect(fieldBoundaryToGeometry({ type: 'Point' })).toBeNull()
   })
 
+  it('returns null for non-object primitives on boundary (not string)', () => {
+    expect(fieldBoundaryToGeometry(0)).toBeNull()
+  })
+
+  it('returns null when JSON string parses to a number (not polygonish)', () => {
+    expect(fieldBoundaryToGeometry(JSON.stringify(42))).toBeNull()
+  })
+
   it('accepts object with coordinates array', () => {
     const loose = { coordinates: poly.coordinates }
     expect(fieldBoundaryToGeometry(loose as unknown)).toEqual(loose)

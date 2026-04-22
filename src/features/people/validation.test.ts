@@ -13,6 +13,10 @@ describe('normalizeTrMobileToE164', () => {
   it('strips leading 0 from 11-digit national', () => {
     expect(normalizeTrMobileToE164('05551234567')).toBe('+905551234567')
   })
+
+  it('returns whitespace-stripped raw when digits do not match TR mobile patterns', () => {
+    expect(normalizeTrMobileToE164(' 12 34 ')).toBe('1234')
+  })
 })
 
 describe('teamPersonFormSchema', () => {

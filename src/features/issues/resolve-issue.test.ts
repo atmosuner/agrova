@@ -3,8 +3,9 @@ import { resolveIssue } from '@/features/issues/resolve-issue'
 
 const mockFrom = vi.fn()
 
+const fanout = vi.hoisted(() => vi.fn().mockResolvedValue(undefined))
 vi.mock('@/lib/invoke-web-push-fanout', () => ({
-  invokeWebPushFanout: vi.fn().mockResolvedValue(undefined),
+  invokeWebPushFanout: fanout,
 }))
 
 vi.mock('@/lib/supabase', () => ({
@@ -55,5 +56,23 @@ describe('resolveIssue', () => {
         resolverPersonId: '33333333-3333-3333-3333-333333333333',
       }),
     ).rejects.toEqual(expect.objectContaining({ message: 'policy' }))
+  })
+
+  it('skips web push when activity_log lookup returns no row', async () => {
+    const issueEq = vi.fn().mockResolvedValue({ error: null })
+    const update = vi.fn().mockReturnValue({ eq: issueEq })
+    const alChain: Record<string, unknown> = {}
+    alChain.maybeSingle = vi.fn().mockResolvedValue({ data: null, error: null })
+    alChain.limit = vi.fn().mockReturnValue(alChain)
+    alChain.order = vi.fn().mockReturnValue(alChain)
+    alChain.eq = vi.fn().mockReturnValue(alChain)
+    const alFrom = { select: vi.fn().mockReturnValue(alChain) }
+    mockFrom.mockReturnValueOnce({ update }).mockReturnValueOnce(alFrom)
+    fanout.mockClear()
+    await resolveIssue({
+      issueId: '22222222-2222-2222-2222-222222222222',
+      resolverPersonId: '33333333-3333-3333-3333-333333333333',
+    })
+    expect(fanout).not.toHaveBeenCalled()
   })
 })

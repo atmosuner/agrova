@@ -63,6 +63,12 @@ describe('fetchIssuesList', () => {
     h.orderMock.mockResolvedValueOnce({ data: null, error: { message: 'fail' } })
     await expect(fetchIssuesList()).rejects.toEqual(expect.objectContaining({ message: 'fail' }))
   })
+
+  it('returns empty list when data is null without error', async () => {
+    h.orderMock.mockResolvedValueOnce({ data: null, error: null })
+    const rows = await fetchIssuesList()
+    expect(rows).toEqual([])
+  })
 })
 
 describe('subscribeIssuesFeed', () => {

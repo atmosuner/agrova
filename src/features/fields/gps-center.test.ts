@@ -14,4 +14,23 @@ describe('gpsCenterToLatLng', () => {
   it('returns empty on invalid', () => {
     expect(gpsCenterToLatLng(null)).toEqual({ lat: '', lng: '' })
   })
+
+  it('returns empty for non-string primitives (not a GPS object)', () => {
+    expect(gpsCenterToLatLng(0)).toEqual({ lat: '', lng: '' })
+  })
+
+  it('parses stringified GeoJSON', () => {
+    expect(gpsCenterToLatLng('{"type":"Point","coordinates":[1,2]}')).toEqual({ lat: '2', lng: '1' })
+  })
+
+  it('returns empty for invalid JSON string', () => {
+    expect(gpsCenterToLatLng('{')).toEqual({ lat: '', lng: '' })
+  })
+
+  it('returns empty for non-Point or bad coordinates', () => {
+    expect(gpsCenterToLatLng({ type: 'LineString', coordinates: [] })).toEqual({ lat: '', lng: '' })
+    expect(
+      gpsCenterToLatLng({ type: 'Point', coordinates: ['a', 'b'] } as never),
+    ).toEqual({ lat: '', lng: '' })
+  })
 })

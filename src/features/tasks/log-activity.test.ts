@@ -42,4 +42,13 @@ describe('logActivity', () => {
       logActivity(supabase, { actorId: 'a', action: 'task.started', subjectType: 'task', subjectId: 's' }),
     ).rejects.toEqual(expect.objectContaining({ message: 'rls' }))
   })
+
+  it('does not fan out when insert succeeds but id is missing', async () => {
+    const single = vi.fn().mockResolvedValue({ data: {}, error: null })
+    const select = vi.fn().mockReturnValue({ single })
+    const insert = vi.fn().mockReturnValue({ select })
+    mockFrom.mockReturnValue({ insert })
+    await logActivity(supabase, { actorId: 'a', action: 'task.created', subjectType: 'task', subjectId: 's' })
+    expect(mockInvoke).not.toHaveBeenCalled()
+  })
 })
