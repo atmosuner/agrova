@@ -2,7 +2,9 @@ import { msg, t } from '@lingui/macro'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { buildSetupPageUrl, generateUrlSafeToken32 } from '@/features/people/generate-setup-token'
 import { mapPeopleMutationError } from '@/features/people/map-people-mutation-error'
+import { downloadPeopleCsv } from '@/features/people/csv'
 import { teamPersonFormSchema, type TeamPersonFormValues } from '@/features/people/validation'
 import { formFieldClassName } from '@/lib/form-field-class'
 import { i18n } from '@/lib/i18n'
@@ -49,6 +51,7 @@ function PeoplePage() {
   const [form, setForm] = useState<TeamPersonFormValues>(emptyCrewForm)
   const [formError, setFormError] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
+  const [setupCopyMsg, setSetupCopyMsg] = useState<string | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const descId = useId()
@@ -163,6 +166,34 @@ function PeoplePage() {
     await load()
   }
 
+  async function createSetupLink(p: Person) {
+    if (p.role === 'OWNER' || !p.active) {
+      return
+    }
+    setSaving(true)
+    setSetupCopyMsg(null)
+    const token = generateUrlSafeToken32()
+    const t0 = new Date()
+    const expires = new Date(t0.getTime() + 7 * 24 * 60 * 60 * 1000).toISOString()
+    const { error } = await supabase
+      .from('people')
+      .update({ setup_token: token, setup_token_expires_at: expires })
+      .eq('id', p.id)
+    setSaving(false)
+    if (error) {
+      setLoadError(error.message)
+      return
+    }
+    const url = buildSetupPageUrl(token)
+    try {
+      await navigator.clipboard.writeText(url)
+      setSetupCopyMsg(t`Setup link copied to clipboard.`)
+    } catch {
+      setLoadError(url)
+    }
+    await load()
+  }
+
   const isModalOpen = modalMode !== null
 
   return (
@@ -172,11 +203,21 @@ function PeoplePage() {
           <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Team`}</h1>
           <p className="mt-2 text-fg-secondary">{t`Crew and roles. Turkish mobile +90; no SMS in MVP.`}</p>
         </div>
-        <Button type="button" onClick={openAdd} disabled={saving || loading}>
-          {t`New person`}
-        </Button>
+        <span className="inline-flex flex-wrap gap-2">
+          <Button type="button" variant="outline" onClick={() => downloadPeopleCsv(rows)} disabled={loading}>
+            {t`Download CSV`}
+          </Button>
+          <Button type="button" onClick={openAdd} disabled={saving || loading}>
+            {t`New person`}
+          </Button>
+        </span>
       </div>
       {loadError ? <p className="mt-4 text-sm text-harvest-500">{loadError}</p> : null}
+      {setupCopyMsg ? (
+        <p className="mt-2 text-sm text-orchard-700" role="status">
+          {setupCopyMsg}
+        </p>
+      ) : null}
       <label className="mt-4 flex cursor-pointer items-center gap-2 text-sm text-fg-secondary">
         <input
           type="checkbox"
@@ -224,6 +265,15 @@ function PeoplePage() {
                       <td className="px-3 py-2 text-right">
                         {!isOwner && p.active ? (
                           <span className="inline-flex flex-wrap justify-end gap-2">
+                            <Button
+                              type="button"
+                              size="sm"
+                              variant="outline"
+                              onClick={() => void createSetupLink(p)}
+                              disabled={saving}
+                            >
+                              {t`Create setup link`}
+                            </Button>
                             <Button
                               type="button"
                               size="sm"

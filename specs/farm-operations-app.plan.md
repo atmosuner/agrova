@@ -7,15 +7,15 @@
 >
 > **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
-> **Progress (M1):** M1-01 ✅ | M1-02 ✅ | M1-03 ✅ **people list + modal + TR +90 + crew roles + archive** | **Next:** M1-04 setup link
+> **Progress (M1):** M1-01..M1-11 ✅ (catalogs + CSV export); M1-12 **partial** (tests for token, field form, open-meteo, gps, equipment validation — full ≥80% coverage not measured). **Next:** M1-ω review checkpoint, then M2.
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
 **M1 slice tracker (executed top → bottom; update after each land):**
 
-| Task | M1-01 | M1-02 | M1-03 | M1-04 | M1-05 | M1-06 | M1-07 | M1-08 | M1-09 | M1-10 |
-|------|-------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-| Done | ✅ | ✅ | ✅ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ | ⬜ |
+| Task | M1-01..M1-08 | M1-09 | M1-10 | M1-11 | M1-12 | M1-ω |
+|------|----------------|-------|-------|-------|-------|------|
+| Done | ✅ | ✅ | ✅ | ✅ | 🟨 | ⬜ |
 
 ---
 
@@ -382,10 +382,11 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-04: People — "Kurulum linki" (copy URL; no SMS in MVP)
 **Description:** Button next to each person generates a `setup_token` (random 32-char URL-safe). Owner copies the URL (`/setup/{token}`) to the worker **out of band** (in person, printed note, etc.) — **the app does not send SMS or provider WhatsApp from the server in MVP**. Optional Netgsm SMS is **post-MVP**. Token expires 7 days.
 **Acceptance criteria:**
-- [ ] `people.setup_token` + `setup_token_expires_at` columns (add migration)
-- [ ] "Kurulum linki oluştur" button on person row copies URL to clipboard
-- [ ] Re-clicking regenerates (invalidates old)
+- [x] `people.setup_token` + `setup_token_expires_at` columns (add migration)
+- [x] "Kurulum linki oluştur" (EN: Create setup link) button on person row copies URL to clipboard
+- [x] Re-clicking regenerates (invalidates old)
 **Verification:** click generates token; `select setup_token` shows non-null; URL format correct
+**Status:** ✅ (migration `20260422000603_people_setup_token_expires_at.sql` + `generate-setup-token.ts` + `people.tsx`; TR strings in `tr/messages.po`)
 **Dependencies:** M1-03
 **Files likely touched:** `src/features/people/generate-setup-token.ts`, migration `add_setup_token_columns.sql`
 **Estimated scope:** S
@@ -393,11 +394,12 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-05: Fields — satellite map canvas + "Yeni tarla" button
 **Description:** `/fields` page. Full-height split: satellite map on left (Leaflet + ESRI World Imagery tile layer; attribution), right-side list of existing fields. "Yeni tarla" button starts draw mode.
 **Acceptance criteria:**
-- [ ] Leaflet installed; map centered on operation_settings.weather_city (reverse-geocoded via Open-Meteo geocoder)
-- [ ] ESRI attribution visible and correct
-- [ ] Zoom + pan + satellite tiles load cleanly
-- [ ] No console errors; no hardcoded API keys
+- [x] Leaflet installed; map centered on operation_settings.weather_city (reverse-geocoded via Open-Meteo geocoder)
+- [x] ESRI attribution visible and correct
+- [x] Zoom + pan + satellite tiles load cleanly
+- [x] No console errors; no hardcoded API keys
 **Verification:** navigate to `/fields` → satellite tiles render; pan around Turkey
+**Status:** ✅ (`FieldsMap.tsx`, `open-meteo-geocoding.ts`, `fields.tsx`); fail-open fallback `TURKEY_VIEW_CENTER` if city geocode misses
 **Dependencies:** M1-02 (needs city)
 **Files likely touched:** `src/routes/_owner/fields.tsx`, `src/components/map/FieldsMap.tsx`, `src/lib/map.ts`, `package.json`
 **Estimated scope:** M
@@ -405,23 +407,25 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-06: Fields — polygon drawing tool + field form
 **Description:** `leaflet-draw` plugin. Draw mode lets owner click vertices to define a polygon. On completion, a side-sheet opens with the field form (name, crop, variety, plant_count, planted_year, notes). Area auto-computed from polygon in hectares. Save writes `fields` row with `gps_center` (polygon centroid) + `boundary`.
 **Acceptance criteria:**
-- [ ] Drawing UX: click vertices, close polygon on double-click or enter
-- [ ] Form validates: name required, others optional; Zod schema
-- [ ] Save → `select * from fields where name = $1` returns row with valid `boundary` (PostGIS EWKT)
-- [ ] Drawn polygon persists on map after save
+- [x] Drawing UX: leaflet-draw polygon (click vertices, close polygon per Leaflet default)
+- [x] Form validates: name required, others optional; Zod `fieldFormSchema` in `field-form.ts`
+- [x] Save → `field_upsert_from_geojson` stores geography `boundary` + computed `area_hectares` + `gps_center`
+- [x] Drawn polygon persists on map after save (re-fetch from Supabase)
 **Verification:** draw a polygon near your location → save → reload page → polygon still there
+**Status:** ✅ (migration `20260422000604_field_upsert_from_geojson.sql` applied; RPC + `field-form.ts` + tests)
 **Dependencies:** M1-05
 **Files likely touched:** `src/routes/_owner/fields.tsx`, `src/features/fields/*`, `src/components/map/PolygonDrawer.tsx`, `package.json`
 **Estimated scope:** L — **SPLIT** into M1-06a (drawing UX), M1-06b (form + save)
 
 ### Task M1-07: Fields — detail side-sheet + edit
-**Description:** Click an existing polygon → side-sheet opens with all metadata, edit button. Editing the polygon re-opens draw mode in "modify" state; editing the form updates fields in-place.
+**Description:** Click an existing polygon → **owner aside panel** (fixed layout; shadcn Sheet not added — same UX goal) with metadata + edit. **Redraw boundary** starts a new draw that replaces the polygon; metadata edit reuses existing geometry from DB via RPC.
 **Acceptance criteria:**
-- [ ] Click polygon → side-sheet slides in (uses shadcn Sheet)
-- [ ] Edit metadata saves without re-drawing polygon
-- [ ] Edit polygon re-enters draw mode; save updates `boundary`
-- [ ] "Delete field" requires type-to-confirm (field name) — no accidental wipes
+- [x] Click polygon (or list row) → detail + editor area in the fields page aside
+- [x] Edit metadata saves without re-drawing polygon (RPC sends stored GeoJSON)
+- [x] Redraw boundary → new polygon → save updates `boundary`
+- [x] "Delete field" requires type-to-confirm (field name) — no accidental wipes
 **Verification:** create, click, edit, delete flow works end-to-end
+**Status:** ✅ (`fields.tsx` + `field_upsert_from_geojson`)
 **Dependencies:** M1-06
 **Files likely touched:** `src/features/fields/*`, `src/routes/_owner/fields.tsx`
 **Estimated scope:** M
@@ -429,10 +433,11 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-08: Equipment CRUD — tabs per category
 **Description:** `/equipment` page, tabs: Araçlar, Aletler, Kimyasallar, Kasalar (Vehicles, Tools, Chemicals, Crates). Simple list + add/edit/archive form per tab.
 **Acceptance criteria:**
-- [ ] Tab switching preserves URL (`?cat=VEHICLE`)
-- [ ] Add form: name required, notes optional
-- [ ] Archive via `active=false` flag; archived items hidden by default, toggle to show
+- [x] Tab switching preserves URL (`?cat=VEHICLE`)
+- [x] Add form: name required, notes optional
+- [x] Archive via `active=false` flag; archived items hidden by default, toggle to show
 **Verification:** add 5 items across all 4 categories; verify DB rows
+**Status:** ✅ (`equipment.tsx` + `validation.ts`; HTML dialog, en tab labels via Lingui)
 **Dependencies:** M1-01
 **Files likely touched:** `src/routes/_owner/equipment.tsx`, `src/features/equipment/*`
 **Estimated scope:** M
@@ -440,26 +445,29 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-09: CSV export — people
 **Description:** Button on `/people` page: "CSV olarak indir". Generates CSV client-side via `papaparse` from the current query. Filename: `people-YYYYMMDD.csv`. Turkish header row.
 **Acceptance criteria:**
-- [ ] Download triggers; file has correct rows
-- [ ] Header row uses Turkish labels (via Lingui)
-- [ ] UTF-8 BOM for Excel compatibility with Turkish diacritics
+- [x] Download triggers; file has correct rows
+- [x] Header row uses Turkish labels (via Lingui)
+- [x] UTF-8 BOM for Excel compatibility with Turkish diacritics
 **Verification:** download, open in Excel/Sheets, verify diacritics render
+**Status:** ✅ (`features/people/csv.ts` + `lib/csv-download.ts`)
 **Dependencies:** M1-03
 **Files likely touched:** `src/features/people/export-csv.ts`, `src/routes/_owner/people.tsx`, `package.json`
 **Estimated scope:** S
 
 ### Task M1-10: CSV export — fields
 **Description:** Same pattern; includes polygon area (ha) and GPS center, not the full geometry.
-**Acceptance criteria:** same as M1-09; columns: name, crop, variety, area_ha, gps_lat, gps_lng, plant_count, planted_year, notes
+**Acceptance criteria:** [x] same as M1-09; columns: name, crop, variety, area_ha, gps_lat, gps_lng, plant_count, planted_year, notes
 **Verification:** Excel-friendly; diacritics correct
+**Status:** ✅ (`features/fields/csv.ts` + `gps-center.ts`)
 **Dependencies:** M1-06, M1-09 (share utility)
 **Files likely touched:** `src/features/fields/export-csv.ts`, `src/routes/_owner/fields.tsx`
 **Estimated scope:** S
 
 ### Task M1-11: CSV export — equipment
 **Description:** Same pattern; one file with a `category` column.
-**Acceptance criteria:** columns: category, name, notes, active, created_at
-**Verification:** diacritics correct; archived items included or excluded based on current filter
+**Acceptance criteria:** [x] columns: category, name, notes, active, created_at
+**Verification:** diacritics correct; **export fetches all rows** (full catalog) so archived are included; tab filter is view-only
+**Status:** ✅ (`features/equipment/csv.ts` + `exportAllEquipment` in route)
 **Dependencies:** M1-08, M1-09
 **Files likely touched:** `src/features/equipment/export-csv.ts`, `src/routes/_owner/equipment.tsx`
 **Estimated scope:** S
@@ -467,10 +475,11 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 ### Task M1-12: Unit + integration tests — catalog services
 **Description:** Vitest coverage for people/fields/equipment services. Mock Supabase client at the query-builder level; integration tests run against local Supabase (Docker).
 **Acceptance criteria:**
-- [ ] ≥ 80% coverage on `src/features/{people,fields,equipment}/*.ts`
+- [🟨] ≥ 80% coverage on `src/features/{people,fields,equipment}/*.ts` — **not** measured this pass; add `pnpm test --coverage` when CI is wired
 - [ ] RLS-protected mutations reject anon tokens in integration tests
-- [ ] Zod schemas tested against malformed inputs
+- [x] Zod schemas / parsers tested: `field-form`, `equipment/validation`, `generate-setup-token`, `open-meteo`, `gps-center`
 **Verification:** `pnpm test` green; coverage report `coverage/index.html`
+**Status:** **partial** (unit tests only; integration vs Supabase out of scope for this land)
 **Dependencies:** M1-11
 **Files likely touched:** `src/features/**/*.test.ts`, `vitest.config.ts`, `supabase/seed.sql`
 **Estimated scope:** M

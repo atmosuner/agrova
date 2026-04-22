@@ -345,6 +345,7 @@ export type Database = {
           phone: string
           role: Database["public"]["Enums"]["person_role"]
           setup_token: string | null
+          setup_token_expires_at: string | null
           updated_at: string
         }
         Insert: {
@@ -357,6 +358,7 @@ export type Database = {
           phone: string
           role: Database["public"]["Enums"]["person_role"]
           setup_token?: string | null
+          setup_token_expires_at?: string | null
           updated_at?: string
         }
         Update: {
@@ -369,6 +371,7 @@ export type Database = {
           phone?: string
           role?: Database["public"]["Enums"]["person_role"]
           setup_token?: string | null
+          setup_token_expires_at?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -495,6 +498,20 @@ export type Database = {
     }
     Functions: {
       current_person_id: { Args: never; Returns: string }
+      field_upsert_from_geojson: {
+        Args: {
+          p_address: string | null
+          p_crop: string
+          p_id: string | null
+          p_name: string
+          p_notes: string | null
+          p_plant_count: number | null
+          p_planted_year: number | null
+          p_polygon: Json
+          p_variety: string | null
+        }
+        Returns: string
+      }
       is_owner: { Args: never; Returns: boolean }
       reassign_task: {
         Args: { p_new_assignee: string; p_task_id: string }

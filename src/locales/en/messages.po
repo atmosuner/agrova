@@ -13,12 +13,28 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/routes/_owner/people.tsx:222
+#: src/routes/_owner/fields.tsx:198
+msgid "—"
+msgstr "—"
+
+#: src/features/equipment/csv.ts:24
+#: src/features/equipment/csv.ts:31
+#: src/features/people/csv.ts:26
+#: src/routes/_owner/people.tsx:263
 msgid "Active"
 msgstr "Active"
 
-#: src/routes/_owner/people.tsx:24
-#: src/routes/_owner/people.tsx:33
+#: src/routes/_owner/equipment.tsx:229
+msgid "Add"
+msgstr "Add"
+
+#: src/routes/_owner/fields.tsx:362
+msgid "Address"
+msgstr "Address"
+
+#: src/features/people/csv.ts:12
+#: src/routes/_owner/people.tsx:26
+#: src/routes/_owner/people.tsx:35
 msgid "Agronomist"
 msgstr "Agronomist"
 
@@ -31,17 +47,36 @@ msgstr "Agrova"
 msgid "Already have an account? Sign in"
 msgstr "Already have an account? Sign in"
 
-#: src/routes/_owner/people.tsx:243
+#: src/routes/_owner/equipment.tsx:267
+#: src/routes/_owner/people.tsx:293
 msgid "Archive"
 msgstr "Archive"
 
-#: src/routes/_owner/people.tsx:153
+#: src/routes/_owner/equipment.tsx:186
+msgid "Archive this item?"
+msgstr "Archive this item?"
+
+#: src/routes/_owner/people.tsx:156
 msgid "Archive this person? They can be shown again with “show archived”."
 msgstr "Archive this person? They can be shown again with “show archived”."
 
-#: src/routes/_owner/people.tsx:222
+#: src/routes/_owner/equipment.tsx:251
+msgid "archived"
+msgstr "archived"
+
+#: src/features/equipment/csv.ts:31
+#: src/features/people/csv.ts:26
+#: src/routes/_owner/people.tsx:263
 msgid "Archived"
 msgstr "Archived"
+
+#: src/routes/_owner/fields.tsx:403
+msgid "Area"
+msgstr "Area"
+
+#: src/features/fields/csv.ts:29
+msgid "Area (ha)"
+msgstr "Area (ha)"
 
 #: src/routes/signup.tsx:155
 msgid "At least 8 characters, including one number."
@@ -51,9 +86,20 @@ msgstr "At least 8 characters, including one number."
 #~ msgid "Authentication form ships in a later milestone."
 #~ msgstr "Authentication form ships in a later milestone."
 
-#: src/routes/_owner/people.tsx:320
+#: src/routes/_owner/equipment.tsx:315
+#: src/routes/_owner/fields.tsx:384
+#: src/routes/_owner/people.tsx:370
 msgid "Cancel"
 msgstr "Cancel"
+
+#: src/features/equipment/csv.ts:21
+msgid "Category"
+msgstr "Category"
+
+#: src/features/equipment/csv.ts:13
+#: src/routes/_owner/equipment.tsx:25
+msgid "Chemicals"
+msgstr "Chemicals"
 
 #: src/routes/signup.tsx:160
 msgid "Confirm password"
@@ -63,6 +109,11 @@ msgstr "Confirm password"
 #~ msgid "Continue to Today"
 #~ msgstr "Continue to Today"
 
+#: src/features/equipment/csv.ts:14
+#: src/routes/_owner/equipment.tsx:26
+msgid "Crates"
+msgstr "Crates"
+
 #: src/routes/login.tsx:120
 msgid "Create an account"
 msgstr "Create an account"
@@ -71,23 +122,64 @@ msgstr "Create an account"
 msgid "Create owner account"
 msgstr "Create owner account"
 
-#: src/routes/_owner/people.tsx:173
+#: src/routes/_owner/people.tsx:275
+msgid "Create setup link"
+msgstr "Create setup link"
+
+#: src/features/equipment/csv.ts:25
+msgid "Created at"
+msgstr "Created at"
+
+#: src/routes/_owner/people.tsx:204
 msgid "Crew and roles. Turkish mobile +90; no SMS in MVP."
 msgstr "Crew and roles. Turkish mobile +90; no SMS in MVP."
+
+#: src/features/fields/csv.ts:27
+#: src/routes/_owner/fields.tsx:322
+msgid "Crop"
+msgstr "Crop"
+
+#: src/routes/_owner/fields.tsx:437
+msgid "Delete field"
+msgstr "Delete field"
 
 #: src/routes/setup.$token.tsx:12
 msgid "Device setup"
 msgstr "Device setup"
 
+#: src/routes/_owner/equipment.tsx:226
+#: src/routes/_owner/fields.tsx:258
+#: src/routes/_owner/people.tsx:208
+msgid "Download CSV"
+msgstr "Download CSV"
+
+#: src/routes/_owner/fields.tsx:188
+msgid "Draw a field boundary on the map first."
+msgstr "Draw a field boundary on the map first."
+
+#: src/routes/_owner/fields.tsx:249
+msgid "Draw parcels on the map, then save. Center uses the weather city in settings."
+msgstr "Draw parcels on the map, then save. Center uses the weather city in settings."
+
 #: src/routes/signup.tsx:81
 msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 
-#: src/routes/_owner/people.tsx:234
+#: src/routes/_owner/equipment.tsx:258
+#: src/routes/_owner/fields.tsx:408
+#: src/routes/_owner/people.tsx:284
 msgid "Edit"
 msgstr "Edit"
 
-#: src/routes/_owner/people.tsx:266
+#: src/routes/_owner/equipment.tsx:290
+msgid "Edit equipment"
+msgstr "Edit equipment"
+
+#: src/routes/_owner/fields.tsx:310
+msgid "Edit field"
+msgstr "Edit field"
+
+#: src/routes/_owner/people.tsx:316
 msgid "Edit person"
 msgstr "Edit person"
 
@@ -100,31 +192,40 @@ msgstr "Email"
 msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "Enter your work email and a phone in international format (E.164)."
 
-#: src/routes/_owner/equipment.tsx:11
+#: src/routes/_owner/equipment.tsx:203
 #: src/routes/_owner/route.tsx:37
 msgid "Equipment"
 msgstr "Equipment"
 
-#: src/routes/_owner/fields.tsx:11
+#: src/routes/_owner/fields.tsx:248
 #: src/routes/_owner/route.tsx:33
 msgid "Fields"
 msgstr "Fields"
 
-#: src/routes/_owner/people.tsx:23
-#: src/routes/_owner/people.tsx:32
+#: src/features/people/csv.ts:11
+#: src/routes/_owner/people.tsx:25
+#: src/routes/_owner/people.tsx:34
 msgid "Foreman"
 msgstr "Foreman"
 
-#: src/routes/_owner/people.tsx:110
+#: src/routes/_owner/equipment.tsx:128
+#: src/routes/_owner/fields.tsx:176
+#: src/routes/_owner/people.tsx:113
 #: src/routes/_owner/settings.tsx:39
 #: src/routes/login.tsx:51
 #: src/routes/signup.tsx:61
 msgid "Formu kontrol edin."
 msgstr "Formu kontrol edin."
 
+#: src/features/people/csv.ts:21
 #: src/routes/signup.tsx:110
 msgid "Full name"
 msgstr "Full name"
+
+#: src/routes/_owner/fields.tsx:300
+#: src/routes/_owner/fields.tsx:403
+msgid "ha"
+msgstr "ha"
 
 #: src/routes/m/history.tsx:11
 #: src/routes/m/route.tsx:12
@@ -136,7 +237,17 @@ msgstr "History"
 msgid "Issues"
 msgstr "Issues"
 
-#: src/routes/_owner/people.tsx:191
+#: src/features/fields/csv.ts:30
+msgid "Latitude"
+msgstr "Latitude"
+
+#: src/routes/_owner/fields.tsx:282
+msgid "List"
+msgstr "List"
+
+#: src/routes/_owner/equipment.tsx:242
+#: src/routes/_owner/fields.tsx:266
+#: src/routes/_owner/people.tsx:232
 #: src/routes/_owner/settings.tsx:75
 msgid "Loading…"
 msgstr "Loading…"
@@ -145,19 +256,51 @@ msgstr "Loading…"
 msgid "locked"
 msgstr "locked"
 
-#: src/routes/_owner/people.tsx:196
-#: src/routes/_owner/people.tsx:273
+#: src/features/fields/csv.ts:31
+msgid "Longitude"
+msgstr "Longitude"
+
+#: src/features/fields/FieldsMap.tsx:179
+msgid "Map of fields"
+msgstr "Map of fields"
+
+#: src/features/equipment/csv.ts:22
+#: src/features/fields/csv.ts:26
+#: src/routes/_owner/equipment.tsx:296
+#: src/routes/_owner/fields.tsx:312
+#: src/routes/_owner/people.tsx:237
+#: src/routes/_owner/people.tsx:323
 msgid "Name"
 msgstr "Name"
 
-#: src/routes/_owner/people.tsx:176
-#: src/routes/_owner/people.tsx:266
+#: src/routes/_owner/fields.tsx:173
+msgid "Name is required."
+msgstr "Name is required."
+
+#: src/routes/_owner/equipment.tsx:290
+msgid "New equipment"
+msgstr "New equipment"
+
+#: src/routes/_owner/fields.tsx:261
+#: src/routes/_owner/fields.tsx:310
+msgid "New field"
+msgstr "New field"
+
+#: src/routes/_owner/people.tsx:211
+#: src/routes/_owner/people.tsx:316
 msgid "New person"
 msgstr "New person"
 
-#: src/routes/_owner/people.tsx:207
+#: src/routes/_owner/people.tsx:248
 msgid "No people match."
 msgstr "No people match."
+
+#: src/features/equipment/csv.ts:23
+#: src/features/fields/csv.ts:34
+#: src/routes/_owner/equipment.tsx:305
+#: src/routes/_owner/fields.tsx:371
+msgid "Notes"
+msgstr "Notes"
 
 #: src/routes/_owner/settings.tsx:89
 msgid "Operation name"
@@ -175,7 +318,8 @@ msgstr "Oturum açılamadı. Yeniden deneyin."
 msgid "Oturum bulunamadı."
 msgstr "Oturum bulunamadı."
 
-#: src/routes/_owner/people.tsx:22
+#: src/features/people/csv.ts:10
+#: src/routes/_owner/people.tsx:24
 msgid "Owner"
 msgstr "Owner"
 
@@ -192,7 +336,8 @@ msgstr "Owner sign-in"
 msgid "Password"
 msgstr "Password"
 
-#: src/routes/_owner/people.tsx:197
+#: src/features/people/csv.ts:22
+#: src/routes/_owner/people.tsx:238
 msgid "Phone"
 msgstr "Phone"
 
@@ -200,12 +345,10 @@ msgstr "Phone"
 msgid "Phone (E.164)"
 msgstr "Phone (E.164)"
 
-#: src/routes/_owner/people.tsx:286
+#: src/routes/_owner/people.tsx:336
 msgid "Phone (TR)"
 msgstr "Phone (TR)"
 
-#: src/routes/_owner/equipment.tsx:12
-#: src/routes/_owner/fields.tsx:12
 #: src/routes/_owner/issues.tsx:12
 #: src/routes/_owner/reports.tsx:12
 #: src/routes/_owner/tasks.tsx:12
@@ -215,10 +358,27 @@ msgstr "Phone (TR)"
 msgid "Placeholder."
 msgstr "Placeholder."
 
+#: src/features/fields/csv.ts:32
+msgid "Plant count"
+msgstr "Plant count"
+
+#: src/features/fields/csv.ts:33
+#: src/routes/_owner/fields.tsx:351
+msgid "Planted year"
+msgstr "Planted year"
+
+#: src/routes/_owner/fields.tsx:341
+msgid "Plants (count)"
+msgstr "Plants (count)"
+
 #: src/routes/m/profile.tsx:11
 #: src/routes/m/route.tsx:13
 msgid "Profile"
 msgstr "Profile"
+
+#: src/routes/_owner/fields.tsx:417
+msgid "Redraw boundary"
+msgstr "Redraw boundary"
 
 #: src/routes/m/report-issue.tsx:11
 msgid "Report an issue"
@@ -229,12 +389,15 @@ msgstr "Report an issue"
 msgid "Reports"
 msgstr "Reports"
 
-#: src/routes/_owner/people.tsx:198
-#: src/routes/_owner/people.tsx:299
+#: src/features/people/csv.ts:23
+#: src/routes/_owner/people.tsx:239
+#: src/routes/_owner/people.tsx:349
 msgid "Role"
 msgstr "Role"
 
-#: src/routes/_owner/people.tsx:323
+#: src/routes/_owner/equipment.tsx:318
+#: src/routes/_owner/fields.tsx:381
+#: src/routes/_owner/people.tsx:373
 #: src/routes/_owner/settings.tsx:130
 msgid "Save"
 msgstr "Save"
@@ -243,7 +406,7 @@ msgstr "Save"
 msgid "Saved."
 msgstr "Saved."
 
-#: src/routes/_owner/people.tsx:323
+#: src/routes/_owner/people.tsx:373
 #: src/routes/_owner/settings.tsx:130
 msgid "Saving…"
 msgstr "Saving…"
@@ -254,7 +417,12 @@ msgstr "Saving…"
 msgid "Settings"
 msgstr "Settings"
 
-#: src/routes/_owner/people.tsx:187
+#: src/routes/_owner/people.tsx:190
+msgid "Setup link copied to clipboard."
+msgstr "Setup link copied to clipboard."
+
+#: src/routes/_owner/equipment.tsx:238
+#: src/routes/_owner/people.tsx:228
 msgid "Show archived"
 msgstr "Show archived"
 
@@ -274,7 +442,8 @@ msgstr "Signing in…"
 msgid "Signing up…"
 msgstr "Signing up…"
 
-#: src/routes/_owner/people.tsx:199
+#: src/features/people/csv.ts:24
+#: src/routes/_owner/people.tsx:240
 msgid "Status"
 msgstr "Status"
 
@@ -289,7 +458,7 @@ msgstr "Task"
 msgid "Tasks"
 msgstr "Tasks"
 
-#: src/routes/_owner/people.tsx:172
+#: src/routes/_owner/people.tsx:203
 #: src/routes/_owner/route.tsx:36
 msgid "Team"
 msgstr "Team"
@@ -303,13 +472,40 @@ msgstr "Time zone"
 msgid "Today"
 msgstr "Today"
 
-#: src/routes/_owner/people.tsx:269
+#: src/features/equipment/csv.ts:12
+#: src/routes/_owner/equipment.tsx:24
+msgid "Tools"
+msgstr "Tools"
+
+#: src/routes/_owner/people.tsx:319
 msgid "TR mobile. Roles: foreman, agronomist, worker."
 msgstr "TR mobile. Roles: foreman, agronomist, worker."
 
 #: src/routes/_owner/settings.tsx:117
 msgid "Turkish name as you would say it; used for the forecast widget (later)."
 msgstr "Turkish name as you would say it; used for the forecast widget (later)."
+
+#: src/routes/_owner/fields.tsx:224
+msgid "Type the field name exactly to delete."
+msgstr "Type the field name exactly to delete."
+
+#: src/routes/_owner/fields.tsx:421
+msgid "Type the field name to confirm deletion."
+msgstr "Type the field name to confirm deletion."
+
+#: src/features/fields/csv.ts:28
+#: src/routes/_owner/fields.tsx:331
+msgid "Variety"
+msgstr "Variety"
+
+#: src/features/equipment/csv.ts:11
+#: src/routes/_owner/equipment.tsx:23
+msgid "Vehicles"
+msgstr "Vehicles"
+
+#: src/routes/_owner/equipment.tsx:204
+msgid "Vehicles, tools, chemicals, and crates."
+msgstr "Vehicles, tools, chemicals, and crates."
 
 #: src/routes/_owner/settings.tsx:104
 msgid "Weather city"
@@ -319,8 +515,9 @@ msgstr "Weather city"
 msgid "Work email and password."
 msgstr "Work email and password."
 
-#: src/routes/_owner/people.tsx:25
-#: src/routes/_owner/people.tsx:34
+#: src/features/people/csv.ts:13
+#: src/routes/_owner/people.tsx:27
+#: src/routes/_owner/people.tsx:36
 msgid "Worker"
 msgstr "Worker"
 
