@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-15 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
+> **Progress (M0):** M0-01..M0-16 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL on Supabase; `src/types/db.ts` from M0-16 + `pnpm supabase:gen-types`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -195,7 +195,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Description:** Install `@supabase/supabase-js` and `dexie`. Create `src/lib/supabase.ts` reading `VITE_SUPABASE_URL` + `VITE_SUPABASE_ANON_KEY` from `.env` (Vercel env in prod). Create `src/lib/db.ts` declaring empty Dexie database (tables added in later slices).
 **Acceptance criteria:**
 - [x] `.env.example` committed with placeholder values + comment; real `.env` gitignored
-- [x] `supabase` export is typed; `supabase.from('people')` is a **type error** until **M0-16** (`AppDatabase` stub + `src/lib/supabase.pre-m0-16.typecheck.ts`)
+- [x] `supabase` export is typed; from **M0-16** onward `src/types/db.ts` + `SupabaseClient<Database>` (was stub-only before generated types)
 - [x] `src/lib/db.ts` exports a `db` **Dexie** singleton
 - [x] Dev console: use `window.__agrova` (dev only) — `auth.getSession()` validates client wiring; `pg_stat_user_tables` is **not** on `public` via PostgREST by default (see `docs/dev-smoke-tests.md`)
 **Verification:** smoke console check documented in `docs/dev-smoke-tests.md`
@@ -296,16 +296,17 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (feat: `M0-15` — applied on Supabase via MCP)
 
 ### Task M0-16: Generate TypeScript types → `src/types/db.ts`
-**Description:** Run Supabase MCP `generate_typescript_types` and commit the output. Wire `supabase.ts` to use `Database` generic so queries are fully typed.
+**Description:** Use Supabase MCP `generate_typescript_types` (or `npx supabase gen types` with `SUPABASE_ACCESS_TOKEN` + `SUPABASE_PROJECT_REF`) and commit `src/types/db.ts` + `supabase/mcp_gentypes.json` input snapshot. Wire `supabase.ts` to `createClient<Database>(...)`.
 **Acceptance criteria:**
-- [ ] `src/types/db.ts` exists and is ≥ 100 lines (reflects all M0 tables)
-- [ ] `supabase: SupabaseClient<Database>` typed
-- [ ] File has a banner comment: "AUTO-GENERATED — DO NOT EDIT BY HAND"
-- [ ] A `pnpm supabase:gen-types` npm script regenerates it
-**Verification:** `pnpm typecheck` passes; `supabase.from('tasks').select()` correctly types `status` as the union
+- [x] `src/types/db.ts` exists and is ≥ 100 lines (all public M0 tables + enums + RLS helper RPCs in `Database`)
+- [x] `supabase: SupabaseClient<Database>` (from `@/types/db`)
+- [x] Banner: `AUTO-GENERATED — DO NOT EDIT BY HAND` (`db.ts` is in `eslint` global ignore for generated literals)
+- [x] `pnpm supabase:gen-types` — `node scripts/supabase-gen-types.mjs` (MCP JSON file or CLI env)
+**Verification:** `pnpm typecheck` passes; `tasks.status` is `Database["public"]["Enums"]["task_status"]` / union on row types
 **Dependencies:** M0-13, M0-15
-**Files likely touched:** `src/types/db.ts`, `package.json`, `src/lib/supabase.ts`
+**Files likely touched:** `src/types/db.ts`, `supabase/mcp_gentypes.json`, `package.json`, `scripts/supabase-gen-types.mjs`, `src/lib/supabase.ts`, `.env.example`, `eslint.config.js`
 **Estimated scope:** S
+**Status:** ✅ **DONE** (feat: `M0-16` — types + gen script; stub `app-database` + pre-m0-16 check removed)
 
 ### Task M0-17: Scaffold edge functions — `sms-setup-link` + `web-push-fanout`
 **Description:** Create Deno-based edge functions in `supabase/functions/`. Both return `{ ok: true, placeholder: true }` for now; real logic lands in M3-01 and M6-03. Deploy via MCP `deploy_edge_function`.
@@ -322,7 +323,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 - [ ] Full CI green including migrations-applied smoke test
 - [x] All 9 tables + RLS + `issue-photos` bucket live on Supabase (Seoul)
 - [ ] Edge functions deployed as placeholders
-- [ ] TypeScript types regenerate automatically via npm script
+- [x] TypeScript types regenerate via `pnpm supabase:gen-types` (MCP or CLI; see `supabase/README.md`)
 - [ ] Human review: M1 may start
 
 ---

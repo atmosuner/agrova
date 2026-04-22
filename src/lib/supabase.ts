@@ -1,6 +1,6 @@
 /* eslint-disable lingui/no-unlocalized-strings -- config URLs/keys, not user-facing */
 import { createClient, type SupabaseClient } from '@supabase/supabase-js'
-import type { AppDatabase } from '@/types/app-database'
+import type { Database } from '@/types/db'
 
 /** Valid-shaped defaults so the client can initialize before `.env` is configured; replace via env in all real deploys. */
 const FALLBACK = {
@@ -12,7 +12,7 @@ const FALLBACK = {
 const url = import.meta.env.VITE_SUPABASE_URL?.trim() || FALLBACK.url
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim() || FALLBACK.anon
 
-export const supabase: SupabaseClient<AppDatabase> = createClient<AppDatabase>(url, anonKey, {
+export const supabase: SupabaseClient<Database> = createClient<Database>(url, anonKey, {
   auth: {
     persistSession: true,
     autoRefreshToken: true,
