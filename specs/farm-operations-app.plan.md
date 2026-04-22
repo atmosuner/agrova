@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-12 are ✅ **implemented** on `main` (M0-11 + M0-12 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
+> **Progress (M0):** M0-01..M0-13 are ✅ **implemented** on `main` (M0-11 → M0-13 SQL applied to the linked Supabase project via **Supabase MCP** `apply_migration`); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -260,15 +260,16 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (feat: `M0-12` — committed SQL + applied on Supabase via MCP)
 
 ### Task M0-13: DB migration 3 — `issues` + `activity_log` + `notifications`
-**Description:** Remaining tables from spec §5. `activity_log.action` accepts the event strings from §14. `notifications` has `(recipient_id, activity_log_id)` unique index. Partition or index-by-`created_at DESC` on `activity_log`.
+**Description:** Remaining tables from spec §5. `activity_log.action` holds event strings (see spec §5 examples, e.g. `task.created`, `issue.reported`). `notifications` has `(recipient_id, activity_log_id)` unique constraint. Index by `created_at DESC` on `activity_log`.
 **Acceptance criteria:**
-- [ ] All three tables present with correct columns + FKs
-- [ ] Index `activity_log(created_at DESC)` exists
-- [ ] `issues.photo_url` is `NOT NULL` (photo required by spec §3)
-**Verification:** `list_tables` shows all M0 tables; `get_advisors` clean
+- [x] All three tables present with correct columns + FKs
+- [x] Index `activity_log(created_at DESC)` exists (`activity_log_created_at_idx` btree on `created_at DESC`)
+- [x] `issues.photo_url` is `NOT NULL` (photo required by spec §3)
+**Verification:** `list_tables` shows all nine public tables; `information_schema` confirms `photo_url` not nullable; `get_advisors` will report **RLS disabled** on public tables until **M0-14** (expected).
 **Dependencies:** M0-12
 **Files likely touched:** `supabase/migrations/20260422000300_issues_activity_notifications.sql`
 **Estimated scope:** S
+**Status:** ✅ **DONE** (feat: `M0-13` — committed SQL + applied on Supabase via MCP)
 
 ### Task M0-14: Row-Level Security policies
 **Description:** Enable RLS on every table. Write policies matching spec §5 role matrix: `people` read-all-authed/write-owner-only; `fields`/`equipment` same; `tasks` owner full + assignee-transition; `issues` anyone-insert + owner-resolve; `activity_log` system-managed (service-role only) + own-read; `notifications` own-recipient only.
