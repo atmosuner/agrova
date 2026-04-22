@@ -60,6 +60,19 @@ msgstr "Ziraat mühendisi"
 msgid "Agrova"
 msgstr "Agrova"
 
+#: src/features/tasks/TaskDetailSheet.tsx:213
+#: src/features/tasks/TaskDetailSheet.tsx:228
+msgid "Aktar"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:38
+msgid "Aktarıldı"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:94
+msgid "Aktarma başarısız."
+msgstr ""
+
 #: src/features/tasks/TasksTable.tsx:33
 #: src/routes/_owner/tasks.tsx:142
 msgid "Aktivite"
@@ -129,11 +142,15 @@ msgstr "En az 8 karakter, en az bir rakam."
 #~ msgstr "Kimlik doğrulama formu sonraki kilometre taşlarında eklenecek."
 
 #: src/features/tasks/TaskDetailSheet.tsx:29
-msgid "Ayrıntılar burada görüntülenecek."
-msgstr ""
+#~ msgid "Ayrıntılar burada görüntülenecek."
+#~ msgstr ""
 
 #: src/routes/_owner/tasks.tsx:163
 msgid "Başlangıç"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:40
+msgid "Başlatıldı"
 msgstr ""
 
 #: src/features/tasks/activities.ts:37
@@ -141,6 +158,7 @@ msgid "Biçme"
 msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:106
+#: src/features/tasks/TaskDetailSheet.tsx:73
 msgid "Bir kişi seçin."
 msgstr ""
 
@@ -156,16 +174,22 @@ msgstr ""
 msgid "Bitiş tarihi geçmişte olamaz."
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:28
 #: src/features/tasks/TasksKanban.tsx:20
 #: src/features/tasks/TasksTable.tsx:15
 #: src/routes/_owner/tasks.tsx:25
 msgid "Bitti"
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:29
 #: src/features/tasks/TasksKanban.tsx:21
 #: src/features/tasks/TasksTable.tsx:16
 #: src/routes/_owner/tasks.tsx:26
 msgid "Bloke"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:42
+msgid "Bloke edildi"
 msgstr ""
 
 #: src/features/tasks/activities.ts:26
@@ -263,6 +287,7 @@ msgstr "Önce haritada tarla sınırı çizin."
 msgid "Draw parcels on the map, then save. Center uses the weather city in settings."
 msgstr "Haritada parsel çizin, ardından kaydedin. Merkez, ayarlardaki hava durumu şehrine göre belirlenir."
 
+#: src/features/tasks/TaskDetailSheet.tsx:201
 #: src/features/tasks/TasksTable.tsx:36
 #: src/routes/_owner/tasks.tsx:85
 msgid "Durum"
@@ -308,6 +333,10 @@ msgstr ""
 msgid "Email"
 msgstr "E-posta"
 
+#: src/features/tasks/TaskDetailSheet.tsx:132
+msgid "En az bir tarla seçin."
+msgstr ""
+
 #: src/routes/signup.tsx:89
 msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "İş e-postanızı ve telefonu uluslararası (E.164) formatta girin."
@@ -352,15 +381,23 @@ msgid "Geri"
 msgstr ""
 
 #: src/features/tasks/TaskDetailSheet.tsx:23
-msgid "Görev"
-msgstr ""
+#~ msgid "Görev"
+#~ msgstr ""
 
-#: src/features/tasks/TaskDetailSheet.tsx:20
+#: src/features/tasks/TaskDetailSheet.tsx:171
 msgid "Görev detayı"
 msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:384
 msgid "görev oluşturulacak"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:37
+msgid "Görev oluşturuldu"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:182
+msgid "Görev yüklenemedi."
 msgstr ""
 
 #: src/routes/_owner/tasks.tsx:213
@@ -384,6 +421,10 @@ msgstr "ha"
 msgid "Hasat"
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:249
+msgid "Henüz kayıt yok."
+msgstr ""
+
 #: src/routes/m/history.tsx:11
 #: src/routes/m/route.tsx:12
 msgid "History"
@@ -397,6 +438,7 @@ msgstr ""
 msgid "İleri"
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:30
 #: src/features/tasks/TasksKanban.tsx:22
 #: src/features/tasks/TasksTable.tsx:17
 #: src/routes/_owner/tasks.tsx:27
@@ -417,7 +459,7 @@ msgid "Kaldır"
 msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:205
-#: src/features/tasks/TaskDetailSheet.tsx:25
+#: src/features/tasks/TaskDetailSheet.tsx:174
 msgid "Kapat"
 msgstr ""
 
@@ -434,9 +476,27 @@ msgid "Kayıt başarısız."
 msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:314
+#: src/features/tasks/TaskDetailSheet.tsx:198
 #: src/features/tasks/TasksTable.tsx:35
 #: src/routes/_owner/tasks.tsx:124
 msgid "Kime"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:234
+msgid "Kopyala"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:117
+#: src/features/tasks/TaskDetailSheet.tsx:150
+msgid "Kopyalama başarısız."
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:271
+msgid "Kopyalanacak tarlalar"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:39
+msgid "Kopyalandı"
 msgstr ""
 
 #: src/features/fields/csv.ts:30
@@ -507,6 +567,7 @@ msgid "Normal"
 msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:370
+#: src/features/tasks/TaskDetailSheet.tsx:208
 msgid "Not"
 msgstr ""
 
@@ -518,6 +579,7 @@ msgid "Notes"
 msgstr "Notlar"
 
 #: src/features/tasks/TaskCreateModal.tsx:423
+#: src/features/tasks/TaskDetailSheet.tsx:297
 msgid "Oluştur"
 msgstr ""
 
@@ -707,6 +769,7 @@ msgstr "Durum"
 msgid "Sulama"
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:27
 #: src/features/tasks/TasksKanban.tsx:19
 #: src/features/tasks/TasksTable.tsx:14
 #: src/routes/_owner/tasks.tsx:24
@@ -717,6 +780,11 @@ msgstr ""
 msgid "Tablo"
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:41
+msgid "Tamamlandı"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:204
 #: src/features/tasks/TasksTable.tsx:38
 msgid "Tarih"
 msgstr ""
@@ -725,6 +793,7 @@ msgstr ""
 msgid "Tarih aralığını kontrol edin."
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:193
 #: src/features/tasks/TasksTable.tsx:34
 #: src/routes/_owner/tasks.tsx:106
 msgid "Tarla"
@@ -740,6 +809,10 @@ msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:271
 msgid "Tarlalar yükleniyor…"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:240
+msgid "Tarlalara kopyala…"
 msgstr ""
 
 #: src/routes/m/task.$id.tsx:12
@@ -804,6 +877,10 @@ msgstr "Silme işlemini onaylamak için tarla adını yazın."
 msgid "Variety"
 msgstr "Çeşit"
 
+#: src/features/tasks/TaskDetailSheet.tsx:294
+msgid "Vazgeç"
+msgstr ""
+
 #: src/features/equipment/csv.ts:11
 #: src/routes/_owner/equipment.tsx:23
 msgid "Vehicles"
@@ -831,15 +908,32 @@ msgstr "İşçi"
 msgid "Worker PWA task list — /m URL prefix until role-based routing."
 msgstr "İşçi PWA görev listesi — rol tabanlı yönlendirmeye kadar /m URL öneki."
 
+#: src/features/tasks/TaskDetailSheet.tsx:26
 #: src/features/tasks/TasksKanban.tsx:18
 #: src/features/tasks/TasksTable.tsx:13
 #: src/routes/_owner/tasks.tsx:23
 msgid "Yapılacak"
 msgstr ""
 
+#: src/features/tasks/TaskDetailSheet.tsx:237
+msgid "Yarın için kopyala"
+msgstr ""
+
 #: src/features/tasks/TaskCreateModal.tsx:198
 #: src/routes/_owner/tasks.tsx:78
 msgid "Yeni görev"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:220
+msgid "Yeni sorumlu…"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:178
+msgid "Yükleniyor…"
+msgstr ""
+
+#: src/features/tasks/TaskDetailSheet.tsx:246
+msgid "Zaman çizelgesi"
 msgstr ""
 
 #: src/features/tasks/TaskCreateModal.tsx:60
