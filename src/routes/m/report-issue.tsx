@@ -8,6 +8,7 @@ import type { VoiceAttachment } from '@/features/issues/VoiceRecorder'
 import { VoiceRecorder } from '@/features/issues/VoiceRecorder'
 import { submitIssueDraft } from '@/features/issues/submit-issue'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
+import { fetchGeolocationOptional } from '@/lib/geolocation'
 
 function parseReportIssueSearch(s: Record<string, unknown>): {
   taskId?: string
@@ -86,12 +87,23 @@ function ReportIssuePage() {
               setDraft(null)
             }}
             onSubmit={async (jpeg) => {
+              let gpsLat: number | null = null
+              let gpsLng: number | null = null
+              if (!taskId) {
+                const g = await fetchGeolocationOptional()
+                if (g) {
+                  gpsLat = g.lat
+                  gpsLng = g.lng
+                }
+              }
               await submitIssueDraft({
                 category: draft.category,
                 photoJpeg: jpeg,
                 reporterId: me.id,
                 taskId: taskId ?? null,
                 fieldId: fieldId ?? null,
+                gpsLat,
+                gpsLng,
                 voiceBlob: voice?.blob ?? null,
                 voiceContentType: voice?.mime ?? null,
               })

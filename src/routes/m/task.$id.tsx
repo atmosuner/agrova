@@ -125,6 +125,15 @@ function TaskDetailPage() {
               >
                 {t`Aktar`}
               </Button>
+              <Button type="button" variant="outline" className="mt-2 h-12 w-full rounded-full" disabled={busy} asChild>
+                <Link
+                  to="/m/report-issue"
+                  search={{ taskId: task.id, fieldId: task.field_id }}
+                  aria-label={t`Sorun bildir`}
+                >
+                  {t`Sorun`}
+                </Link>
+              </Button>
             </>
           ) : null}
         </div>
