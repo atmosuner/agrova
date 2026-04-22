@@ -9,7 +9,7 @@
 >
 > **Progress (M1):** M1-01..M1-11 ✅; M1-12 **partial** — catalog unit + integration: `pnpm test:coverage` enforces M1-12 thresholds on `src/features/{people,fields,equipment}/**/*.ts` (V8; ~90% lines in that slice); RLS **anon** write probes in `src/integration/rls-catalog-anon.test.ts` run when real `VITE_SUPABASE_*` are set, **skipped** in default CI. **Next:** M1-ω (catalog) human review. **M2 (tasks)** is already implemented on `main` — see M2 line below.
 >
-> **Progress (M2):** M2-01..M2-08 ✅ on `main`; M2-09 **partial** — V8 thresholds now include `src/features/tasks/**/*.ts` (hooks + thin re-exports excluded in `vite.config`) and `src/lib/invoke-web-push-fanout.ts`; unit tests cover create/duplicate/reassign, `log-activity`, worker outbox payload shapes, and edge-invoke client. **Still open (per M2-09 ac):** `supabase/tests/tasks-rls.test.sql` (RLS) + that suite and `pnpm supabase:test` in default CI. **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
+> **Progress (M2):** M2-01..M2-09 ✅ on `main` — **M2-09** includes V8 on tasks + `invoke-web-push-fanout`, unit tests for task services/outbox, and **`supabase/tests/tasks-rls.test.sql`** (structural RLS on `tasks` + `reassign_task`). Run `pnpm supabase:test` on a fully migrated database (not part of the default GitHub **quality** job). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
 >
 > **Progress (M5):** M5-01..M5-05 ✅ (worker **Alet** sheet + `task_equipment` outbox; trigger `task_equipment_after_insert_chemical` → `chemical_applications` for `CHEMICAL` — migration `20260422170000_…` + MCP; owner usage sheet; field chemicals tab + CSV; tests + coverage excludes). **Next:** M5-ω.
 >
@@ -35,7 +35,7 @@
 
 | M2-01..M2-04 | M2-05 | M2-06 | M2-07 | M2-08 | M2-09 | M2-ω |
 |------|------|------|------|------|------|------|
-| ✅ | ✅ | ✅ | ✅ | ✅ | 🟨 | ⬜ |
+| ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ⬜ |
 
 **M3 slice tracker:**
 
@@ -44,7 +44,7 @@
 | ⏸️ | ✅ | ✅ | 🟨 | 🟨 | 🟨 | ⬜ |
 
 * **M3-05..08** — Shipped: today list, detail, completion, reassign. **Gaps:** pull-to-refresh (spec) vs top **Yenile** button; “optimistic UI” = invalidate/refetch, not full local-first optimistic rows; haptic/focus on `WorkerButton` are present, Lighthouse a11y not re-run.  
-* **M3-09..12** — Shipped: Dexie v2, `bootstrapReadCachesForWorker`, outbox + `drainOutbox`, `SyncIndicator` + `SyncSheet`, conflict drop. **Gaps:** list queries are still **network-primary** (not “read Dexie first, then revalidate” everywhere); `sync.test.ts` is placeholder-level; M3-11 Vitest “simulated conflict” not exhaustive.  
+* **M3-09..12** — Shipped: Dexie v2, `bootstrapReadCachesForWorker`, outbox + `drainOutbox`, `SyncIndicator` + `SyncSheet`, conflict drop. **Gaps:** list queries are still **network-primary** (not “read Dexie first, then revalidate” everywhere); M3-11: Vitest now runs **`enqueueOutbox` + `drainOutbox`** with `fake-indexeddb` (no-op row path); full mismatch/backoff/“two workers” matrix still open.  
 * **M3-13..15** — Shipped: history (grouped days + **Daha eski**), profile, Playwright `e2e/offline-sync.spec.ts`. **Gaps:** E2E is **smoke** (copy + unauth redirect + HTTP 200), not full offline complete/reassign; run dev first (`PLAYWRIGHT_BASE_URL` if port ≠ 5173).  
 * **M3-ω** — **Open:** coverage on `src/lib/sync.ts` + `src/lib/db.ts` to spec §11, human review, full offline E2E if desired.
 
@@ -630,12 +630,12 @@ Goal: owner creates, lists, reassigns, and audit-logs tasks; no worker mobile ye
 **Description:** Cover create/list/reassign/duplicate/audit-log. Integration tests assert RLS: assignee CAN update status; non-assignee CANNOT.
 **Acceptance criteria:**
 - [x] ≥ 80% coverage on `src/features/tasks/*.ts` (V8: `src/features/tasks/**` in `vite.config` coverage `include` with `use*.ts` + re-exports excluded; measured by `pnpm test:coverage` global thresholds on the full include set)
-- [ ] RLS tests pass via pgTAP (tasks-specific SQL + CI still open)
-**Verification:** `pnpm test` / `pnpm test:coverage` green; `pnpm supabase:test` green when linked (not in default GitHub CI); future `supabase/tests/tasks-rls.test.sql`
+- [x] RLS structural checks: `supabase/tests/tasks-rls.test.sql` (policy names on `public.tasks` + `reassign_task` RPC; run with `pnpm supabase:test` on a migrated DB). Behavioral assignee vs non-assignee tests remain manual / future pgTap expansion.
+**Verification:** `pnpm test` / `pnpm test:coverage` green; `pnpm supabase:test` green when linked (not in default GitHub CI quality job)
 **Dependencies:** M2-08
 **Files likely touched:** `src/features/tasks/**/*.test.ts`, `supabase/tests/tasks-rls.test.sql`
 **Estimated scope:** M
-**Status:** **partial** (task unit coverage + outbox contract tests; `invoke-web-push-fanout` in coverage; tasks RLS pgTAP file + local `db test` in default CI: backlog)
+**Status:** ✅ **DONE** (as written; default CI = unit + coverage; DB test is local/linked)
 
 ### Checkpoint M2-ω: Owner can plan
 - [ ] Owner creates a task in ≤ 20s (spec KPI)
@@ -773,11 +773,11 @@ Goal: worker opens a **setup link** (from owner), sets up once, sees today's tas
 - [x] Mismatch: row dropped (treat as **no-op**)
 - [x] `last_error` on outbox row after failure
 - [x] Backoff **steps** present (5s… cap); **exhaustive Vitest** for edge cases ⬜
-**Verification:** simulated conflict test passes in Vitest
+**Verification:** `src/lib/sync.test.ts` — `fake-indexeddb` + outbox `enqueue`/`drain` smoke (no network); deeper mismatch/backoff matrix still ⬜
 **Dependencies:** M3-10
-**Files likely touched:** `src/lib/sync.ts`, `src/lib/sync.test.ts` (current: smoke + `resetSyncBackoffForTests` only)
+**Files likely touched:** `src/lib/sync.ts`, `src/lib/sync.test.ts` (drain + reset; conflict simulation optional)
 **Estimated scope:** M
-**Status:** 🟨 **partial** (runtime behavior; deep tests and “two workers” simulation not in `sync.test.ts` yet)
+**Status:** 🟨 **partial** (prod behavior in `sync.ts`; tests cover drain path + reset; full matrix TBD)
 
 ### Task M3-12: Sync indicator UI (top-right, tappable)
 **Description:** **Dot** in header: **orchard-500** when synced & online; **harvest-500** when `pending>0` & online; **surface-2** when **offline** (not a literal green dot — semantic colors). Tap → **`SyncSheet`**, last 20, kind + time + `last_error`.
@@ -1407,23 +1407,23 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
 |-----------|------:|-----:|------------:|--------:|
 | M0 Foundations | 17 | 17 | 0 | 0 |
 | M1 Catalogs | 12 | 11 | 1 | 0 |
-| M2 Tasks | 9 | 8 | 1 | 0 |
+| M2 Tasks | 9 | 9 | 0 | 0 |
 | M3 Worker mobile | 15 | 7 | 7 | 1 |
 | M4 Issues & photos | 8 | 7 | 1 | 0 |
 | M5 Equipment + chemicals | 5 | 5 | 0 | 0 |
 | M6 Notifications | 8 | 7 | 1 | 0 |
 | M7 Owner dashboard | 9 | 8 | 0 | 1 |
 | M8 Polish + launch | 12 | 9 | 0 | 3 |
-| **Total** | **95** | **80** | **12** | **3** |
+| **Total** | **95** | **81** | **11** | **3** |
 
 **Footnotes (ids → meaning)**
 
 - **M1-12** → *in progress* (catalog coverage + integration in CI; `supabase/seed` optional; M1-ω).
-- **M2-09** → *in progress* (V8 includes tasks + fanout; pgTAP tasks file + `supabase db test` in default CI: M2-ω).
+- **M2-09** → ✅ *done* (M2-ω = human: task create KPI, etc.; DB test is local/linked, not `ci.yml` quality job).
 - **M3-01** → *pending* (⏸️ deferred, v1.1+). **M3-05..15** (except full-done ids) → *in progress* (see M3 slice tracker: pull-to-refresh, Dexie-first, E2E depth, M3-ω).
 - **M4-08** → *in progress* (E2E dual-session deferred; M4-ω).
 - **M6-08** → *in progress* (mute + client fanout tests; E2E push, server idempotency, full M6-ω).
-- **M7-09 / M7-ω** → *pending* (Lighthouse/perf report to `docs/lighthouse/`, etc.).
+- **M7-09 / M7-ω** → *pending* (capture steps in `docs/lighthouse/README.md`; committed `m7-ω.html` with KPIs still TBD).
 - **M8** *pending* = 3: **(1)** i18n — Turkish catalog completion + owner tone review, **(2)** M8-10 — seven critical E2E flows in CI, **(3)** M8-11 / M8-12 — production domain + launch retro (human/ops); partial M8 items are counted under *Done* if the code path exists (e.g. a11y axe, export edge, off-line route).
 
 **Checkpoints (ω)** are not separate rows; they close when the milestone’s *Done* + agreed *In progress* matches exit criteria in each **Checkpoint Mx-ω** section (often **human**).

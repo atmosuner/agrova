@@ -73,7 +73,9 @@ pnpm test:coverage
 pnpm build
 ```
 
-**Supabase (local):** after `supabase link` and a running stack, `pnpm supabase:test` runs `supabase db test` against `supabase/tests/*.sql` (structural RLS checks; M2-09 RLS is still tracked — not part of default GitHub CI). See `supabase/README.md`.
+**Supabase (local):** after `supabase link` and a running stack, `pnpm supabase:test` runs `supabase db test` against `supabase/tests/*.sql` (includes `tasks-rls.test.sql` + `rls.test.sql` when your CLI runs the folder). Not part of the default GitHub **quality** job. See `supabase/README.md`.
+
+**Lighthouse (M7-ω):** see [`docs/lighthouse/README.md`](./docs/lighthouse/README.md).
 
 Fast test run without coverage thresholds: `pnpm test:run`. Watch mode: `pnpm test` (Vitest).
 

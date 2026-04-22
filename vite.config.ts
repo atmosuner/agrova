@@ -15,6 +15,7 @@ export default defineConfig({
     maxWorkers: 1,
     environment: 'node',
     passWithNoTests: false,
+    setupFiles: [path.join(projectRoot, 'src/vitest-setup.ts')],
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     /** Run explicitly: `pnpm vitest run src/integration` (requires real Supabase env). */
     exclude: ['**/node_modules/**', '**/dist/**', 'src/integration/**'],

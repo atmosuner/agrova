@@ -11,7 +11,7 @@ M0-14 RLS is split across five timestamped files (`20260422000402`–`2026042200
 ### Policy / schema checks (`db test`)
 
 - **SQL in** `supabase/tests/` (e.g. `rls.test.sql`) are intended for `pnpm supabase:test` (CLI `supabase db test` with a linked project / local database where migrations are applied). They are **not** in the default GitHub Actions quality job (requires a Supabase-linked environment).
-- **M2-09** also calls for a dedicated tasks RLS SQL suite (`supabase/tests/tasks-rls.test.sql` in the plan) — to be added; until then, catalog + structural RLS checks remain the main automated DB tests.
+- **M2-09** includes `supabase/tests/tasks-rls.test.sql` (policy names on `public.tasks` + `reassign_task` presence). Run with `pnpm supabase:test` on a database where all migrations are applied, alongside `rls.test.sql` if your `supabase db test` config runs the whole `tests/` folder.
 
 ### M6 / M8 Edge functions & secrets
 
