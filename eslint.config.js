@@ -33,6 +33,8 @@ export default defineConfig([
       'src/components/ui/**',
       'src/locales/**',
       'src/routeTree.gen.ts',
+      '**/*.test.ts',
+      '**/*.test.tsx',
     ],
     rules: {
       'lingui/no-unlocalized-strings': [

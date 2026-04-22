@@ -9,6 +9,8 @@
     "build": "lingui compile --typescript && tsc -b && vite build",
     "typecheck": "tsc -b --noEmit",
     "lint": "eslint .",
+    "test": "vitest",
+    "test:run": "vitest run",
     "i18n:extract": "lingui extract",
     "i18n:compile": "lingui compile --typescript",
     "preview": "vite preview"
@@ -53,6 +55,7 @@
     "typescript": "~6.0.2",
     "typescript-eslint": "^8.58.2",
     "vite": "^8.0.9",
-    "vite-plugin-pwa": "^1.2.0"
+    "vite-plugin-pwa": "^1.2.0",
+    "vitest": "^4.1.5"
   }
 }

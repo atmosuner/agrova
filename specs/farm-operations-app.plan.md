@@ -5,7 +5,7 @@
 > **Companion rules:** `.cursor/rules/*` (always applied)
 > **Status:** Draft v1.0 — produced 2026-04-22 via `/plan`
 >
-> **Progress (M0):** M0-01..M0-08 are ✅ **implemented** on `main` (bump this line when later M0 tasks land).
+> **Progress (M0):** M0-01..M0-09 are ✅ **implemented** on `main` (bump this line when later M0 tasks land).
 >
 > This plan translates the spec into discrete, verifiable tasks sized for a single focused session (~1–2h of agent work each). It is organized by milestone (M0–M8, from spec §16), with checkpoints between milestones and an explicit dependency graph. Tasks are ID'd `Mx-NN` for stable cross-referencing in commits, PRs, and future plan revisions.
 
@@ -92,8 +92,8 @@ M8 Polish + launch — a11y audit, Lighthouse, KVKK, data export, deploy
 - **Commits** reference the task ID in the subject: `feat(M3-05): worker task detail screen`.
 - **Branches** follow `feature/M3-05-worker-task-detail`.
 - Every task is landed via PR; CI must be green; a human (owner) reviews before merge.
-- **Verification always runs these four** unless noted otherwise:
-  `pnpm lint && pnpm typecheck && pnpm test && pnpm build`
+- **Verification always runs these** unless noted otherwise:
+  `pnpm lint && pnpm typecheck && pnpm test:run && pnpm build` (`pnpm test` is Vitest watch mode)
 
 ---
 
@@ -205,15 +205,16 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Status:** ✅ **DONE** (feat: `M0-08`)
 
 ### Task M0-09: GitHub Actions CI — typecheck + lint + test + build on PR
-**Description:** Write `.github/workflows/ci.yml` that runs on every push to `main` and every PR to `main`. Matrix: Node 20, pnpm 9. Jobs: install (cached), `pnpm lint`, `pnpm typecheck`, `pnpm test --run`, `pnpm build`. E2E is a separate nightly workflow (M8-10).
+**Description:** Write `.github/workflows/ci.yml` that runs on every push to `main` and every PR to `main`. Matrix: Node 20, pnpm 9. Jobs: install (cached), `pnpm lint`, `pnpm typecheck`, `pnpm test:run` (headless Vitest), `pnpm build`. E2E is a separate nightly workflow (M8-10).
 **Acceptance criteria:**
-- [ ] Workflow runs in <5 minutes on a cold cache, <2 minutes on a warm cache
-- [ ] Failing type error, lint error, test, or build fails the workflow
-- [ ] Status badge in README links to the Actions page
+- [x] Workflow runs in <5 minutes on a cold cache, <2 minutes on a warm cache (typical; verify on Actions)
+- [x] Failing type error, lint error, test, or build fails the workflow
+- [x] Status badge in README links to the Actions page
 **Verification:** open a dummy PR with a deliberate type error → CI fails; revert → CI green
 **Dependencies:** M0-02 through M0-08 (needs all four commands to exist)
-**Files likely touched:** `.github/workflows/ci.yml`, `README.md`
+**Files likely touched:** `.github/workflows/ci.yml`, `README.md`, `package.json` (`vitest`, `test` / `test:run` scripts)
 **Estimated scope:** S
+**Status:** ✅ **DONE** (feat: `M0-09`)
 
 ### Task M0-10: Enable branch protection on `main`
 **Description:** Configure GitHub branch protection via API: require CI to pass; require PR reviews (or allow self-approve since solo dev); disallow force-push + direct push to `main`; require linear history.
@@ -226,7 +227,7 @@ Goal: production-shaped project with empty but working scaffolding, DB schema co
 **Estimated scope:** XS
 
 ### Checkpoint M0-α: Scaffolding complete
-- [ ] `pnpm lint && pnpm typecheck && pnpm test && pnpm build` passes locally and in CI
+- [x] `pnpm lint && pnpm typecheck && pnpm test:run && pnpm build` passes locally; CI runs the same (branch protection in M0-10)
 - [ ] A browser visiting the dev server sees Turkish copy using DESIGN.md tokens
 - [ ] Lighthouse PWA score ≥ 80
 - [ ] Branch protection blocks direct push

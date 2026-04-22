@@ -1,5 +1,7 @@
 # Agrova
 
+[![CI](https://github.com/atmosuner/agrova/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/atmosuner/agrova/actions/workflows/ci.yml)
+
 > A mobile-first, offline-capable task management PWA for a Turkish fruit operation.
 > Owners plan; foremen, agronomists, and low-literacy field workers execute.
 
@@ -61,13 +63,16 @@ pnpm install
 pnpm dev                # http://127.0.0.1:5173
 ```
 
-Quality:
+Quality (match CI):
 
 ```bash
 pnpm typecheck
 pnpm lint
+pnpm test:run
 pnpm build
 ```
+
+Watch-mode tests: `pnpm test` (Vitest).
 
 **shadcn/ui (M0-04):** use non-interactive flags — see [`docs/shadcn-init.md`](./docs/shadcn-init.md).
 

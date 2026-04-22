@@ -4,13 +4,18 @@ import { lingui } from '@lingui/vite-plugin'
 import { tanstackRouter } from '@tanstack/router-plugin/vite'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
-import { defineConfig } from 'vite'
+import { defineConfig } from 'vitest/config'
 import react from '@vitejs/plugin-react'
 
 const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 
 // https://vite.dev/config/
 export default defineConfig({
+  test: {
+    environment: 'node',
+    passWithNoTests: false,
+    include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
+  },
   plugins: [
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     react({ babel: { plugins: ['@lingui/babel-plugin-lingui-macro'] } }),
