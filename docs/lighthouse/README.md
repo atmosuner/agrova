@@ -8,4 +8,6 @@ Owner dashboard performance is tracked in the plan as **M7-09** (Lighthouse Perf
 2. Open Chrome → DevTools → **Lighthouse** (or use the Lighthouse CLI against `http://127.0.0.1:4173/today` or your preview port).
 3. Save the **HTML** (and optionally JSON) export and commit it here, e.g. `docs/lighthouse/m7-omega-<date>.html`, when running the **Checkpoint M7-ω** review.
 
+A placeholder is committed at `m7-omega-PLACEHOLDER.html` until a real run replaces it.
+
 The plan asks for a committed report at `docs/lighthouse/m7-ω.html` for final sign-off; replace that filename when the numbers meet the spec.

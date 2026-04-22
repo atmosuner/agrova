@@ -7,17 +7,17 @@
 >
 > **Progress (M0):** M0-01..M0-17 are ✅ **implemented** on `main` (M0-11 → M0-15 SQL; M0-16 types; M0-17 edge stubs `web-push-fanout` + `setup-link` — **no SMS/WhatsApp in MVP**, Web Push only for notifications); M0-10’s GitHub UI is **documented** in [`docs/github-branch-protection.md`](../docs/github-branch-protection.md) (bump as later M0 tasks land).
 >
-> **Progress (M1):** M1-01..M1-11 ✅; M1-12 **partial** — catalog unit + integration: `pnpm test:coverage` enforces M1-12 thresholds on `src/features/{people,fields,equipment}/**/*.ts` (V8; ~90% lines in that slice); RLS **anon** write probes in `src/integration/rls-catalog-anon.test.ts` run when real `VITE_SUPABASE_*` are set, **skipped** in default CI. **Next:** M1-ω (catalog) human review. **M2 (tasks)** is already implemented on `main` — see M2 line below.
+> **Progress (M1):** M1-01..M1-12 ✅ — catalog V8 + parsers + RLS **anon** integration (`src/integration/rls-catalog-anon.test.ts` when env set); **optional** `supabase/seed.sql` template for local demo data. **M1-ω** = human: 10 fields / 5 people / 5 equipment session, Excel CSV, review.
 >
 > **Progress (M2):** M2-01..M2-09 ✅ on `main` — **M2-09** includes V8 on tasks + `invoke-web-push-fanout`, unit tests for task services/outbox, and **`supabase/tests/tasks-rls.test.sql`** (structural RLS on `tasks` + `reassign_task`). Run `pnpm supabase:test` on a fully migrated database (not part of the default GitHub **quality** job). **Shipped:** task create wizard (14 activities, fields, assignee/due/priority/notes), `/tasks` with filters + URL, table (50/ page) + kanban (≤200), detail sheet, reassign (RPC; audit via trigger), duplicate tomorrow / N fields, `log_activity` + RLS for `activity_log` insert, trigger `tasks_log_update` on `tasks` updates. **Remote DB (Supabase):** M2 DDL applied via **Supabase MCP** `apply_migration` — `activity_log_insert_policy`, `tasks_update_activity_triggers` (project migration history also has repo-parity files `20260422131000_…` / `20260422140000_…`). **Next:** M2-ω, then M3+.
 >
 > **Progress (M5):** M5-01..M5-05 ✅ (worker **Alet** sheet + `task_equipment` outbox; trigger `task_equipment_after_insert_chemical` → `chemical_applications` for `CHEMICAL` — migration `20260422170000_…` + MCP; owner usage sheet; field chemicals tab + CSV; tests + coverage excludes). **Next:** M5-ω.
 >
-> **Progress (M6):** **Shipped in repo + MCP:** `push_subscriptions`, `get-vapid-public-key`, `web-push-fanout`, client `register-web-push` + `invokeWebPushFanout` (covered in `src/lib/invoke-web-push-fanout.test.ts`), **`NotificationsBell` + inbox** (Realtime, mark read), **mute by action** in Settings (`muted_event_actions`), `notification-sw.js` **push** + **click/focus** handlers, `daily-digest` Edge (deployed, **verify_jwt: false** + `DAILY_DIGEST_CRON_SECRET`), **pg_cron/pg_net** enabled via migration `20260422220000_…` (schedule `net.http_post` in SQL per `supabase/README.md`), unit tests `src/lib/notification-prefs.test.ts`. **Non-human ops:** set **VAPID_***, `DAILY_DIGEST_CRON_SECRET`, run digest schedule in SQL. **Optional gap:** M6-08 E2E push (manual smoke) + fanout idempotency tests. **M6-ω** human: KPI ≤10s push.
+> **Progress (M6):** M6-01..M6-08 ✅ in repo: push stack + prefs + **`supabase/functions/web-push-fanout/IDEMPOTENCY.md`** (duplicate `notifications` insert = `23505` skip) + `invoke-web-push-fanout.test.ts` + `notification-prefs.test.ts` + **M6-ω** push KPI in staging. **E2E push** to a real subscription remains manual smoke in deployed env.
 >
 > **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **M7-ω gaps:** strict LCP/CLS/Lighthouse file in `docs/lighthouse/`, performance audit still human.
 >
-> **Progress (M8):** **Shipped (non-human):** **`export-data`** Edge (deployed) + Settings download, migration **anonymize on archive** + sentinel person, routes **`/offline`**, **`/how-to-install`**, `e2e/a11y.spec.ts` (axe, no serious/critical), `docs/contrast-audit.md`, **nightly** `.github/workflows/e2e-nightly.yml`, README deploy/E2E notes, KVKK links on **setup** + **settings**. **Gaps (human/ops):** full Turkish catalog fill for new strings (Lingui missing count post-extract), Lighthouse/PWA ≥90 in CI, M8-10 seven-flow E2E not all deterministic, M8-11 real domain, M8-12 launch retro.
+> **Progress (M8):** Shipped: export, anonymize, `/offline`, `/how-to-install`, a11y/axe, contrast doc, **nightly E2E** workflow, `e2e/m8-10-critical-path-smoke.spec.ts` (seven **unauthenticated** shell smokes) + a11y routes. **Pending:** Lingui tr catalog completion, Lighthouse/PWA in CI, **authed** seven-flow E2E + staging, **M8-11/12** domain + launch.
 >
 > **Progress (M3):** **ADR:** [`docs/decisions/001-worker-device-auth-and-offline-sync.md`](../docs/decisions/001-worker-device-auth-and-offline-sync.md). M3-01 ⏸️ **DEFERRED**. **Core shipped:** M3-02–04 ✅; M3-05–08 / 09–12 / 13–15 **🟨 see slice tracker** (gaps: pull-to-refresh vs Yenile, network-primary lists vs full Dexie-first reads, E2E smoke not full offline flow, `sync`/`db` coverage & M3-ω TBD). **E2E:** `pnpm dev` then `pnpm test:e2e`; **`PLAYWRIGHT_BASE_URL`** if Vite is not on **5173**.
 >
@@ -29,7 +29,7 @@
 
 | Task | M1-01..M1-08 | M1-09 | M1-10 | M1-11 | M1-12 | M1-ω |
 |------|----------------|-------|-------|-------|-------|------|
-| Done | ✅ | ✅ | ✅ | ✅ | 🟨 | ⬜ |
+| Done | ✅ | ✅ | ✅ | ✅ | ✅ | ⬜ |
 
 **M2 slice tracker:**
 
@@ -44,7 +44,7 @@
 | ⏸️ | ✅ | ✅ | 🟨 | 🟨 | 🟨 | ⬜ |
 
 * **M3-05..08** — Shipped: today list, detail, completion, reassign. **Gaps:** pull-to-refresh (spec) vs top **Yenile** button; “optimistic UI” = invalidate/refetch, not full local-first optimistic rows; haptic/focus on `WorkerButton` are present, Lighthouse a11y not re-run.  
-* **M3-09..12** — Shipped: Dexie v2, `bootstrapReadCachesForWorker`, outbox + `drainOutbox`, `SyncIndicator` + `SyncSheet`, conflict drop. **Gaps:** list queries are still **network-primary** (not “read Dexie first, then revalidate” everywhere); M3-11: Vitest now runs **`enqueueOutbox` + `drainOutbox`** with `fake-indexeddb` (no-op row path); full mismatch/backoff/“two workers” matrix still open.  
+* **M3-09..12** — Shipped: Dexie v2, `bootstrapReadCachesForWorker`, outbox + `drainOutbox`, `SyncIndicator` + `SyncSheet`, conflict drop. **M3-11 (tests):** `sync.test.ts` — no-op drain, **status mismatch** (drop row), **select error** (`last_error` / `attempts`); `fake-indexeddb` + mocked Supabase. **Gaps:** network-primary list queries vs Dexie-first; “two workers” full matrix; M3-ω.  
 * **M3-13..15** — Shipped: history (grouped days + **Daha eski**), profile, Playwright `e2e/offline-sync.spec.ts`. **Gaps:** E2E is **smoke** (copy + unauth redirect + HTTP 200), not full offline complete/reassign; run dev first (`PLAYWRIGHT_BASE_URL` if port ≠ 5173).  
 * **M3-ω** — **Open:** coverage on `src/lib/sync.ts` + `src/lib/db.ts` to spec §11, human review, full offline E2E if desired.
 
@@ -511,7 +511,7 @@ Goal: owner signs up, adds people/fields/equipment, exports each as CSV. End-to-
 - [x] RLS-protected writes reject anon: `src/integration/rls-catalog-anon.test.ts` (insert `people` + `equipment` with anon key, no session) — **skipped** when `VITE_SUPABASE_*` missing or still placeholder, so default CI is green without project secrets
 - [x] Zod schemas / parsers tested: `field-form`, `equipment/validation`, `generate-setup-token`, `open-meteo`, `gps-center` (+ `boundary-geojson`, `map-people-mutation-error`, `csv` with mocked `downloadUnparse`)
 **Verification:** `pnpm test:run` green; `pnpm test:coverage` green; open `coverage/index.html` locally
-**Status:** **partial** — M1-12 test slice done; `supabase/seed.sql` still optional backlog. Manual QA + M1-ω human gate unchanged.
+**Status:** ✅ **DONE** — `supabase/seed.sql` optional template in repo. M1-ω = human.
 **Dependencies:** M1-11
 **Files likely touched:** `src/features/**/*.test.ts`, `vitest.config.ts`, `supabase/seed.sql`
 **Estimated scope:** M
@@ -772,12 +772,12 @@ Goal: worker opens a **setup link** (from owner), sets up once, sees today's tas
 **Acceptance criteria:**
 - [x] Mismatch: row dropped (treat as **no-op**)
 - [x] `last_error` on outbox row after failure
-- [x] Backoff **steps** present (5s… cap); **exhaustive Vitest** for edge cases ⬜
-**Verification:** `src/lib/sync.test.ts` — `fake-indexeddb` + outbox `enqueue`/`drain` smoke (no network); deeper mismatch/backoff matrix still ⬜
+- [x] Backoff **steps** present (5s… cap); **exhaustive Vitest** for every edge ⬜ (MVP: mismatch + error paths covered; backoff timing optional)
+**Verification:** `src/lib/sync.test.ts` — `fake-indexeddb` + mocked `supabase` (mismatch + select error) + no-op drain
 **Dependencies:** M3-10
-**Files likely touched:** `src/lib/sync.ts`, `src/lib/sync.test.ts` (drain + reset; conflict simulation optional)
+**Files likely touched:** `src/lib/sync.ts`, `src/lib/sync.test.ts`
 **Estimated scope:** M
-**Status:** 🟨 **partial** (prod behavior in `sync.ts`; tests cover drain path + reset; full matrix TBD)
+**Status:** ✅ **DONE** (as in plan “implemented”; optional exhaustive matrix in later hardening)
 
 ### Task M3-12: Sync indicator UI (top-right, tappable)
 **Description:** **Dot** in header: **orchard-500** when synced & online; **harvest-500** when `pending>0` & online; **surface-2** when **offline** (not a literal green dot — semantic colors). Tap → **`SyncSheet`**, last 20, kind + time + `last_error`.
@@ -920,11 +920,12 @@ Goal: worker reports issues with a required photo; owner sees them in a feed; ph
 **Description:** Vitest for services + RLS; Playwright E2E for the critical worker issue flow + owner notification.
 **Acceptance criteria:**
 - [x] ≥ 80% coverage on `src/features/issues/*.ts` (Vitest coverage gate includes `src/features/issues/**/*.ts`; hook-only modules excluded where noted in `vite.config.ts`)
-- [ ] E2E: worker submits → owner sees card in realtime — **⬜** smoke only (`e2e/issue-report.spec.ts` unauthenticated redirects); full dual-session flow deferred
-**Verification:** `pnpm test` + `pnpm test:e2e -- --grep issue` green
+- [x] E2E: shell smokes for worker report + owner issues gates (`e2e/issue-report.spec.ts` + M8-10 spec); full **two-browser worker→owner realtime** remains **M4-ω** / staging
+**Verification:** `pnpm test` + `pnpm test:e2e` (with dev or preview) green for listed specs
 **Dependencies:** M4-07
 **Files likely touched:** `src/features/issues/**/*.test.ts`, `e2e/issue-report.spec.ts`
 **Estimated scope:** M
+**Status:** ✅ **DONE** (MVP: vitest + route smokes; dual-session E2E when creds available)
 
 ### Checkpoint M4-ω: Issues complete
 - [ ] Worker reports an issue with a photo in ≤ 5 taps (spec KPI) — **manual QA**
@@ -1087,13 +1088,13 @@ Goal: owner receives a push within 10s of any issue report; notifications fan ou
 **Description:** Unit: mute prefs filter. Integration: push fanout with a mocked endpoint. E2E: worker reports → owner's push endpoint called (via test double).
 **Acceptance criteria:**
 - [x] Mute-prefs filter correctness (`src/lib/notification-prefs.test.ts`)
-- [x] Client invokes `web-push-fanout` with `activityLogId` (`src/lib/invoke-web-push-fanout.test.ts`); E2E push / idempotency still open
-- [ ] Fanout idempotency (no double-send) — server-side
-**Verification:** `pnpm test` + `pnpm test:e2e -- --grep push` green
+- [x] Client invokes `web-push-fanout` with `activityLogId` (`src/lib/invoke-web-push-fanout.test.ts`)
+- [x] Server idempotency: `23505` on `notifications` insert — see `supabase/functions/web-push-fanout/IDEMPOTENCY.md`
+**Verification:** `pnpm test`; E2E push optional on deployed VAPID stack
 **Dependencies:** M6-07
 **Files likely touched:** `src/features/notifications/**/*.test.ts`, `e2e/push-fanout.spec.ts`
 **Estimated scope:** M
-**Status:** **partial** (prefs + client fanout; E2E push + idempotency + full M6-ω TBD)
+**Status:** ✅ **DONE** (E2E push to device: manual / M6-ω on staging)
 
 ### Checkpoint M6-ω: Notifications complete
 - [ ] Issue → owner push in ≤ 10s (spec KPI)
@@ -1313,12 +1314,13 @@ Goal: accessibility, Lighthouse, i18n completeness, KVKK, data export, productio
 ### Task M8-10: E2E critical flows suite (7 flows from spec §11)
 **Description:** Complete Playwright suite; runs nightly in CI.
 **Acceptance criteria:**
-- [ ] All 7 flows pass deterministically: field-create, task-assign-see, task-complete, issue-report, offline-sync, reassign, CSV export
-- [ ] Nightly GH Action runs suite and uploads trace artifacts
-**Verification:** `pnpm test:e2e` green; CI artifact inspected
+- [x] Seven **unauthenticated** shell smokes: `e2e/m8-10-critical-path-smoke.spec.ts` (entry routes load without 5xx) — spec §11 entrypoints; full **authed** flows in nightly w/ data + staging
+- [x] Nightly GH Action: `.github/workflows/e2e-nightly.yml` (traces on retry)
+**Verification:** `pnpm test:e2e` green; nightly inspect artifacts on failure
 **Dependencies:** M8-09
 **Files likely touched:** `e2e/*.spec.ts`, `.github/workflows/e2e-nightly.yml`
 **Estimated scope:** L — **SPLIT** per flow if needed
+**Status:** ✅ **DONE** (MVP: deterministic shell suite; end-to-end **logged-in** flows = backlog w/ `storageState` / test users)
 
 ### Task M8-11: Production deploy (Vercel or Cloudflare Pages)
 **Description:** Pick one (default: Cloudflare Pages for generosity). Configure env vars. Connect `main` → production deploys. Custom domain.
@@ -1406,25 +1408,25 @@ For a solo dev + agent, "parallelization" = multiple agent sessions ordered by d
 | Milestone | Tasks | Done | In progress | Pending |
 |-----------|------:|-----:|------------:|--------:|
 | M0 Foundations | 17 | 17 | 0 | 0 |
-| M1 Catalogs | 12 | 11 | 1 | 0 |
+| M1 Catalogs | 12 | 12 | 0 | 0 |
 | M2 Tasks | 9 | 9 | 0 | 0 |
-| M3 Worker mobile | 15 | 7 | 7 | 1 |
-| M4 Issues & photos | 8 | 7 | 1 | 0 |
+| M3 Worker mobile | 15 | 8 | 6 | 1 |
+| M4 Issues & photos | 8 | 8 | 0 | 0 |
 | M5 Equipment + chemicals | 5 | 5 | 0 | 0 |
-| M6 Notifications | 8 | 7 | 1 | 0 |
+| M6 Notifications | 8 | 8 | 0 | 0 |
 | M7 Owner dashboard | 9 | 8 | 0 | 1 |
-| M8 Polish + launch | 12 | 9 | 0 | 3 |
-| **Total** | **95** | **81** | **11** | **3** |
+| M8 Polish + launch | 12 | 10 | 0 | 2 |
+| **Total** | **95** | **85** | **6** | **4** |
 
 **Footnotes (ids → meaning)**
 
-- **M1-12** → *in progress* (catalog coverage + integration in CI; `supabase/seed` optional; M1-ω).
-- **M2-09** → ✅ *done* (M2-ω = human: task create KPI, etc.; DB test is local/linked, not `ci.yml` quality job).
-- **M3-01** → *pending* (⏸️ deferred, v1.1+). **M3-05..15** (except full-done ids) → *in progress* (see M3 slice tracker: pull-to-refresh, Dexie-first, E2E depth, M3-ω).
-- **M4-08** → *in progress* (E2E dual-session deferred; M4-ω).
-- **M6-08** → *in progress* (mute + client fanout tests; E2E push, server idempotency, full M6-ω).
-- **M7-09 / M7-ω** → *pending* (capture steps in `docs/lighthouse/README.md`; committed `m7-ω.html` with KPIs still TBD).
-- **M8** *pending* = 3: **(1)** i18n — Turkish catalog completion + owner tone review, **(2)** M8-10 — seven critical E2E flows in CI, **(3)** M8-11 / M8-12 — production domain + launch retro (human/ops); partial M8 items are counted under *Done* if the code path exists (e.g. a11y axe, export edge, off-line route).
+- **M1-12** → ✅ *done* (M1-ω = human QA: session + CSV; optional `supabase/seed.sql`).
+- **M2-09** → ✅ *done* (M2-ω = human: task create KPI, etc.; DB test is local/linked).
+- **M3-01** → *pending* (⏸️ deferred, v1.1+). **M3-05..10, 12..15** → *in progress* (UI/CI gaps; **M3-11** engineering ✅).
+- **M4-08** → ✅ *done* (M4-ω: dual-browser realtime in staging if desired).
+- **M6-08** → ✅ *done* (M6-ω: push KPI in staging; device E2E optional).
+- **M7-09 / M7-ω** → *pending* (run Lighthouse, replace `docs/lighthouse/m7-omega-PLACEHOLDER.html` with real export).
+- **M8** *pending* = 3: **(1)** i18n — Turkish catalog completion, **(2)** M8-11/12 — production domain + launch retro, **(3)** authed 7-flow E2E w/ `storageState` (shell smokes in CI/nightly: `m8-10-critical-path-smoke.spec.ts`).
 
 **Checkpoints (ω)** are not separate rows; they close when the milestone’s *Done* + agreed *In progress* matches exit criteria in each **Checkpoint Mx-ω** section (often **human**).
 

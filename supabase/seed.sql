@@ -1,0 +1,8 @@
+-- Optional dev / staging seed (M1-12). Not used by `pnpm test` or default CI.
+-- Apply manually in the SQL editor or with `psql` when you need repeatable demo data
+-- (people, fields, equipment). Keep phones unique to avoid `people` unique conflicts.
+--
+-- Example (commented):
+-- insert into public.people (full_name, phone, role)
+--   values ('Demo Owner', '+905550000000', 'OWNER')
+--   on conflict (phone) do nothing;
