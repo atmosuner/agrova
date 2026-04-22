@@ -44,7 +44,7 @@ msgid "Acil"
 msgstr "Acil"
 
 #: src/features/issues/IssuesFeed.tsx:210
-#: src/routes/m/profile.tsx:134
+#: src/routes/m/profile.tsx:129
 msgid "Açık"
 msgstr "Açık"
 
@@ -63,7 +63,7 @@ msgstr "Aktif tarlalar (bugün)"
 msgid "Activity"
 msgstr "Aktivite"
 
-#: src/routes/m/profile.tsx:104
+#: src/routes/m/profile.tsx:99
 msgid "Ad"
 msgstr "Ad"
 
@@ -184,7 +184,7 @@ msgstr "arşivde"
 msgid "Archived"
 msgstr "Arşivde"
 
-#: src/routes/_owner/fields.tsx:439
+#: src/routes/_owner/fields.tsx:437
 msgid "Area"
 msgstr "Alan"
 
@@ -267,7 +267,7 @@ msgstr "Bildirim yok"
 #: src/features/notifications/NotificationsBell.tsx:46
 #: src/features/notifications/NotificationsBell.tsx:62
 #: src/features/notifications/NotificationsBell.tsx:65
-#: src/routes/m/profile.tsx:113
+#: src/routes/m/profile.tsx:108
 msgid "Bildirimler"
 msgstr "Bildirimler"
 
@@ -275,7 +275,7 @@ msgstr "Bildirimler"
 msgid "Bildirimler (Web Push)"
 msgstr "Bildirimler (Web Push)"
 
-#: src/routes/m/profile.tsx:115
+#: src/routes/m/profile.tsx:110
 msgid "Bildirimleri sessize al"
 msgstr "Bildirimleri sessize al"
 
@@ -422,7 +422,7 @@ msgstr "Çevrimdışı"
 
 #: src/features/equipment/csv.ts:13
 #: src/routes/_owner/equipment.tsx:26
-#: src/routes/_owner/fields.tsx:422
+#: src/routes/_owner/fields.tsx:420
 msgid "Chemicals"
 msgstr "Kimyasallar"
 
@@ -430,7 +430,7 @@ msgstr "Kimyasallar"
 msgid "Chrome’da agrova.app adresini açın."
 msgstr "Chrome’da agrova.app adresini açın."
 
-#: src/routes/m/profile.tsx:161
+#: src/routes/m/profile.tsx:156
 msgid "Çıkış yap"
 msgstr "Çıkış yap"
 
@@ -485,7 +485,7 @@ msgstr "Kültür"
 msgid "Daha eski"
 msgstr "Daha eski"
 
-#: src/routes/_owner/settings.tsx:138
+#: src/routes/_owner/settings.tsx:155
 msgid "Data export"
 msgstr "Veri dışa aktarma"
 
@@ -497,11 +497,11 @@ msgstr "Data is stored in Supabase (region: project settings, e.g. Seoul) — Po
 msgid "Date"
 msgstr "Tarih"
 
-#: src/routes/_owner/fields.tsx:473
+#: src/routes/_owner/fields.tsx:471
 msgid "Delete field"
 msgstr "Tarlayı sil"
 
-#: src/routes/_owner/fields.tsx:409
+#: src/routes/_owner/fields.tsx:408
 msgid "Detail"
 msgstr "Detail"
 
@@ -557,7 +557,7 @@ msgid "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e
 msgstr "E-postanızı onaylayın, ardından giriş yapın. (Geliştirme modunda e-posta onayı kapalıysa giriş sayfasını kullanın.)"
 
 #: src/routes/_owner/equipment.tsx:270
-#: src/routes/_owner/fields.tsx:444
+#: src/routes/_owner/fields.tsx:442
 #: src/routes/_owner/people.tsx:284
 msgid "Edit"
 msgstr "Düzenle"
@@ -610,6 +610,10 @@ msgstr "En az bir tarla seçin."
 msgid "En fazla 60 saniye."
 msgstr "En fazla 60 saniye."
 
+#: src/routes/_owner/settings.tsx:186
+msgid "End this session on this device. You can sign in again with your work email and password."
+msgstr "Bu cihazdaki oturumu sonlandırın. İş e-postanız ve şifrenizle yeniden giriş yapabilirsiniz."
+
 #: src/routes/signup.tsx:89
 msgid "Enter your work email and a phone in international format (E.164)."
 msgstr "İş e-postanızı ve telefonu uluslararası (E.164) formatta girin."
@@ -646,7 +650,7 @@ msgstr "Başçı"
 #: src/routes/_owner/equipment.tsx:130
 #: src/routes/_owner/fields.tsx:182
 #: src/routes/_owner/people.tsx:113
-#: src/routes/_owner/settings.tsx:44
+#: src/routes/_owner/settings.tsx:48
 #: src/routes/login.tsx:56
 #: src/routes/signup.tsx:61
 msgid "Formu kontrol edin."
@@ -806,7 +810,7 @@ msgstr "Görevler yükleniyor…"
 msgid "Görevlere dön"
 msgstr "Görevlere dön"
 
-#: src/routes/m/profile.tsx:129
+#: src/routes/m/profile.tsx:124
 msgid "Görünüm"
 msgstr "Görünüm"
 
@@ -823,7 +827,7 @@ msgid "Gübreleme"
 msgstr "Gübreleme"
 
 #: src/routes/_owner/fields.tsx:306
-#: src/routes/_owner/fields.tsx:439
+#: src/routes/_owner/fields.tsx:437
 msgid "ha"
 msgstr "ha"
 
@@ -877,7 +881,7 @@ msgstr "İlaçlama"
 msgid "İleri"
 msgstr "İleri"
 
-#: src/routes/_owner/settings.tsx:162
+#: src/routes/_owner/settings.tsx:179
 msgid "İndir"
 msgstr "İndir"
 
@@ -916,7 +920,7 @@ msgstr "İşçi"
 msgid "İsteğe bağlı — görevi bitirmeden önce sahadan kare alabilirsiniz."
 msgstr "İsteğe bağlı — görevi bitirmeden önce sahadan kare alabilirsiniz."
 
-#: src/routes/_owner/settings.tsx:141
+#: src/routes/_owner/settings.tsx:158
 msgid "JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görüntüsü."
 msgstr "JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görüntüsü."
 
@@ -1002,7 +1006,7 @@ msgstr "Kopyalanacak tarlalar"
 msgid "Kopyalandı"
 msgstr "Kopyalandı"
 
-#: src/routes/m/profile.tsx:135
+#: src/routes/m/profile.tsx:130
 msgid "Koyu"
 msgstr "Koyu"
 
@@ -1042,13 +1046,22 @@ msgstr "Liste yüklenemedi."
 #: src/routes/_owner/equipment.tsx:244
 #: src/routes/_owner/fields.tsx:272
 #: src/routes/_owner/people.tsx:232
-#: src/routes/_owner/settings.tsx:80
+#: src/routes/_owner/settings.tsx:97
 msgid "Loading…"
 msgstr "Yükleniyor…"
 
-#: src/routes/_owner/settings.tsx:129
+#: src/routes/_owner/settings.tsx:146
 msgid "locked"
 msgstr "sabit"
+
+#: src/routes/_owner/settings.tsx:184
+#: src/routes/_owner/settings.tsx:199
+msgid "Log out"
+msgstr "Çıkış yap"
+
+#: src/routes/_owner/settings.tsx:199
+msgid "Logging out…"
+msgstr "Çıkış yapılıyor…"
 
 #: src/features/fields/csv.ts:31
 msgid "Longitude"
@@ -1154,11 +1167,11 @@ msgstr "Open tasks (today)"
 msgid "Open-Meteo verisi yok. Şehri Ayarlar’da kontrol edin."
 msgstr "Open-Meteo verisi yok. Şehri Ayarlar’da kontrol edin."
 
-#: src/routes/_owner/settings.tsx:94
+#: src/routes/_owner/settings.tsx:111
 msgid "Operation name"
 msgstr "İşletme adı"
 
-#: src/routes/_owner/settings.tsx:89
+#: src/routes/_owner/settings.tsx:106
 msgid "Operation name, weather city, and a fixed time zone. Use Turkish city names (e.g. Antalya)."
 msgstr "İşletme adı, hava için şehir ve sabit saat dilimi. Şehir adını Türkçe yazın (ör. Antalya)."
 
@@ -1166,7 +1179,7 @@ msgstr "İşletme adı, hava için şehir ve sabit saat dilimi. Şehir adını T
 msgid "Oturum açılamadı. Yeniden deneyin."
 msgstr "Oturum açılamadı. Yeniden deneyin."
 
-#: src/routes/_owner/settings.tsx:51
+#: src/routes/_owner/settings.tsx:55
 msgid "Oturum bulunamadı."
 msgstr "Oturum bulunamadı."
 
@@ -1238,7 +1251,7 @@ msgstr "Bitki sayısı"
 msgid "Preparing your session…"
 msgstr "Preparing your session…"
 
-#: src/routes/_owner/settings.tsx:162
+#: src/routes/_owner/settings.tsx:179
 msgid "Preparing…"
 msgstr "Preparing…"
 
@@ -1251,11 +1264,11 @@ msgid "Privacy & data"
 msgstr "Privacy & data"
 
 #: src/components/layout/MobileShell.tsx:17
-#: src/routes/m/profile.tsx:101
+#: src/routes/m/profile.tsx:96
 msgid "Profil"
 msgstr "Profil"
 
-#: src/routes/m/profile.tsx:94
+#: src/routes/m/profile.tsx:89
 msgid "Profil yüklenemedi."
 msgstr "Profil yüklenemedi."
 
@@ -1264,7 +1277,7 @@ msgstr "Profil yüklenemedi."
 #~ msgid "Profile"
 #~ msgstr "Profil"
 
-#: src/routes/_owner/fields.tsx:453
+#: src/routes/_owner/fields.tsx:451
 msgid "Redraw boundary"
 msgstr "Sınırı yeniden çiz"
 
@@ -1277,7 +1290,7 @@ msgstr "Sınırı yeniden çiz"
 msgid "Reports"
 msgstr "Raporlar"
 
-#: src/routes/m/profile.tsx:108
+#: src/routes/m/profile.tsx:103
 msgid "Rol"
 msgstr "Rol"
 
@@ -1310,16 +1323,16 @@ msgstr "Sahip hesapları cihaz kurulum linkiyle giriş yapamaz."
 #: src/routes/_owner/equipment.tsx:330
 #: src/routes/_owner/fields.tsx:387
 #: src/routes/_owner/people.tsx:373
-#: src/routes/_owner/settings.tsx:135
+#: src/routes/_owner/settings.tsx:152
 msgid "Save"
 msgstr "Kaydet"
 
-#: src/routes/_owner/settings.tsx:133
+#: src/routes/_owner/settings.tsx:150
 msgid "Saved."
 msgstr "Kaydedildi."
 
 #: src/routes/_owner/people.tsx:373
-#: src/routes/_owner/settings.tsx:135
+#: src/routes/_owner/settings.tsx:152
 msgid "Saving…"
 msgstr "Kaydediliyor…"
 
@@ -1343,9 +1356,13 @@ msgstr "Sesi sil"
 msgid "Sesli not"
 msgstr "Sesli not"
 
+#: src/routes/_owner/settings.tsx:183
+msgid "Session"
+msgstr "Oturum"
+
 #: src/routes/_owner/route.tsx:42
-#: src/routes/_owner/settings.tsx:79
-#: src/routes/_owner/settings.tsx:87
+#: src/routes/_owner/settings.tsx:96
+#: src/routes/_owner/settings.tsx:104
 msgid "Settings"
 msgstr "Ayarlar"
 
@@ -1390,7 +1407,7 @@ msgstr "Kayıt yapılıyor…"
 msgid "Şimdi değil"
 msgstr "Şimdi değil"
 
-#: src/routes/m/profile.tsx:133
+#: src/routes/m/profile.tsx:128
 msgid "Sistem"
 msgstr "Sistem"
 
@@ -1530,7 +1547,7 @@ msgstr "Görevler"
 msgid "Team"
 msgstr "Ekip"
 
-#: src/routes/m/profile.tsx:106
+#: src/routes/m/profile.tsx:101
 msgid "Telefon"
 msgstr "Telefon"
 
@@ -1538,7 +1555,7 @@ msgstr "Telefon"
 msgid "This page describes how Agrova processes personal and operational data. It is informational and does not replace legal advice (KVKK / GDPR)."
 msgstr "This page describes how Agrova processes personal and operational data. It is informational and does not replace legal advice (KVKK / GDPR)."
 
-#: src/routes/_owner/settings.tsx:126
+#: src/routes/_owner/settings.tsx:143
 msgid "Time zone"
 msgstr "Saat dilimi"
 
@@ -1564,7 +1581,7 @@ msgstr "Toplam"
 msgid "TR mobile. Roles: foreman, agronomist, worker."
 msgstr "Cep: +90. Roller: başçı, ziraat mühendisi, işçi."
 
-#: src/routes/_owner/settings.tsx:139
+#: src/routes/_owner/settings.tsx:156
 msgid "Tüm verilerimi indir"
 msgstr "Tüm verilerimi indir"
 
@@ -1583,7 +1600,7 @@ msgstr "Tümü"
 msgid "Tümünü göster"
 msgstr "Tümünü göster"
 
-#: src/routes/_owner/settings.tsx:122
+#: src/routes/_owner/settings.tsx:139
 msgid "Turkish name as you would say it; used for the forecast widget (later)."
 msgstr "Günlük konuştuğunuz gibi Türkçe şehir adı; hava widget’ı için (ileride)."
 
@@ -1591,7 +1608,7 @@ msgstr "Günlük konuştuğunuz gibi Türkçe şehir adı; hava widget’ı içi
 msgid "Type the field name exactly to delete."
 msgstr "Silmek için tarla adını aynen yazın."
 
-#: src/routes/_owner/fields.tsx:457
+#: src/routes/_owner/fields.tsx:455
 msgid "Type the field name to confirm deletion."
 msgstr "Silme işlemini onaylamak için tarla adını yazın."
 
@@ -1622,7 +1639,7 @@ msgstr "Araçlar, aletler, kimyasallar ve kasalar."
 msgid "Weather"
 msgstr "Hava"
 
-#: src/routes/_owner/settings.tsx:109
+#: src/routes/_owner/settings.tsx:126
 msgid "Weather city"
 msgstr "Hava için şehir"
 
@@ -1676,7 +1693,7 @@ msgstr "Yeni atamalar burada listelenir."
 msgid "Yeni görev"
 msgstr "Yeni görev"
 
-#: src/routes/m/profile.tsx:164
+#: src/routes/m/profile.tsx:159
 msgid "Yeni kurulum linki için işletme sahibiyle iletişime geçin."
 msgstr "Yeni kurulum linki için işletme sahibiyle iletişime geçin."
 
@@ -1713,7 +1730,7 @@ msgstr "You can export field-level chemical logs as CSV; a full data export is p
 #: src/features/tasks/ReassignSheet.mobile.tsx:62
 #: src/features/tasks/TaskDetailSheet.tsx:170
 #: src/routes/m/history.tsx:33
-#: src/routes/m/profile.tsx:86
+#: src/routes/m/profile.tsx:81
 #: src/routes/m/task.$id.tsx:62
 #: src/routes/m/tasks.tsx:37
 msgid "Yükleniyor…"

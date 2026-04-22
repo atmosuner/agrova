@@ -79,6 +79,8 @@ pnpm build
 
 **Playwright (optional authed E2E):** set `E2E_OWNER_EMAIL` and `E2E_OWNER_PASSWORD` in `.env` (see `.env.example`). Playwright then runs `e2e/auth.owner.setup.ts`, writes `e2e/.auth/owner.json` (gitignored), and runs `e2e/*.authed.spec.ts`. Without these vars, authed specs are skipped and only public smokes run.
 
+**Sign out:** **Settings** (owner) → *Log out*, or **Profil** (worker, `/m/profile`) → *Çıkış yap* — both call `signOutAndClearLocalData()` (Supabase session + IndexedDB / Dexie cleared) and return to the appropriate login screen.
+
 Fast test run without coverage thresholds: `pnpm test:run`. Watch mode: `pnpm test` (Vitest).
 
 **E2E:** `pnpm dev` in one terminal, then `pnpm test:e2e` (or `PLAYWRIGHT_BASE_URL` if the dev server port differs). A **nightly** workflow (`.github/workflows/e2e-nightly.yml`) builds, runs `vite preview`, and executes Playwright — set `VITE_*` secrets in CI if tests need a real Supabase project.

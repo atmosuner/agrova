@@ -17,7 +17,7 @@
 >
 > **Progress (M7):** `/today` — **4 tiles** (stats + Open-Meteo **weather** from settings city), **realtime** invalidation on `tasks`/`issues` for stats, **3-column board** (today) + `TaskDetailSheet`, **lazy mini map** (fields + today highlight), **activity feed** (20 rows, Realtime, sentinel label), skeletons. **Lighthouse:** `pnpm lh:report` → `docs/lighthouse/m7-ω.html` (unauth `/today`); KPI sign-off for logged-in + human M7-ω.
 >
-> **Progress (M8):** Shipped: export, anonymize, `/offline`, `/how-to-install`, a11y/axe, contrast doc, **nightly E2E** workflow, `e2e/m8-10-critical-path-smoke.spec.ts` (seven **unauthenticated** shell smokes) + a11y routes. **Pending:** Lingui tr catalog completion, Lighthouse/PWA in CI, **authed** seven-flow E2E + staging, **M8-11/12** domain + launch.
+> **Progress (M8):** Shipped: export, anonymize, `/offline`, `/how-to-install`, a11y/axe, contrast doc, **nightly E2E** workflow, `e2e/m8-10-critical-path-smoke.spec.ts` (seven **unauthenticated** shell smokes) + a11y routes, **owner Settings → Log out** (shared `signOutAndClearLocalData`, tests in `src/features/auth/logout.test.ts`). **Pending:** Lingui tr catalog completion, Lighthouse/PWA in CI, **authed** seven-flow E2E + staging, **M8-11/12** domain + launch.
 >
 > **Progress (M3):** **ADR:** [`docs/decisions/001-worker-device-auth-and-offline-sync.md`](../docs/decisions/001-worker-device-auth-and-offline-sync.md). M3-01 ⏸️ **DEFERRED**. **Core shipped:** M3-02–04 ✅; M3-05–08 / 09–12 / 13–15 **🟨 see slice tracker** (gaps: pull-to-refresh vs Yenile, network-primary lists vs full Dexie-first reads, E2E smoke not full offline flow, `sync`/`db` coverage & M3-ω TBD). **E2E:** `pnpm dev` then `pnpm test:e2e`; **`PLAYWRIGHT_BASE_URL`** if Vite is not on **5173**.
 >
@@ -804,7 +804,7 @@ Goal: worker opens a **setup link** (from owner), sets up once, sees today's tas
 **Status:** 🟨 **partial** (UX: button “Daha eski” vs infinite scroll; window math via `addDaysToISODate`)
 
 ### Task M3-14: Profile screen (Profil) — mute toggles + logout
-**Description:** **`/m/profile`**. Read-only name, phone, role. **`push_muted`** (and **theme** key) in **`people.notification_prefs`** via `mergeNotificationPrefs`. Theme: **`src/lib/theme.ts`** → `.dark` on **`<html>`** + `localStorage` + `applyThemeOn load` in **`main.tsx`**. Logout: **`supabase.auth.signOut`**, **`db.delete()`**, navigate **`/login?redirect=…&worker=true`**.
+**Description:** **`/m/profile`**. Read-only name, phone, role. **`push_muted`** (and **theme** key) in **`people.notification_prefs`** via `mergeNotificationPrefs`. Theme: **`src/lib/theme.ts`** → `.dark` on **`<html>`** + `localStorage` + `applyThemeOn load` in **`main.tsx`**. Logout: shared **`signOutAndClearLocalData()`** in **`src/features/auth/logout.ts`** (**`supabase.auth.signOut`** + **`db.delete()`**), navigate **`/login?redirect=…&worker=true`**. **Owner:** **`/settings`** → **Log out** (same helper, navigate **`/login`** with owner search / not worker landing).
 **Acceptance criteria:**
 - [x] Toggles + theme **persist** to `people` JSON
 - [x] Theme live + stored (`getStoredAgrovaTheme` / profile merge)

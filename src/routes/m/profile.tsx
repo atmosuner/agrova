@@ -3,6 +3,7 @@ import { t } from '@lingui/macro'
 import { useEffect, useState } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { signOutAndClearLocalData } from '@/features/auth/logout'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import {
   applyThemeToDocument,
@@ -14,7 +15,6 @@ import {
   readMutePush,
 } from '@/lib/theme'
 import { supabase } from '@/lib/supabase'
-import { db } from '@/lib/db'
 import type { Json } from '@/types/db'
 
 export const Route = createFileRoute('/m/profile')({
@@ -71,12 +71,7 @@ function ProfilePage() {
 
   async function onLogout() {
     setErr(null)
-    await supabase.auth.signOut()
-    try {
-      await db.delete()
-    } catch {
-      // ignore
-    }
+    await signOutAndClearLocalData()
     void navigate({ to: '/login', search: { redirect: undefined, worker: true } })
   }
 

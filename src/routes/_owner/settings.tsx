@@ -1,7 +1,8 @@
 import { msg, t } from '@lingui/macro'
 import { useMemo, useState } from 'react'
-import { createFileRoute } from '@tanstack/react-router'
+import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
+import { signOutAndClearLocalData } from '@/features/auth/logout'
 import { LOCKED_APP_TIMEZONE } from '@/features/settings/constants'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
 import { downloadAgrovaDataExport } from '@/features/settings/download-export'
@@ -16,6 +17,7 @@ export const Route = createFileRoute('/_owner/settings')({
 })
 
 function SettingsPage() {
+  const navigate = useNavigate()
   const { settings, refresh, loading: bootLoading } = useOperationSettings()
   const [exporting, setExporting] = useState(false)
   const [exportErr, setExportErr] = useState<string | null>(null)
@@ -30,6 +32,8 @@ function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [formError, setFormError] = useState<string | null>(null)
   const [ok, setOk] = useState(false)
+  const [loggingOut, setLoggingOut] = useState(false)
+  const [logoutError, setLogoutError] = useState<string | null>(null)
 
   function setField(name: keyof OperationSettingsFormValues, value: string) {
     setDraft((d) => ({ ...(d ?? fromDb), [name]: value }))
@@ -71,6 +75,19 @@ function SettingsPage() {
     setOk(true)
     setDraft(null)
     await refresh()
+  }
+
+  async function onLogout() {
+    setLogoutError(null)
+    setLoggingOut(true)
+    try {
+      await signOutAndClearLocalData()
+      void navigate({ to: '/login', search: { redirect: undefined, worker: false } })
+    } catch (e) {
+      setLogoutError(e instanceof Error ? e.message : String(e))
+    } finally {
+      setLoggingOut(false)
+    }
   }
 
   if (bootLoading && !settings) {
@@ -163,6 +180,25 @@ function SettingsPage() {
         </Button>
       </section>
       <NotificationMuteSettings />
+      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Session`)}>
+        <h2 className="text-lg font-medium text-fg">{t`Log out`}</h2>
+        <p className="mt-1 text-sm text-fg-secondary">
+          {t`End this session on this device. You can sign in again with your work email and password.`}
+        </p>
+        {logoutError ? <p className="mt-2 text-sm text-harvest-600">{logoutError}</p> : null}
+        <Button
+          type="button"
+          // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token
+          variant="destructive"
+          className="mt-3"
+          disabled={loggingOut}
+          onClick={() => {
+            void onLogout()
+          }}
+        >
+          {loggingOut ? t`Logging out…` : t`Log out`}
+        </Button>
+      </section>
     </div>
   )
 }
