@@ -19,6 +19,7 @@
     "i18n:compile": "lingui compile --typescript",
     "lh:report": "node scripts/lighthouse-today.mjs",
     "preview": "vite preview",
+    "gh-pages:emit-fallback": "node scripts/emit-github-pages-spa.mjs",
     "supabase:gen-types": "node scripts/supabase-gen-types.mjs",
     "supabase:functions:serve": "npx -y supabase@2 functions serve"
   },

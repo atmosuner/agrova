@@ -9,8 +9,27 @@ import react from '@vitejs/plugin-react'
 
 const projectRoot = fileURLToPath(new URL('.', import.meta.url))
 
+/**
+ * Project GitHub Pages: `https://<user>.github.io/<repo>/` needs Vite `base` set to
+ * `/<repo>/`. User/organization site repos (`<user>.github.io`) publish at the root — use
+ * `base: '/'` (set `AGROVA_GITHUB_PAGES=1` only for project pages deploys, not in CI’s
+ * default `pnpm build` which must stay at `/` so checks match local dev).
+ */
+function resolveGhpViteBase(): string {
+  const repo = process.env['GITHUB_REPOSITORY']?.split('/')[1] ?? ''
+  const useGhpBase =
+    process.env['AGROVA_GITHUB_PAGES'] === '1' && repo.length > 0 && !repo.endsWith('.github.io')
+  if (!useGhpBase) return '/'
+  return `/${repo}/`
+}
+
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(() => {
+  const base = resolveGhpViteBase()
+  const navigateFallback =
+    base === '/' ? 'index.html' : `${base.replace(/\/$/, '')}/index.html`
+
+  return {
   test: {
     maxWorkers: 1,
     environment: 'node',
@@ -20,7 +39,7 @@ export default defineConfig({
     /** Run explicitly: `pnpm vitest run src/integration` (requires real Supabase env). */
     exclude: ['**/node_modules/**', '**/dist/**', 'src/integration/**'],
     coverage: {
-      provider: 'v8',
+      provider: 'v8' as const,
       reporter: ['text', 'html'],
       include: [
         'src/features/people/**/*.ts',
@@ -58,6 +77,7 @@ export default defineConfig({
       },
     },
   },
+  base,
   plugins: [
     tanstackRouter({ target: 'react', autoCodeSplitting: true }),
     react({ babel: { plugins: ['@lingui/babel-plugin-lingui-macro'] } }),
@@ -75,15 +95,15 @@ export default defineConfig({
         theme_color: '#3F8B4E',
         background_color: '#FAFAF7',
         display: 'standalone',
-        start_url: '/',
-        scope: '/',
+        start_url: base,
+        scope: base,
         lang: 'tr',
         dir: 'ltr',
         icons: [
-          { src: '/icons/pwa-192.png', sizes: '192x192', type: 'image/png' },
-          { src: '/icons/pwa-512.png', sizes: '512x512', type: 'image/png', purpose: 'any' },
+          { src: `${base}icons/pwa-192.png`, sizes: '192x192', type: 'image/png' },
+          { src: `${base}icons/pwa-512.png`, sizes: '512x512', type: 'image/png', purpose: 'any' },
           {
-            src: '/icons/pwa-512-maskable.png',
+            src: `${base}icons/pwa-512-maskable.png`,
             sizes: '512x512',
             type: 'image/png',
             purpose: 'maskable',
@@ -92,7 +112,7 @@ export default defineConfig({
       },
       workbox: {
         globPatterns: ['**/*.{js,css,html,ico,png,svg,woff2}'],
-        navigateFallback: '/index.html',
+        navigateFallback,
         // M6-04: push notification click (see public/notification-sw.js)
         importScripts: ['notification-sw.js'],
         // Offline IndexedDB / API: later milestones; shell precache only for now
@@ -105,4 +125,5 @@ export default defineConfig({
       '@': path.resolve(projectRoot, 'src'),
     },
   },
+  }
 })
