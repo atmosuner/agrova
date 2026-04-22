@@ -2,9 +2,12 @@ import { I18nProvider } from '@lingui/react'
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { createRouter, RouterProvider } from '@tanstack/react-router'
+import { registerSW } from 'virtual:pwa-register'
 import { routeTree } from '@/routeTree.gen'
 import '@/index.css'
 import { i18n } from '@/lib/i18n'
+
+void registerSW({ immediate: true })
 
 const router = createRouter({ routeTree })
 
