@@ -80,7 +80,7 @@ describe('submitIssueDraft', () => {
 
   it('omits task/field/gps from row payload when undefined or NaN', async () => {
     await submitIssueDraft({
-      category: 'EQUIP',
+      category: 'EQUIPMENT',
       photoJpeg: new Blob(['x'], { type: 'image/jpeg' }),
       reporterId: '11111111-1111-1111-1111-111111111111',
       gpsLat: Number.NaN,
