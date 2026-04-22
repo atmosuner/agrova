@@ -2,7 +2,13 @@
 import Dexie, { type Table } from 'dexie'
 import type { Json } from '@/types/db'
 
-export type OutboxKind = 'task_status' | 'task_reassign' | 'task_completion'
+export type OutboxKind =
+  | 'task_status'
+  | 'task_reassign'
+  | 'task_completion'
+  | 'issue_row'
+  | 'issue_photo'
+  | 'issue_voice'
 
 export type OutboxRow = {
   id: string

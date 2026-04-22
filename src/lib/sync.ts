@@ -5,6 +5,7 @@ import { supabase } from '@/lib/supabase'
 import type { Database, Json } from '@/types/db'
 
 type TaskStatus = Database['public']['Enums']['task_status']
+type IssueCategory = Database['public']['Enums']['issue_category']
 
 const BACKOFF_MS = [5_000, 30_000, 120_000, 600_000, 900_000] as const
 let lastDrainErrorAt = 0
@@ -18,6 +19,14 @@ function isPayloadRecord(p: Json): p is { [k: string]: Json | undefined } {
 function asTaskStatus(s: string | undefined, fallback: TaskStatus): TaskStatus {
   if (s === 'TODO' || s === 'IN_PROGRESS' || s === 'DONE' || s === 'BLOCKED' || s === 'CANCELLED') {
     return s
+  }
+  return fallback
+}
+
+function asIssueCategory(s: string | undefined, fallback: IssueCategory): IssueCategory {
+  const allowed: IssueCategory[] = ['PEST', 'EQUIPMENT', 'INJURY', 'IRRIGATION', 'WEATHER', 'THEFT', 'SUPPLY']
+  if (s && (allowed as string[]).includes(s)) {
+    return s as IssueCategory
   }
   return fallback
 }
@@ -93,6 +102,140 @@ async function processRow(row: OutboxRow): Promise<void> {
       return
     }
     await reassignTask(supabase, { taskId, newAssigneeId })
+    return
+  }
+  if (row.kind === 'issue_row') {
+    const issueId = typeof p.issueId === 'string' ? p.issueId : ''
+    const category = asIssueCategory(typeof p.category === 'string' ? p.category : undefined, 'PEST')
+    const reporterId = typeof p.reporterId === 'string' ? p.reporterId : ''
+    const taskId = typeof p.taskId === 'string' ? p.taskId : null
+    const fieldId = typeof p.fieldId === 'string' ? p.fieldId : null
+    const gpsLat = typeof p.gpsLat === 'number' ? p.gpsLat : null
+    const gpsLng = typeof p.gpsLng === 'number' ? p.gpsLng : null
+    if (!issueId || !reporterId) {
+      return
+    }
+    const { data: existing, error: exErr } = await supabase.from('issues').select('id').eq('id', issueId).maybeSingle()
+    if (exErr) {
+      throw exErr
+    }
+    if (existing) {
+      return
+    }
+    const rowInsert: Database['public']['Tables']['issues']['Insert'] = {
+      id: issueId,
+      category,
+      reporter_id: reporterId,
+      task_id: taskId,
+      field_id: fieldId,
+      gps_lat: gpsLat,
+      gps_lng: gpsLng,
+      photo_url: null,
+      voice_note_url: null,
+    }
+    const { error: insErr } = await supabase.from('issues').insert(rowInsert)
+    if (insErr) {
+      if (insErr.code === '23505') {
+        return
+      }
+      throw insErr
+    }
+    return
+  }
+  if (row.kind === 'issue_photo') {
+    const issueId = typeof p.issueId === 'string' ? p.issueId : ''
+    const blobId = typeof p.blobId === 'string' ? p.blobId : ''
+    if (!issueId || !blobId) {
+      return
+    }
+    const { data: issueRow, error: isErr } = await supabase.from('issues').select('id, photo_url').eq('id', issueId).maybeSingle()
+    if (isErr) {
+      throw isErr
+    }
+    if (!issueRow) {
+      return
+    }
+    if (issueRow.photo_url) {
+      await db.blobs.delete(blobId)
+      return
+    }
+    const blobRow = await db.blobs.get(blobId)
+    if (!blobRow?.blob) {
+      return
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      throw new Error('no auth')
+    }
+    const objectPath = `${user.id}/issues/${issueId}.jpg`
+    const { error: upErr } = await supabase.storage.from('issue-photos').upload(objectPath, blobRow.blob, {
+      upsert: true,
+      contentType: 'image/jpeg',
+    })
+    if (upErr) {
+      throw upErr
+    }
+    const { error: rpcErr } = await supabase.rpc('set_issue_photo_url', {
+      p_issue_id: issueId,
+      p_path: objectPath,
+    })
+    if (rpcErr) {
+      throw rpcErr
+    }
+    await db.blobs.delete(blobId)
+    return
+  }
+  if (row.kind === 'issue_voice') {
+    const issueId = typeof p.issueId === 'string' ? p.issueId : ''
+    const blobId = typeof p.blobId === 'string' ? p.blobId : ''
+    const contentType = typeof p.contentType === 'string' ? p.contentType : 'audio/webm'
+    if (!issueId || !blobId) {
+      return
+    }
+    const { data: issueRow, error: isErr } = await supabase
+      .from('issues')
+      .select('id, voice_note_url')
+      .eq('id', issueId)
+      .maybeSingle()
+    if (isErr) {
+      throw isErr
+    }
+    if (!issueRow) {
+      return
+    }
+    if (issueRow.voice_note_url) {
+      await db.blobs.delete(blobId)
+      return
+    }
+    const blobRow = await db.blobs.get(blobId)
+    if (!blobRow?.blob) {
+      return
+    }
+    const {
+      data: { user },
+    } = await supabase.auth.getUser()
+    if (!user) {
+      throw new Error('no auth')
+    }
+    const ext = contentType.includes('webm') ? 'webm' : contentType.includes('mpeg') ? 'mp3' : 'm4a'
+    const objectPath = `${user.id}/issues/${issueId}.${ext}`
+    const { error: upErr } = await supabase.storage.from('issue-photos').upload(objectPath, blobRow.blob, {
+      upsert: true,
+      contentType,
+    })
+    if (upErr) {
+      throw upErr
+    }
+    const { error: rpcErr } = await supabase.rpc('set_issue_voice_note_url', {
+      p_issue_id: issueId,
+      p_path: objectPath,
+    })
+    if (rpcErr) {
+      throw rpcErr
+    }
+    await db.blobs.delete(blobId)
   }
 }
 
@@ -142,7 +285,7 @@ function newUUID(): string {
 }
 
 export async function enqueueOutbox(
-  item: Pick<OutboxRow, 'kind' | 'payload'> & Partial<Pick<OutboxRow, 'client_uuid'>>,
+  item: Pick<OutboxRow, 'kind' | 'payload'> & Partial<Pick<OutboxRow, 'client_uuid' | 'enqueued_at'>>,
 ): Promise<string> {
   const id = newUUID()
   const row: OutboxRow = {
@@ -150,7 +293,7 @@ export async function enqueueOutbox(
     kind: item.kind,
     payload: item.payload,
     client_uuid: item.client_uuid ?? newUUID(),
-    enqueued_at: Date.now(),
+    enqueued_at: item.enqueued_at ?? Date.now(),
     attempts: 0,
     last_error: null,
   }

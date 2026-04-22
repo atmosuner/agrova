@@ -62,7 +62,11 @@ export function IssueConfirm({ category, file, onRetake, onSubmit, voiceSlot }: 
             setBusy(true)
             try {
               const jpeg = await compressImageToJpeg(file)
-              await onSubmit(jpeg)
+              try {
+                await onSubmit(jpeg)
+              } catch {
+                setErr(t`Gönderilemedi. Bağlantınızı kontrol edip yeniden deneyin.`)
+              }
             } catch {
               setErr(t`Fotoğraf işlenemedi. Yeniden çekmeyi deneyin.`)
             } finally {
