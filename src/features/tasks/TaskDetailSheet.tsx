@@ -76,17 +76,9 @@ export function TaskDetailSheet({ taskId, onClose }: Props) {
     setFormErr(null)
     setBusy(true)
     try {
-      const { data: me, error: e1 } = await supabase.rpc('current_person_id')
-      if (e1) {
-        throw e1
-      }
-      if (!me) {
-        throw new Error('me')
-      }
       await reassignTask(supabase, {
         taskId,
         newAssigneeId: newAssignee,
-        actorId: me,
       })
       setNewAssignee('')
       await onInvalidated()
