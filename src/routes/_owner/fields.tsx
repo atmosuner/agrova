@@ -5,6 +5,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { fieldToPolygonFeature } from '@/features/fields/boundary-geojson'
 import { downloadFieldsCsv } from '@/features/fields/csv'
+import { FieldChemicalLog } from '@/features/fields/FieldChemicalLog'
 import { fieldFormSchema } from '@/features/fields/field-form'
 import { FieldsMap } from '@/features/fields/FieldsMap'
 import { formFieldClassName } from '@/lib/form-field-class'
@@ -52,6 +53,9 @@ function FieldsPage() {
     address: '',
   })
   const [deleteTyped, setDeleteTyped] = useState('')
+  /* Tab keys are internal; labels are translated in the tab buttons. */
+  // eslint-disable-next-line lingui/no-unlocalized-strings
+  const [fieldAsideTab, setFieldAsideTab] = useState<'info' | 'chemical'>('info')
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -92,6 +96,8 @@ function FieldsPage() {
     setSelectedId(id)
     setEditing(false)
     setDeleteTyped('')
+    // eslint-disable-next-line lingui/no-unlocalized-strings
+    setFieldAsideTab('info')
   }
 
   function onDrawSettled() {
@@ -388,55 +394,89 @@ function FieldsPage() {
         ) : null}
         {selected && !editing ? (
           <div className="space-y-2 rounded-md border border-orchard-200 bg-orchard-50/30 p-3 text-sm">
-            <h3 className="font-medium text-fg">{selected.name}</h3>
-            <p className="text-fg-secondary">
-              {selected.crop}
-              {selected.variety ? (
-                <>
-                  {'\u00a0\u2014\u00a0'}
-                  {selected.variety}
-                </>
-              ) : null}
-            </p>
-            {selected.area_hectares != null ? (
-              <p className="text-fg-secondary">
-                {i18n._(msg`Area`)}: {(Math.round(selected.area_hectares * 100) / 100).toString()} {t`ha`}
-              </p>
-            ) : null}
-            <div className="flex flex-wrap gap-2 pt-1">
-              <Button type={b.btn} size={b.sm} variant={b.out} onClick={openEdit}>
-                {t`Edit`}
-              </Button>
-              <Button
-                type={b.btn}
-                size={b.sm}
-                variant={b.out}
-                onClick={startReplaceBoundary}
-                disabled={wantsDraw}
+            <div className="flex flex-wrap gap-1 border-b border-orchard-200 pb-2">
+              <button
+                type="button"
+                className={clsx(
+                  'rounded px-2 py-1 text-xs font-medium',
+                  fieldAsideTab === 'info' ? 'bg-orchard-100 text-fg' : 'text-fg-secondary hover:bg-orchard-50/80',
+                )}
+                onClick={() => {
+                  // eslint-disable-next-line lingui/no-unlocalized-strings
+                  setFieldAsideTab('info')
+                }}
               >
-                {t`Redraw boundary`}
-              </Button>
-            </div>
-            <div className="mt-2 border-t border-orchard-200 pt-2">
-              <p className="text-xs text-fg-secondary">{t`Type the field name to confirm deletion.`}</p>
-              <input
-                className={clsx(formFieldClassName, 'mt-1 text-sm')}
-                value={deleteTyped}
-                onChange={(e) => setDeleteTyped(e.target.value)}
-                placeholder={selected.name}
-                autoComplete="off"
-              />
-              <Button
-                type={b.btn}
-                className="mt-2"
-                size={b.sm}
-                variant={b.out}
-                onClick={() => void removeField()}
-                disabled={saving || deleteTyped.trim() !== selected.name.trim()}
+                {t`Detail`}
+              </button>
+              <button
+                type="button"
+                className={clsx(
+                  'rounded px-2 py-1 text-xs font-medium',
+                  fieldAsideTab === 'chemical' ? 'bg-orchard-100 text-fg' : 'text-fg-secondary hover:bg-orchard-50/80',
+                )}
+                onClick={() => {
+                  // eslint-disable-next-line lingui/no-unlocalized-strings
+                  setFieldAsideTab('chemical')
+                }}
               >
-                {t`Delete field`}
-              </Button>
+                {i18n._(msg`Chemicals`)}
+              </button>
             </div>
+            {fieldAsideTab === 'info' ? (
+              <>
+                <h3 className="font-medium text-fg">{selected.name}</h3>
+                <p className="text-fg-secondary">
+                  {selected.crop}
+                  {selected.variety ? (
+                    <>
+                      {'\u00a0\u2014\u00a0'}
+                      {selected.variety}
+                    </>
+                  ) : null}
+                </p>
+                {selected.area_hectares != null ? (
+                  <p className="text-fg-secondary">
+                    {i18n._(msg`Area`)}: {(Math.round(selected.area_hectares * 100) / 100).toString()} {t`ha`}
+                  </p>
+                ) : null}
+                <div className="flex flex-wrap gap-2 pt-1">
+                  <Button type={b.btn} size={b.sm} variant={b.out} onClick={openEdit}>
+                    {t`Edit`}
+                  </Button>
+                  <Button
+                    type={b.btn}
+                    size={b.sm}
+                    variant={b.out}
+                    onClick={startReplaceBoundary}
+                    disabled={wantsDraw}
+                  >
+                    {t`Redraw boundary`}
+                  </Button>
+                </div>
+                <div className="mt-2 border-t border-orchard-200 pt-2">
+                  <p className="text-xs text-fg-secondary">{t`Type the field name to confirm deletion.`}</p>
+                  <input
+                    className={clsx(formFieldClassName, 'mt-1 text-sm')}
+                    value={deleteTyped}
+                    onChange={(e) => setDeleteTyped(e.target.value)}
+                    placeholder={selected.name}
+                    autoComplete="off"
+                  />
+                  <Button
+                    type={b.btn}
+                    className="mt-2"
+                    size={b.sm}
+                    variant={b.out}
+                    onClick={() => void removeField()}
+                    disabled={saving || deleteTyped.trim() !== selected.name.trim()}
+                  >
+                    {t`Delete field`}
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <FieldChemicalLog fieldId={selected.id} fieldName={selected.name} />
+            )}
           </div>
         ) : null}
       </aside>
