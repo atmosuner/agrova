@@ -50,14 +50,12 @@ export function NotificationsBell() {
       >
         <Bell className="h-5 w-5" aria-hidden />
         {unread > 0 ? (
-          <span className="absolute -right-0.5 -top-0.5 min-w-5 rounded-full bg-orchard-500 px-1.5 text-center text-[10px] font-medium text-white">
-            {unread > 99 ? '99+' : unread}
-          </span>
+          <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-status-blocked" aria-hidden />
         ) : null}
       </button>
       {open ? (
         <div
-          className="absolute right-0 z-50 mt-2 w-[min(100vw-2rem,24rem)] rounded-xl border border-border bg-surface-0 p-0 shadow-lg"
+          className="absolute right-0 z-50 mt-2 w-[min(100vw-2rem,24rem)] rounded-xl border border-border-strong bg-surface-0 p-0 ring-[3px] ring-[rgba(12,18,16,0.04)]"
           role="dialog"
           aria-label={i18n._(msg`Bildirimler`)}
         >
