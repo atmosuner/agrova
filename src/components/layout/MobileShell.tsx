@@ -76,7 +76,7 @@ export function MobileShell() {
   return (
     <div className="flex min-h-dvh flex-col bg-canvas pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] pt-[env(safe-area-inset-top,0px)]">
       {/* Header */}
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border bg-surface-0/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-surface-0/80">
+      <header className="sticky top-[env(safe-area-inset-top,0px)] z-30 flex items-center justify-between gap-3 border-b border-border bg-surface-0/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-surface-0/80">
         <div className="min-w-0">
           <p className="truncate text-[18px] font-medium leading-tight text-fg">
             {t`Merhaba`}, {firstNameFromFull(me?.full_name)}
