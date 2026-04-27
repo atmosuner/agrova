@@ -3,12 +3,13 @@ import { msg, t } from '@lingui/macro'
 import { useMemo, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { useQueryClient } from '@tanstack/react-query'
+import { ChevronLeft } from 'lucide-react'
 import { useTaskDetailQuery } from '@/features/tasks/useTaskDetailQuery'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import { activityIdFromDbValue, ACTIVITY_LABEL } from '@/features/tasks/activities'
 import { ActivityIcon } from '@/components/icons/activities/ActivityIcon'
+import { StatusPill } from '@/features/tasks/TaskCard.mobile'
 import { WorkerButton } from '@/components/ui/WorkerButton'
-import { Button } from '@/components/ui/button'
 import { i18n } from '@/lib/i18n'
 import { transitionTask } from '@/features/tasks/transition-task'
 import { CompletionFlow } from '@/features/tasks/CompletionFlow'
@@ -67,7 +68,7 @@ function TaskDetailPage() {
   if (error || !task) {
     return (
       <div className="px-4 pt-6">
-        <p className="text-harvest-500">{t`Görev bulunamadı.`}</p>
+        <p className="text-status-blocked">{t`Görev bulunamadı.`}</p>
         <Link to="/m/tasks" className="mt-2 inline-block text-orchard-500">
           {t`Görevlere dön`}
         </Link>
@@ -87,79 +88,85 @@ function TaskDetailPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col pb-28">
-      <div className="px-4 pt-4">
-        <Link to="/m/tasks" className="text-sm text-orchard-600">
-          ← {i18n._(msg`Görevler`)}
+    <div className="flex min-h-0 flex-1 flex-col pb-6">
+      <div className="flex-1 px-4 pt-4">
+        <Link
+          to="/m/tasks"
+          className="inline-flex items-center gap-1 text-sm font-medium text-orchard-500"
+        >
+          <ChevronLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+          {i18n._(msg`Görevler`)}
         </Link>
-        <div className="mt-3 flex items-start gap-3">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center rounded-xl bg-orchard-50 dark:bg-orchard-500/10">
-            {aid ? <ActivityIcon id={aid} className="h-16 w-16" /> : null}
+
+        <div className="mt-4 flex items-start gap-3.5">
+          <div className="inline-flex h-[88px] w-[88px] shrink-0 items-center justify-center rounded-[20px] bg-orchard-50 dark:bg-orchard-500/10">
+            {aid ? <ActivityIcon id={aid} className="h-[52px] w-[52px] text-orchard-500" /> : null}
           </div>
-          <div>
-            <h1 className="text-xl font-semibold text-fg">{title}</h1>
-            <p className="text-fg-secondary">{task.fields?.name ?? '—'}</p>
+          <div className="min-w-0 pt-1">
+            <h1 className="text-[22px] font-semibold leading-[1.15] text-fg">{title}</h1>
+            <p className="mt-1 truncate text-base text-fg-secondary">{task.fields?.name ?? '—'}</p>
+            <div className="mt-2">
+              <StatusPill status={task.status} />
+            </div>
           </div>
         </div>
-        {task.notes ? <p className="mt-3 text-sm text-fg-secondary">{task.notes}</p> : null}
-        {err ? <p className="mt-2 text-sm text-harvest-500">{err}</p> : null}
+
+        {task.notes ? (
+          <p className="mt-4 rounded-xl bg-surface-1 p-3.5 text-[15px] leading-relaxed text-fg-secondary">
+            {task.notes}
+          </p>
+        ) : null}
+
+        {err ? (
+          <p
+            role="alert"
+            className="mt-3 rounded-lg border border-status-blocked/15 bg-status-blocked/[0.06] px-3 py-2 text-[13px] text-status-blocked"
+          >
+            {err}
+          </p>
+        ) : null}
       </div>
+
       {task.status === 'TODO' || task.status === 'IN_PROGRESS' ? (
-        <div className="mt-auto w-full max-w-md self-center px-4">
+        <div className="mt-4 px-4">
           {task.status === 'TODO' ? (
-            <WorkerButton onClick={onStart} disabled={busy}>
-              {busy ? t`…` : t`Başla`}
-            </WorkerButton>
-          ) : null}
-          {task.status === 'TODO' ? (
-            <Button
-              type="button"
-              variant="outline"
-              className="mt-2 h-12 w-full rounded-full"
-              disabled={busy}
-              onClick={() => setAttach(true)}
-            >
-              {t`Alet`}
-            </Button>
+            <>
+              <WorkerButton onClick={onStart} disabled={busy}>
+                {busy ? t`…` : t`Başla`}
+              </WorkerButton>
+              <SecondaryRow disabled={busy}>
+                <SecondaryButton onClick={() => setAttach(true)} disabled={busy}>
+                  {t`Alet`}
+                </SecondaryButton>
+              </SecondaryRow>
+            </>
           ) : null}
           {task.status === 'IN_PROGRESS' ? (
             <>
-              <WorkerButton
-                onClick={() => {
-                  setFlow(true)
-                }}
-                className="mb-2"
+              <button
+                type="button"
                 disabled={busy}
+                onClick={() => setFlow(true)}
+                className="inline-flex h-[72px] w-full items-center justify-center rounded-full bg-status-done text-xl font-semibold text-white transition hover:opacity-95 active:scale-[0.97] disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-done"
               >
                 {t`Bitir`}
-              </WorkerButton>
-              <Button
-                type="button"
-                variant="secondary"
-                className="h-12 w-full rounded-full"
-                onClick={() => setReassign(true)}
-                disabled={busy}
-              >
-                {t`Aktar`}
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                className="mt-2 h-12 w-full rounded-full"
-                disabled={busy}
-                onClick={() => setAttach(true)}
-              >
-                {t`Alet`}
-              </Button>
-              <Button type="button" variant="outline" className="mt-2 h-12 w-full rounded-full" disabled={busy} asChild>
+              </button>
+              <SecondaryRow disabled={busy}>
+                <SecondaryButton onClick={() => setReassign(true)} disabled={busy}>
+                  {t`Aktar`}
+                </SecondaryButton>
+                <SecondaryButton onClick={() => setAttach(true)} disabled={busy}>
+                  {t`Alet`}
+                </SecondaryButton>
                 <Link
                   to="/m/report-issue"
                   search={{ taskId: task.id, fieldId: task.field_id }}
                   aria-label={t`Sorun bildir`}
+                  className="inline-flex h-[52px] w-full items-center justify-center rounded-full border border-status-blocked/25 bg-surface-0 text-[15px] font-medium text-status-blocked transition hover:bg-status-blocked/5 active:scale-[0.98] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-status-blocked"
                 >
                   {t`Sorun`}
                 </Link>
-              </Button>
+              </SecondaryRow>
             </>
           ) : null}
         </div>
@@ -181,5 +188,34 @@ function TaskDetailPage() {
         <AttachSheetMobile taskId={task.id} attachedIds={attachedEquipmentIds} onClose={() => setAttach(false)} />
       ) : null}
     </div>
+  )
+}
+
+function SecondaryRow({ children, disabled }: { children: React.ReactNode; disabled?: boolean }) {
+  return (
+    <div className="mt-2.5 grid grid-cols-3 gap-2" aria-disabled={disabled || undefined}>
+      {children}
+    </div>
+  )
+}
+
+function SecondaryButton({
+  children,
+  onClick,
+  disabled,
+}: {
+  children: React.ReactNode
+  onClick?: () => void
+  disabled?: boolean
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className="inline-flex h-[52px] w-full items-center justify-center rounded-full border border-border-strong bg-surface-0 text-[15px] font-medium text-fg transition hover:bg-surface-1 active:scale-[0.98] disabled:opacity-60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orchard-500"
+    >
+      {children}
+    </button>
   )
 }

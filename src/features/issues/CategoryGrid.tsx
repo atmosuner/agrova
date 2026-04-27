@@ -35,7 +35,7 @@ export function CategoryGrid({ onSelectCategory, disabled }: Props) {
             disabled={disabled}
             onClick={() => onSelectCategory(cat)}
             className={cn(
-              'flex min-h-14 min-w-14 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface-0 p-4 text-center shadow-sm transition active:scale-[0.99] disabled:opacity-50',
+              'flex min-h-14 min-w-14 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface-0 p-4 text-center transition active:scale-[0.99] disabled:opacity-50',
             )}
           >
             <IssueCategoryIcon category={cat} className="h-14 w-14 text-orchard-600" />
@@ -51,7 +51,7 @@ export function CategoryGrid({ onSelectCategory, disabled }: Props) {
             disabled={disabled}
             onClick={() => onSelectCategory(cat)}
             className={cn(
-              'flex min-h-14 min-w-14 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface-0 p-4 text-center shadow-sm transition active:scale-[0.99] disabled:opacity-50',
+              'flex min-h-14 min-w-14 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface-0 p-4 text-center transition active:scale-[0.99] disabled:opacity-50',
             )}
           >
             <IssueCategoryIcon category={cat} className="h-14 w-14 text-orchard-600" />
@@ -65,7 +65,7 @@ export function CategoryGrid({ onSelectCategory, disabled }: Props) {
           disabled={disabled}
           onClick={() => onSelectCategory(last!)}
           className={cn(
-            'flex min-h-14 w-[calc(50%-0.5rem)] min-w-14 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface-0 p-4 text-center shadow-sm transition active:scale-[0.99] disabled:opacity-50',
+            'flex min-h-14 w-[calc(50%-0.5rem)] min-w-14 flex-col items-center justify-center gap-2 rounded-2xl border border-border bg-surface-0 p-4 text-center transition active:scale-[0.99] disabled:opacity-50',
           )}
         >
           <IssueCategoryIcon category={last!} className="h-14 w-14 text-orchard-600" />

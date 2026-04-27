@@ -1,7 +1,7 @@
-/* eslint-disable lingui/no-unlocalized-strings */
+/* eslint-disable lingui/no-unlocalized-strings -- Intl format args + IANA tz */
 import { msg, t } from '@lingui/macro'
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { CheckCircle2, ClipboardList, User } from 'lucide-react'
 import { InstallPrompt } from '@/components/InstallPrompt'
 import { SyncIndicator } from '@/components/SyncIndicator'
@@ -27,9 +27,22 @@ function formatTrDateHeader(): string {
   }).format(new Date())
 }
 
+function subscribeOnline(cb: () => void) {
+  globalThis.addEventListener('online', cb)
+  globalThis.addEventListener('offline', cb)
+  return () => {
+    globalThis.removeEventListener('online', cb)
+    globalThis.removeEventListener('offline', cb)
+  }
+}
+function getOnline() {
+  return typeof navigator !== 'undefined' ? navigator.onLine !== false : true
+}
+
 export function MobileShell() {
   const { data: me, isSuccess } = useMyPersonQuery()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const isOnline = useSyncExternalStore(subscribeOnline, getOnline)
   const themeBeforeMobileRef = useRef<ReturnType<typeof getStoredAgrovaTheme> | null>(null)
 
   useEffect(() => {
@@ -59,40 +72,63 @@ export function MobileShell() {
 
   return (
     <div className="flex min-h-dvh flex-col bg-canvas pb-[calc(4.5rem+env(safe-area-inset-bottom,0px))] pt-[env(safe-area-inset-top,0px)]">
-      <header className="sticky top-0 z-30 flex items-center justify-between gap-2 border-b border-border bg-surface-0/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-surface-0/80">
+      {/* Header */}
+      <header className="sticky top-0 z-30 flex items-center justify-between gap-3 border-b border-border bg-surface-0/95 px-4 py-3 backdrop-blur supports-[backdrop-filter]:bg-surface-0/80">
         <div className="min-w-0">
-          <p className="truncate text-lg font-medium text-fg">
+          <p className="truncate text-[18px] font-medium leading-tight text-fg">
             {t`Merhaba`}, {firstNameFromFull(me?.full_name)}
           </p>
-          <p className="text-xs capitalize text-fg-muted">{formatTrDateHeader()}</p>
+          <p className="mt-0.5 text-[12px] capitalize text-fg-muted">{formatTrDateHeader()}</p>
         </div>
         <SyncIndicator />
       </header>
+
+      {/* Offline banner */}
+      {!isOnline && (
+        <div
+          className="border-b border-border bg-surface-2 px-4 py-2 text-[13px] text-fg-secondary"
+          role="status"
+          aria-live="polite"
+        >
+          {t`Çevrimdışısınız. Değişiklikler bağlantı gelince gönderilecek.`}
+        </div>
+      )}
+
       <div className="min-h-0 flex-1">
         <Outlet />
       </div>
+
+      {/* Bottom tab bar */}
       <nav
-        className="fixed bottom-0 left-0 right-0 z-30 flex h-[4.5rem] min-h-[4.5rem] items-stretch justify-around border-t border-border bg-surface-0 pb-[env(safe-area-inset-bottom,0px)] text-xs text-fg-secondary"
-        aria-label={i18n._(msg`Worker navigation`)}
+        className="fixed bottom-0 left-0 right-0 z-30 flex min-h-[4.5rem] items-stretch justify-around border-t border-border bg-surface-0 pb-[env(safe-area-inset-bottom,0px)]"
+        aria-label={i18n._(msg`İşçi navigasyonu`)}
       >
         {bottomTabs.map((tab) => {
           const active = pathname === tab.to || pathname.startsWith(`${tab.to}/`)
           const Icon = tab.icon
+          const label = i18n._(tab.label)
           return (
             <Link
               key={tab.to}
               to={tab.to}
+              aria-current={active ? 'page' : undefined}
               className={cn(
-                'flex flex-1 flex-col items-center justify-center gap-1 py-2 transition-colors',
-                active ? 'font-medium text-orchard-500' : 'text-fg-secondary',
+                'flex flex-1 flex-col items-center justify-center gap-1 pt-2 pb-1 transition-colors',
+                active ? 'text-orchard-500' : 'text-fg-muted',
               )}
             >
-              <Icon className="h-7 w-7 shrink-0" aria-hidden />
-              <span className="truncate">{i18n._(tab.label)}</span>
+              <Icon
+                className={cn('h-7 w-7 shrink-0', active ? 'stroke-[2]' : 'stroke-[1.75]')}
+                aria-hidden
+              />
+              <span className={cn('text-[11px] font-medium truncate', active ? 'font-semibold' : '')}>
+                {label}
+              </span>
             </Link>
           )
         })}
       </nav>
+
       <InstallPrompt />
     </div>
   )

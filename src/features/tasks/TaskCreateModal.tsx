@@ -189,7 +189,7 @@ export function TaskCreateModal({ open, onClose, onCreated }: TaskCreateModalPro
   return (
     <dialog
       ref={dialogRef}
-      className="fixed inset-0 m-auto w-[min(100vw-2rem,520px)] max-h-[min(100dvh-2rem,720px)] overflow-hidden rounded-lg border border-border bg-surface-0 p-0 text-fg shadow-lg backdrop:bg-black/40"
+      className="fixed inset-0 m-auto w-[min(100vw-2rem,520px)] max-h-[min(100dvh-2rem,720px)] overflow-hidden rounded-2xl border border-border bg-surface-0 p-0 text-fg backdrop:bg-[rgba(12,18,16,0.55)]"
       onPointerDown={onBackdropPointerDown}
     >
       <div className="flex max-h-[min(100dvh-2rem,720px)] flex-col">

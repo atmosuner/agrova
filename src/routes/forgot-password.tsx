@@ -1,11 +1,18 @@
-import { t } from '@lingui/macro'
+import { msg, t } from '@lingui/macro'
 import { useState } from 'react'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
+import { Send } from 'lucide-react'
+import {
+  AuthErrorMessage,
+  AuthShell,
+  authInputClassName,
+  authPrimaryButtonClassName,
+} from '@/components/layout/AuthShell'
 import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
+import { i18n } from '@/lib/i18n'
 import { getSiteUrl } from '@/lib/site-url'
 import { supabase } from '@/lib/supabase'
-import { formFieldClassName } from '@/lib/form-field-class'
+import { cn } from '@/lib/utils'
 import { z } from 'zod'
 
 /* eslint-disable lingui/no-unlocalized-strings -- zod + device domain; TR fixed strings */
@@ -72,48 +79,55 @@ function ForgotPasswordPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-fg">{t`Reset password`}</h1>
-        <p className="mt-2 text-sm text-fg-secondary">
-          {t`We’ll send a link to your work email. Use the same address as your Agrova owner account.`}
-        </p>
-      </div>
+    <AuthShell
+      title={i18n._(msg`Şifre sıfırla`)}
+      subtitle={i18n._(msg`E-posta adresinize bağlantı göndereceğiz.`)}
+      footer={
+        <Link
+          to="/login"
+          search={{ redirect: undefined }}
+          className="text-[13px] font-medium text-orchard-500 underline-offset-2 hover:underline"
+        >
+          ← {i18n._(msg`Girişe dön`)}
+        </Link>
+      }
+    >
       {done ? (
-        <p className="text-sm text-orchard-700" role="status">
-          {t`If an account exists for that address, you’ll receive an email with a link. Check spam.`}
-        </p>
+        <div role="status" className="flex flex-col items-center gap-3 text-center">
+          <span
+            aria-hidden
+            className="inline-flex h-16 w-16 items-center justify-center rounded-full border-2 border-orchard-500/20 bg-orchard-50"
+          >
+            <Send className="h-7 w-7 text-orchard-500" strokeWidth={2} />
+          </span>
+          <p className="text-lg font-semibold text-fg">{i18n._(msg`Bağlantı gönderildi`)}</p>
+          <p className="text-[14px] leading-relaxed text-fg-secondary">
+            {i18n._(msg`Gelen kutunuzu kontrol edin. Birkaç dakika içinde ulaşmadıysa spam klasörüne bakın.`)}
+          </p>
+        </div>
       ) : (
-        <form onSubmit={onSubmit} className="flex flex-col gap-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-fg" htmlFor="fp-email">
-              {t`Email`}
+        <form onSubmit={onSubmit} className="flex flex-col gap-3.5">
+          <div className="flex flex-col gap-1.5">
+            <label className="text-[13px] font-medium text-fg" htmlFor="fp-email">
+              {i18n._(msg`E-posta`)}
             </label>
             <input
               id="fp-email"
               type="email"
               autoComplete="email"
-              className={formFieldClassName}
+              placeholder="kemal@ciftlik.com.tr"
+              className={authInputClassName}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
-          {err ? <p className="text-sm text-harvest-500">{err}</p> : null}
-          <Button type="submit" disabled={sending} className="w-full">
-            {sending ? t`Sending…` : t`Send link`}
-          </Button>
+          {err ? <AuthErrorMessage>{err}</AuthErrorMessage> : null}
+          <button type="submit" className={cn(authPrimaryButtonClassName, 'mt-1')} disabled={sending}>
+            {sending ? t`Gönderiliyor…` : t`Sıfırlama bağlantısı gönder`}
+          </button>
         </form>
       )}
-      <p className="text-center text-sm text-fg-secondary">
-        <Link
-          to="/login"
-          search={{ redirect: undefined }}
-          className="font-medium text-orchard-500 underline-offset-2 hover:underline"
-        >
-          {t`Back to sign-in`}
-        </Link>
-      </p>
-    </div>
+    </AuthShell>
   )
 }

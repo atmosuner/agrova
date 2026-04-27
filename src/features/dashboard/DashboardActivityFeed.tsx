@@ -25,7 +25,7 @@ export function DashboardActivityFeed() {
   const rows = data ?? []
 
   return (
-    <section className="rounded-xl border border-border bg-surface-0 p-4 shadow-sm" aria-label={i18n._(msg`Son olaylar`)}>
+    <section className="rounded-xl border border-border bg-surface-0 p-4" aria-label={i18n._(msg`Son olaylar`)}>
       <h2 className="text-sm font-semibold text-fg">{i18n._(msg`Aktivite`)}</h2>
       {isLoading ? (
         <ul className="mt-3 space-y-2">

@@ -57,7 +57,7 @@ export function InstallPrompt({ onInstalled, className }: Props) {
     return (
       <div
         className={cn(
-          'fixed bottom-24 left-3 right-3 z-40 flex flex-col gap-3 rounded-xl border border-border bg-surface-0 p-4 shadow-lg md:left-auto md:right-4 md:w-96',
+          'fixed bottom-24 left-3 right-3 z-40 flex flex-col gap-3 rounded-xl border border-border bg-surface-0 p-4 ring-[3px] ring-[rgba(12,18,16,0.04)] md:left-auto md:right-4 md:w-96',
           className,
         )}
         role="status"
@@ -94,7 +94,7 @@ export function InstallPrompt({ onInstalled, className }: Props) {
   return (
     <div
       className={cn(
-        'fixed bottom-24 left-3 right-3 z-40 flex flex-col gap-3 rounded-xl border border-border bg-surface-0 p-4 shadow-lg md:left-auto md:right-4 md:w-96',
+        'fixed bottom-24 left-3 right-3 z-40 flex flex-col gap-3 rounded-xl border border-border bg-surface-0 p-4 ring-[3px] ring-[rgba(12,18,16,0.04)] md:left-auto md:right-4 md:w-96',
         className,
       )}
     >

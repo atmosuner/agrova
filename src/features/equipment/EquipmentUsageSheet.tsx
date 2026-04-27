@@ -38,7 +38,7 @@ export function EquipmentUsageSheet({ equipment, onClose }: Props) {
     >
       <div
         className={cn(
-          'max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-border bg-surface-0 p-4 shadow-lg sm:rounded-2xl',
+          'max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-t-2xl border border-border bg-surface-0 p-4 sm:rounded-2xl',
         )}
         onClick={(e) => e.stopPropagation()}
       >

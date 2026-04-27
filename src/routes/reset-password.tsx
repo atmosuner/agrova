@@ -1,11 +1,18 @@
-import { t } from '@lingui/macro'
+import { msg, t } from '@lingui/macro'
 import { useEffect, useState } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
+import {
+  AuthErrorMessage,
+  AuthShell,
+  authInputClassName,
+  authPrimaryButtonClassName,
+} from '@/components/layout/AuthShell'
+import { PasswordStrengthBar } from '@/components/ui/PasswordStrengthBar'
 import { newPasswordPairValuesSchema } from '@/features/auth/validation'
-import { formFieldClassName } from '@/lib/form-field-class'
+import { i18n } from '@/lib/i18n'
 import { getSiteUrl } from '@/lib/site-url'
 import { supabase } from '@/lib/supabase'
+import { cn } from '@/lib/utils'
 
 export const Route = createFileRoute('/reset-password')({
   component: ResetPasswordPage,
@@ -69,94 +76,101 @@ function ResetPasswordPage() {
 
   if (!getSiteUrl()) {
     return (
-      <div className="mx-auto max-w-md px-4 py-8">
-        <p className="text-harvest-600">{t`Yapılandırma hatası: VITE_SITE_URL tanımlı değil.`}</p>
-      </div>
+      <AuthShell title={i18n._(msg`Yapılandırma hatası`)} subtitle={undefined} showDesktopPanel={false}>
+        <p className="text-[14px] text-status-blocked">{t`VITE_SITE_URL tanımlı değil.`}</p>
+      </AuthShell>
     )
   }
 
   if (!ready && !gaveUp) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-4 py-8">
-        <p className="text-sm text-fg-secondary">{t`Checking your reset link…`}</p>
-      </div>
+      <AuthShell
+        title={i18n._(msg`Sıfırlama bağlantınız kontrol ediliyor…`)}
+        subtitle={i18n._(msg`Birkaç saniye sürebilir.`)}
+        showDesktopPanel={false}
+      >
+        <p className="text-[14px] text-fg-secondary">{t`Lütfen bekleyin.`}</p>
+      </AuthShell>
     )
   }
 
   if (!ready && gaveUp) {
     return (
-      <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-4 px-4 py-8">
-        <p className="text-sm text-fg-secondary">
-          {t`This link is invalid or expired. Request a new reset email, or open the link from the latest message.`}
-        </p>
-        <Link
-          to="/forgot-password"
-          className="text-sm font-medium text-orchard-500 underline-offset-2 hover:underline"
-        >
-          {t`Request reset email`}
-        </Link>
-        <p className="text-sm">
+      <AuthShell
+        title={i18n._(msg`Bağlantı geçersiz`)}
+        subtitle={i18n._(msg`Bu bağlantı süresi dolmuş veya geçersiz. Yeni bir sıfırlama e-postası isteyin.`)}
+        showDesktopPanel={false}
+        footer={
           <Link
             to="/login"
             search={{ redirect: undefined }}
-            className="text-orchard-500 underline-offset-2 hover:underline"
+            className="text-[13px] font-medium text-orchard-500 underline-offset-2 hover:underline"
           >
-            {t`Back to sign-in`}
+            ← {i18n._(msg`Girişe dön`)}
           </Link>
-        </p>
-      </div>
+        }
+      >
+        <Link
+          to="/forgot-password"
+          className={cn(authPrimaryButtonClassName, 'no-underline')}
+        >
+          {t`Yeni bağlantı iste`}
+        </Link>
+      </AuthShell>
     )
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-fg">{t`Set a new password`}</h1>
-        <p className="mt-1 text-sm text-fg-secondary">{t`Choose a strong password for your account.`}</p>
-      </div>
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-fg" htmlFor="rp1">
-            {t`New password`}
+    <AuthShell
+      title={i18n._(msg`Yeni şifre belirle`)}
+      subtitle={i18n._(msg`Güçlü bir şifre seçin.`)}
+      footer={
+        <Link
+          to="/login"
+          search={{ redirect: undefined }}
+          className="text-[13px] font-medium text-orchard-500 underline-offset-2 hover:underline"
+        >
+          ← {i18n._(msg`Girişe dön`)}
+        </Link>
+      }
+    >
+      <form onSubmit={onSubmit} className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-fg" htmlFor="rp1">
+            {i18n._(msg`Yeni şifre`)}
           </label>
           <input
             id="rp1"
             type="password"
             autoComplete="new-password"
-            className={formFieldClassName}
+            placeholder={i18n._(msg`En az 8 karakter`)}
+            className={authInputClassName}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             required
           />
+          {newPassword.length > 0 ? <PasswordStrengthBar value={newPassword} className="mt-1" /> : null}
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-fg" htmlFor="rp2">
-            {t`Confirm new password`}
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-fg" htmlFor="rp2">
+            {i18n._(msg`Şifre tekrar`)}
           </label>
           <input
             id="rp2"
             type="password"
             autoComplete="new-password"
-            className={formFieldClassName}
+            placeholder="••••••••"
+            className={authInputClassName}
             value={newPasswordConfirm}
             onChange={(e) => setNewPasswordConfirm(e.target.value)}
             required
           />
         </div>
-        {err ? <p className="text-sm text-harvest-500">{err}</p> : null}
-        <Button type="submit" disabled={saving} className="w-full">
-          {saving ? t`Saving…` : t`Update password`}
-        </Button>
+        {err ? <AuthErrorMessage>{err}</AuthErrorMessage> : null}
+        <button type="submit" className={cn(authPrimaryButtonClassName, 'mt-1')} disabled={saving}>
+          {saving ? t`Kaydediliyor…` : t`Şifremi Güncelle`}
+        </button>
       </form>
-      <p className="text-center text-sm text-fg-secondary">
-        <Link
-          to="/login"
-          search={{ redirect: undefined }}
-          className="font-medium text-orchard-500 underline-offset-2 hover:underline"
-        >
-          {t`Back to sign-in`}
-        </Link>
-      </p>
-    </div>
+    </AuthShell>
   )
 }

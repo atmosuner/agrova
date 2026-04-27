@@ -1,10 +1,13 @@
 import { msg, t } from '@lingui/macro'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
 import { createFileRoute } from '@tanstack/react-router'
+import { Search } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { fieldToPolygonFeature } from '@/features/fields/boundary-geojson'
 import { downloadFieldsCsv } from '@/features/fields/csv'
+import { DeleteFieldModal } from '@/features/fields/DeleteFieldModal'
+import { DrawModeBanner } from '@/features/fields/DrawModeBanner'
 import { FieldChemicalLog } from '@/features/fields/FieldChemicalLog'
 import { fieldFormSchema } from '@/features/fields/field-form'
 import { FieldsMap } from '@/features/fields/FieldsMap'
@@ -52,10 +55,22 @@ function FieldsPage() {
     notes: '',
     address: '',
   })
-  const [deleteTyped, setDeleteTyped] = useState('')
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
   /* Tab keys are internal; labels are translated in the tab buttons. */
   // eslint-disable-next-line lingui/no-unlocalized-strings
   const [fieldAsideTab, setFieldAsideTab] = useState<'info' | 'chemical'>('info')
+
+  const filteredRows = useMemo(() => {
+    const q = searchQuery.trim().toLocaleLowerCase('tr')
+    if (!q) return rows
+    return rows.filter(
+      (r) =>
+        r.name.toLocaleLowerCase('tr').includes(q) ||
+        r.crop.toLocaleLowerCase('tr').includes(q) ||
+        (r.variety && r.variety.toLocaleLowerCase('tr').includes(q)),
+    )
+  }, [rows, searchQuery])
 
   const load = useCallback(async () => {
     setLoading(true)
@@ -95,7 +110,7 @@ function FieldsPage() {
   function onFieldClick(id: string) {
     setSelectedId(id)
     setEditing(false)
-    setDeleteTyped('')
+    setDeleteModalOpen(false)
     // eslint-disable-next-line lingui/no-unlocalized-strings
     setFieldAsideTab('info')
   }
@@ -176,10 +191,10 @@ function FieldsPage() {
     if (!parsed.success) {
       const c = parsed.error.issues[0]
       if (c?.code === 'too_small' && c.path[0] === 'name') {
-        setErr(t`Name is required.`)
+        setErr(t`Ad alanı zorunludur.`)
         return
       }
-      setErr(t`Formu kontrol edin.`)
+      setErr(t`Lütfen formu kontrol edin.`)
       return
     }
     const { name, crop, variety, plantCount, plantedYear, notes, address } = parsed.data
@@ -190,9 +205,7 @@ function FieldsPage() {
           ? fieldToPolygonFeature(selected)
           : null
     if (geometry == null) {
-      setErr(
-        t`Draw a field boundary on the map first.`
-      )
+      setErr(t`Önce haritada tarla sınırı çizin.`)
       return
     }
     setSaving(true)
@@ -222,15 +235,7 @@ function FieldsPage() {
   }
 
   async function removeField() {
-    if (!selected) {
-      return
-    }
-    if (deleteTyped.trim() !== selected.name.trim()) {
-      setErr(
-        t`Type the field name exactly to delete.`
-      )
-      return
-    }
+    if (!selected) return
     setSaving(true)
     setErr(null)
     /* eslint-disable lingui/no-unlocalized-strings -- PostgREST chain, not user-facing copy */
@@ -242,34 +247,19 @@ function FieldsPage() {
       return
     }
     setSelectedId(null)
-    setDeleteTyped('')
+    setDeleteModalOpen(false)
     setEditing(false)
     await load()
   }
 
   return (
-    <div className="flex min-h-0 flex-col gap-4 lg:h-[min(100vh,900px)] lg:flex-row lg:items-stretch">
-      <div className="flex min-h-[50vh] min-w-0 flex-1 flex-col gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Fields`}</h1>
-          <p className="mt-1 text-fg-secondary">{t`Draw parcels on the map, then save. Center uses the weather city in settings.`}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
-          <Button
-            type={b.btn}
-            onClick={() => downloadFieldsCsv(rows)}
-            disabled={loading}
-            variant={b.out}
-          >
-            {t`Download CSV`}
-          </Button>
-          <Button type={b.btn} onClick={startNewField} disabled={loading || wantsDraw} variant={b.def}>
-            {t`New field`}
-          </Button>
-        </div>
-        {err ? <p className="text-sm text-harvest-600">{err}</p> : null}
+    <div className="flex min-h-0 flex-1 flex-col lg:h-full lg:flex-row">
+      {/* Map area */}
+      <div className="flex min-h-[50vh] min-w-0 flex-1 flex-col">
+        <DrawModeBanner visible={wantsDraw} onCancel={onDrawSettled} />
+        {err ? <p className="px-4 py-2 text-sm text-harvest-600">{err}</p> : null}
         {loading ? (
-          <p className="text-sm text-fg-secondary">{t`Loading…`}</p>
+          <p className="px-4 py-6 text-sm text-fg-secondary">{t`Yükleniyor…`}</p>
         ) : (
           <div className="min-h-0 min-w-0 flex-1">
             <FieldsMap
@@ -284,38 +274,106 @@ function FieldsPage() {
           </div>
         )}
       </div>
-      <aside className="flex w-full min-w-0 flex-col gap-3 border-orchard-200 pt-2 lg:max-w-md lg:border-l lg:pl-4 lg:pt-0">
-        <h2 className="text-sm font-medium text-fg">{t`List`}</h2>
-        <ul className="max-h-48 space-y-1 overflow-y-auto text-sm">
-          {rows.map((r) => (
-            <li key={r.id}>
-              <button
-                type="button"
-                className={
-                  r.id === selectedId
-                    ? 'w-full rounded bg-orchard-100 px-2 py-1.5 text-left text-fg'
-                    : 'w-full rounded px-2 py-1.5 text-left text-fg-secondary hover:bg-orchard-50'
-                }
-                onClick={() => onFieldClick(r.id)}
-              >
-                {r.name}
-                {r.area_hectares != null
-                  ? (
-                      <>
-                        {'\u00a0\u2014\u00a0'}
-                        {(Math.round(r.area_hectares * 100) / 100).toString()} {t`ha`}
-                      </>
-                    )
-                  : null}
-              </button>
-            </li>
-          ))}
+
+      {/* Right panel */}
+      <aside
+        className={clsx(
+          'flex w-full shrink-0 flex-col border-border transition-opacity lg:w-[360px] lg:border-l',
+          wantsDraw && 'pointer-events-none opacity-60',
+        )}
+      >
+        {/* Panel header */}
+        <div className="flex items-center gap-2 border-b border-border px-4 py-3">
+          <span className="text-[13px] font-semibold text-fg">
+            {rows.length} {t`tarla`}
+          </span>
+          <div className="ml-auto flex gap-1.5">
+            <Button
+              type={b.btn}
+              size={b.sm}
+              variant={b.out}
+              className="h-7 px-2.5 text-[12px]"
+              onClick={() => downloadFieldsCsv(rows)}
+              disabled={loading}
+            >
+              CSV
+            </Button>
+            <Button
+              type={b.btn}
+              size={b.sm}
+              className="h-7 px-2.5 text-[12px]"
+              onClick={startNewField}
+              disabled={loading || wantsDraw}
+            >
+              {t`Yeni tarla`}
+            </Button>
+          </div>
+        </div>
+
+        {/* Search */}
+        <div className="px-4 py-2">
+          <div className="relative">
+            <Search className="absolute left-2.5 top-1/2 h-3.5 w-3.5 -translate-y-1/2 text-fg-muted" strokeWidth={1.75} />
+            <input
+              type="search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder={i18n._(msg`Tarla ara…`)}
+              className="h-8 w-full rounded-lg bg-surface-1 pl-8 pr-3 text-[13px] text-fg outline-none placeholder:text-fg-faint focus:ring-2 focus:ring-orchard-500/20"
+              aria-label={t`Tarla ara`}
+            />
+          </div>
+        </div>
+
+        {/* Field list */}
+        <ul className="flex-1 space-y-0.5 overflow-y-auto px-2 py-1">
+          {filteredRows.map((r) => {
+            const isSelected = r.id === selectedId
+            const metaParts: string[] = []
+            if (r.variety) metaParts.push(r.variety)
+            if (r.area_hectares != null) metaParts.push(`${(Math.round(r.area_hectares * 100) / 100).toString()} ha`)
+            if (r.planted_year != null) metaParts.push(String(r.planted_year))
+
+            return (
+              <li key={r.id}>
+                <button
+                  type="button"
+                  className={clsx(
+                    'flex w-full items-start gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors',
+                    isSelected
+                      ? 'border-[1.5px] border-orchard-500 bg-orchard-50'
+                      : 'border border-transparent hover:bg-surface-1',
+                  )}
+                  onClick={() => onFieldClick(r.id)}
+                  aria-current={isSelected ? 'true' : undefined}
+                >
+                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border-strong" aria-hidden />
+                  <div className="min-w-0">
+                    <p className="text-[13px] font-semibold text-fg">
+                      {r.name}
+                      {r.crop ? <> — {r.crop}</> : null}
+                    </p>
+                    {metaParts.length > 0 && (
+                      <p className="mt-0.5 text-[11px] text-fg-muted">{metaParts.join(' · ')}</p>
+                    )}
+                  </div>
+                </button>
+              </li>
+            )
+          })}
+          {filteredRows.length === 0 && !loading && (
+            <p className="px-3 py-4 text-center text-[12px] text-fg-muted">{t`Tarla bulunamadı.`}</p>
+          )}
         </ul>
+
+        {/* Detail / edit panel */}
         {editing ? (
-          <div className="space-y-2 rounded-md border border-border-strong bg-surface-0 p-3">
-            <h3 className="text-sm font-medium text-fg">{selected == null ? t`New field` : t`Edit field`}</h3>
-            <label className="block text-xs text-fg-secondary">
-              {t`Name`}
+          <div className="shrink-0 space-y-2 border-t border-border bg-surface-0 p-4">
+            <h3 className="text-[13px] font-semibold text-fg">
+              {selected == null ? t`Yeni tarla` : t`Tarla düzenle`}
+            </h3>
+            <label className="block text-[11px] font-medium text-fg-muted">
+              {t`Ad`}
               <input
                 className={clsx(formFieldClassName, 'mt-0.5')}
                 value={form.name}
@@ -324,8 +382,8 @@ function FieldsPage() {
                 autoComplete="off"
               />
             </label>
-            <label className="block text-xs text-fg-secondary">
-              {t`Crop`}
+            <label className="block text-[11px] font-medium text-fg-muted">
+              {t`Ürün`}
               <input
                 className={clsx(formFieldClassName, 'mt-0.5')}
                 value={form.crop}
@@ -333,8 +391,8 @@ function FieldsPage() {
                 autoComplete="off"
               />
             </label>
-            <label className="block text-xs text-fg-secondary">
-              {t`Variety`}
+            <label className="block text-[11px] font-medium text-fg-muted">
+              {t`Çeşit`}
               <input
                 className={clsx(formFieldClassName, 'mt-0.5')}
                 value={form.variety}
@@ -343,8 +401,8 @@ function FieldsPage() {
               />
             </label>
             <div className="grid grid-cols-2 gap-2">
-              <label className="block text-xs text-fg-secondary">
-                {t`Plants (count)`}
+              <label className="block text-[11px] font-medium text-fg-muted">
+                {t`Bitki sayısı`}
                 <input
                   className={clsx(formFieldClassName, 'mt-0.5')}
                   inputMode="numeric"
@@ -353,8 +411,8 @@ function FieldsPage() {
                   autoComplete="off"
                 />
               </label>
-              <label className="block text-xs text-fg-secondary">
-                {t`Planted year`}
+              <label className="block text-[11px] font-medium text-fg-muted">
+                {t`Dikim yılı`}
                 <input
                   className={clsx(formFieldClassName, 'mt-0.5')}
                   inputMode="numeric"
@@ -364,8 +422,8 @@ function FieldsPage() {
                 />
               </label>
             </div>
-            <label className="block text-xs text-fg-secondary">
-              {t`Address`}
+            <label className="block text-[11px] font-medium text-fg-muted">
+              {t`Adres`}
               <input
                 className={clsx(formFieldClassName, 'mt-0.5')}
                 value={form.address}
@@ -373,8 +431,8 @@ function FieldsPage() {
                 autoComplete="off"
               />
             </label>
-            <label className="block text-xs text-fg-secondary">
-              {t`Notes`}
+            <label className="block text-[11px] font-medium text-fg-muted">
+              {t`Notlar`}
               <textarea
                 className={clsx(formFieldClassName, 'mt-0.5 min-h-[4rem]')}
                 value={form.notes}
@@ -382,102 +440,100 @@ function FieldsPage() {
                 autoComplete="off"
               />
             </label>
-            <div className="flex flex-wrap gap-2">
-              <Button type={b.btn} onClick={() => void saveField()} disabled={saving}>
-                {t`Save`}
+            <div className="flex gap-2 pt-1">
+              <Button type={b.btn} size={b.sm} onClick={() => void saveField()} disabled={saving}>
+                {t`Kaydet`}
               </Button>
-              <Button type={b.btn} onClick={closeEditor} disabled={saving} variant={b.out}>
-                {t`Cancel`}
+              <Button type={b.btn} size={b.sm} onClick={closeEditor} disabled={saving} variant={b.out}>
+                {t`İptal`}
               </Button>
             </div>
           </div>
         ) : null}
         {selected && !editing ? (
-          <div className="space-y-2 rounded-md border border-orchard-200 bg-orchard-50/30 p-3 text-sm">
-            <div className="flex flex-wrap gap-1 border-b border-orchard-200 pb-2">
+          <div className="shrink-0 border-t border-border bg-surface-0">
+            <div className="flex gap-1 border-b border-border px-4 pt-2">
               <button
                 type="button"
                 className={clsx(
-                  'rounded px-2 py-1 text-xs font-medium',
-                  fieldAsideTab === 'info' ? 'bg-orchard-100 text-fg' : 'text-fg-secondary hover:bg-orchard-50/80',
+                  'rounded-t px-3 py-1.5 text-[12px] font-medium transition-colors',
+                  fieldAsideTab === 'info'
+                    ? 'border-b-2 border-orchard-500 text-fg'
+                    : 'text-fg-secondary hover:text-fg',
                 )}
-                onClick={() => {
-                  setFieldAsideTab('info')
-                }}
+                onClick={() => setFieldAsideTab('info')}
+                aria-pressed={fieldAsideTab === 'info'}
               >
-                {t`Detail`}
+                {t`Detay`}
               </button>
               <button
                 type="button"
                 className={clsx(
-                  'rounded px-2 py-1 text-xs font-medium',
-                  fieldAsideTab === 'chemical' ? 'bg-orchard-100 text-fg' : 'text-fg-secondary hover:bg-orchard-50/80',
+                  'rounded-t px-3 py-1.5 text-[12px] font-medium transition-colors',
+                  fieldAsideTab === 'chemical'
+                    ? 'border-b-2 border-orchard-500 text-fg'
+                    : 'text-fg-secondary hover:text-fg',
                 )}
-                onClick={() => {
-                  setFieldAsideTab('chemical')
-                }}
+                onClick={() => setFieldAsideTab('chemical')}
+                aria-pressed={fieldAsideTab === 'chemical'}
               >
-                {i18n._(msg`Chemicals`)}
+                {i18n._(msg`Kimyasallar`)}
               </button>
             </div>
-            {fieldAsideTab === 'info' ? (
-              <>
-                <h3 className="font-medium text-fg">{selected.name}</h3>
-                <p className="text-fg-secondary">
-                  {selected.crop}
-                  {selected.variety ? (
-                    <>
-                      {'\u00a0\u2014\u00a0'}
-                      {selected.variety}
-                    </>
-                  ) : null}
-                </p>
-                {selected.area_hectares != null ? (
-                  <p className="text-fg-secondary">
-                    {i18n._(msg`Area`)}: {(Math.round(selected.area_hectares * 100) / 100).toString()} {t`ha`}
+            <div className="p-4">
+              {fieldAsideTab === 'info' ? (
+                <div className="space-y-2 text-sm">
+                  <h3 className="text-[13px] font-semibold text-fg">{selected.name}</h3>
+                  <p className="text-[12px] text-fg-secondary">
+                    {selected.crop}
+                    {selected.variety ? <> — {selected.variety}</> : null}
                   </p>
-                ) : null}
-                <div className="flex flex-wrap gap-2 pt-1">
-                  <Button type={b.btn} size={b.sm} variant={b.out} onClick={openEdit}>
-                    {t`Edit`}
-                  </Button>
-                  <Button
-                    type={b.btn}
-                    size={b.sm}
-                    variant={b.out}
-                    onClick={startReplaceBoundary}
-                    disabled={wantsDraw}
-                  >
-                    {t`Redraw boundary`}
-                  </Button>
+                  {selected.area_hectares != null ? (
+                    <p className="text-[12px] text-fg-secondary">
+                      {i18n._(msg`Alan`)}: {(Math.round(selected.area_hectares * 100) / 100).toString()} ha
+                    </p>
+                  ) : null}
+                  <div className="flex flex-wrap gap-2 pt-1">
+                    <Button type={b.btn} size={b.sm} variant={b.out} onClick={openEdit}>
+                      {t`Düzenle`}
+                    </Button>
+                    <Button
+                      type={b.btn}
+                      size={b.sm}
+                      variant={b.out}
+                      onClick={startReplaceBoundary}
+                      disabled={wantsDraw}
+                    >
+                      {t`Sınırı yeniden çiz`}
+                    </Button>
+                  </div>
+                  <div className="mt-2 border-t border-border pt-2">
+                    <button
+                      type="button"
+                      className="text-[12px] font-medium text-fg-muted transition-colors hover:text-status-blocked"
+                      onClick={() => setDeleteModalOpen(true)}
+                    >
+                      {t`Tarlayı sil…`}
+                    </button>
+                  </div>
                 </div>
-                <div className="mt-2 border-t border-orchard-200 pt-2">
-                  <p className="text-xs text-fg-secondary">{t`Type the field name to confirm deletion.`}</p>
-                  <input
-                    className={clsx(formFieldClassName, 'mt-1 text-sm')}
-                    value={deleteTyped}
-                    onChange={(e) => setDeleteTyped(e.target.value)}
-                    placeholder={selected.name}
-                    autoComplete="off"
-                  />
-                  <Button
-                    type={b.btn}
-                    className="mt-2"
-                    size={b.sm}
-                    variant={b.out}
-                    onClick={() => void removeField()}
-                    disabled={saving || deleteTyped.trim() !== selected.name.trim()}
-                  >
-                    {t`Delete field`}
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <FieldChemicalLog fieldId={selected.id} fieldName={selected.name} />
-            )}
+              ) : (
+                <FieldChemicalLog fieldId={selected.id} fieldName={selected.name} />
+              )}
+            </div>
           </div>
         ) : null}
       </aside>
+
+      {selected && (
+        <DeleteFieldModal
+          open={deleteModalOpen}
+          fieldName={selected.name}
+          saving={saving}
+          onConfirm={() => void removeField()}
+          onClose={() => setDeleteModalOpen(false)}
+        />
+      )}
     </div>
   )
 }

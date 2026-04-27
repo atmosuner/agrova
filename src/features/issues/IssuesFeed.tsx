@@ -120,58 +120,51 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-3">
-        <label className="flex flex-col gap-1 text-xs text-fg-muted">
-          {t`Kategori`}
+      <div className="flex flex-wrap items-center gap-2">
+        <FilterTab active={resolved === 'open'} onClick={() => setResolved('open')} label={t`Açık`} />
+        <FilterTab active={resolved === 'all'} onClick={() => setResolved('all')} label={t`Tümü`} />
+        <FilterTab active={resolved === 'resolved'} onClick={() => setResolved('resolved')} label={t`Çözüldü`} />
+
+        <div className="mx-1 h-5 w-px bg-border-strong" aria-hidden />
+
+        <select
+          className="h-[30px] rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary"
+          value={category}
+          onChange={(e) => setCategory(e.target.value as IssueCategory | 'all')}
+          aria-label={t`Kategori filtresi`}
+        >
+          <option value="all">{t`Tüm kategoriler`}</option>
+          {ISSUE_CATEGORY_ORDER.map((c) => (
+            <option key={c} value={c}>
+              {i18n._(CATEGORY_LABEL[c])}
+            </option>
+          ))}
+        </select>
+
+        {fieldOptions.length > 1 && (
           <select
-            className="rounded-md border border-border bg-surface-0 px-2 py-1.5 text-sm text-fg"
-            value={category}
-            onChange={(e) => setCategory(e.target.value as IssueCategory | 'all')}
-          >
-            <option value="all">{t`Tümü`}</option>
-            {ISSUE_CATEGORY_ORDER.map((c) => (
-              <option key={c} value={c}>
-                {i18n._(CATEGORY_LABEL[c])}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-fg-muted">
-          {t`Tarla`}
-          <select
-            className="rounded-md border border-border bg-surface-0 px-2 py-1.5 text-sm text-fg"
+            className="h-[30px] rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary"
             value={fieldId}
             onChange={(e) => setFieldId(e.target.value as string | 'all')}
+            aria-label={t`Tarla filtresi`}
           >
-            <option value="all">{t`Tümü`}</option>
+            <option value="all">{t`Tüm tarlalar`}</option>
             {fieldOptions.map(([id, name]) => (
               <option key={id} value={id}>
                 {name}
               </option>
             ))}
           </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-fg-muted">
-          {t`Durum`}
-          <select
-            className="rounded-md border border-border bg-surface-0 px-2 py-1.5 text-sm text-fg"
-            value={resolved}
-            onChange={(e) => setResolved(e.target.value as ResolvedFilter)}
-          >
-            <option value="all">{t`Tümü`}</option>
-            <option value="open">{t`Sadece açık`}</option>
-            <option value="resolved">{t`Çözüldü`}</option>
-          </select>
-        </label>
+        )}
       </div>
 
-      <ul className="flex flex-col gap-3">
+      <ul className="flex flex-col gap-3" aria-live="polite">
         {filtered.map((r) => (
           <li
             key={r.id}
             ref={r.id === highlightId ? highlightRef : undefined}
             className={cn(
-              'rounded-xl border border-border bg-surface-0 p-4 shadow-sm',
+              'rounded-xl border border-border bg-surface-0 p-4',
               r.id === highlightId && 'ring-2 ring-orchard-500 ring-offset-2',
             )}
           >
@@ -260,5 +253,23 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
         </button>
       ) : null}
     </div>
+  )
+}
+
+function FilterTab({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={cn(
+        'h-[30px] rounded-[7px] px-3 text-[12px] font-medium transition-colors',
+        active
+          ? 'border border-border-strong bg-surface-1 text-fg'
+          : 'border border-transparent text-fg-secondary hover:text-fg',
+      )}
+      aria-pressed={active}
+    >
+      {label}
+    </button>
   )
 }

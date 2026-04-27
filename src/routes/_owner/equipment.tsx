@@ -21,10 +21,10 @@ type Row = Tables<'equipment'>
 
 /* eslint-disable lingui/no-unlocalized-strings -- DB enum + msg keys */
 const TABS: { cat: EquipmentCategory; label: ReturnType<typeof msg> }[] = [
-  { cat: 'VEHICLE', label: msg`Vehicles` },
-  { cat: 'TOOL', label: msg`Tools` },
-  { cat: 'CHEMICAL', label: msg`Chemicals` },
-  { cat: 'CRATE', label: msg`Crates` },
+  { cat: 'VEHICLE', label: msg`Araçlar` },
+  { cat: 'TOOL', label: msg`Aletler` },
+  { cat: 'CHEMICAL', label: msg`Kimyasallar` },
+  { cat: 'CRATE', label: msg`Kasalar` },
 ]
 /* eslint-enable lingui/no-unlocalized-strings */
 
@@ -185,7 +185,7 @@ function EquipmentPage() {
   }
 
   async function archiveRow(r: Row) {
-    if (!window.confirm(i18n._(msg`Archive this item?`))) {
+    if (!window.confirm(i18n._(msg`Bu öğeyi arşivlemek istediğinize emin misiniz?`))) {
       return
     }
     setSaving(true)
@@ -202,20 +202,20 @@ function EquipmentPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Equipment`}</h1>
-      <p className="mt-1 text-fg-secondary">{t`Vehicles, tools, chemicals, and crates.`}</p>
+      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Ekipman`}</h1>
+      <p className="mt-1 text-fg-secondary">{t`Araçlar, aletler, kimyasallar ve kasalar.`}</p>
 
-      <div className="mt-4 flex flex-wrap gap-1 border-b border-orchard-200 pb-2">
+      <div className="mt-4 flex gap-1 border-b border-border">
         {TABS.map((tab) => (
           <Link
             key={tab.cat}
             to="/equipment"
             search={{ cat: tab.cat } as { cat: Category }}
             className={clsx(
-              'rounded-t px-3 py-2 text-sm font-medium',
+              'px-3 py-2 text-[13px] font-medium transition-colors',
               tab.cat === cat
-                ? 'bg-orchard-100 text-fg'
-                : 'text-fg-secondary hover:bg-orchard-50/80'
+                ? 'border-b-2 border-orchard-500 text-fg'
+                : 'text-fg-muted hover:text-fg',
             )}
           >
             {i18n._(tab.label)}
@@ -225,36 +225,36 @@ function EquipmentPage() {
 
       <div className="mt-3 flex flex-wrap items-center gap-3">
         <Button type={b.btn} onClick={() => void exportAllEquipment()} disabled={saving || loading} variant={b.out}>
-          {t`Download CSV`}
+          {t`CSV indir`}
         </Button>
         <Button type={b.btn} onClick={openAdd} disabled={saving || loading} variant={b.def}>
-          {t`Add`}
+          {t`Ekle`}
         </Button>
         <label className="inline-flex items-center gap-2 text-sm text-fg-secondary">
           <input
             type="checkbox"
-            className="rounded border-orchard-200"
+            className="rounded border-border"
             checked={showArchived}
             onChange={(e) => setShowArchived(e.target.checked)}
           />
-          {t`Show archived`}
+          {t`Arşivlenenleri göster`}
         </label>
       </div>
       {err ? <p className="mt-2 text-sm text-harvest-600">{err}</p> : null}
-      {loading ? <p className="mt-2 text-sm text-fg-secondary">{t`Loading…`}</p> : null}
+      {loading ? <p className="mt-2 text-sm text-fg-secondary">{t`Yükleniyor…`}</p> : null}
 
-      <ul className="mt-3 divide-y divide-orchard-100">
+      <ul className="mt-3 divide-y divide-border">
         {rows.map((r) => (
-          <li key={r.id} className="flex flex-wrap items-baseline justify-between gap-2 py-2 text-sm">
+          <li key={r.id} className="flex flex-wrap items-baseline justify-between gap-2 py-2.5 text-sm">
             <button
               type="button"
               className="min-w-0 flex-1 cursor-pointer rounded text-left"
               onClick={() => setUsageFor(r)}
             >
               <span className="font-medium text-fg">{r.name}</span>
-              {r.notes ? <p className="text-fg-secondary">{r.notes}</p> : null}
+              {r.notes ? <p className="text-[12px] text-fg-muted">{r.notes}</p> : null}
               {showArchived && !r.active ? (
-                <span className="text-xs text-fg-secondary">{t`archived`}</span>
+                <span className="text-[11px] text-fg-muted">{t`arşivlenmiş`}</span>
               ) : null}
             </button>
             <span className="inline-flex flex-wrap justify-end gap-2">
@@ -267,7 +267,7 @@ function EquipmentPage() {
                     onClick={() => openEdit(r)}
                     disabled={saving}
                   >
-                    {t`Edit`}
+                    {t`Düzenle`}
                   </Button>
                   <Button
                     type={b.btn}
@@ -276,7 +276,7 @@ function EquipmentPage() {
                     onClick={() => void archiveRow(r)}
                     disabled={saving}
                   >
-                    {t`Archive`}
+                    {t`Arşivle`}
                   </Button>
                 </>
               ) : null}
@@ -287,25 +287,26 @@ function EquipmentPage() {
 
       <dialog
         ref={dialogRef}
-        className="max-w-md rounded-md border border-border bg-surface-0 p-0 shadow-lg backdrop:bg-black/20"
+        className="m-auto max-w-md rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
         aria-labelledby={titleId}
         aria-describedby={descId}
+        aria-modal="true"
         onKeyDown={(e) => (e.key === 'Escape' ? closeModal() : null)}
         onClick={(e) => (e.target === e.currentTarget ? closeModal() : null)}
       >
         <form
           onSubmit={(e) => void onSubmit(e)}
-          className="space-y-3 p-4"
+          className="space-y-3 p-6"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 id={titleId} className="text-lg font-semibold text-fg">
-            {modal?.type === 'add' ? t`New equipment` : t`Edit equipment`}
+          <h2 id={titleId} className="text-[18px] font-semibold text-fg">
+            {modal?.type === 'add' ? t`Yeni ekipman` : t`Ekipmanı düzenle`}
           </h2>
-          <p id={descId} className="text-sm text-fg-secondary">
+          <p id={descId} className="text-[13px] text-fg-secondary">
             {i18n._((TABS.find((x) => x.cat === cat) ?? TABS[0]!).label)}
           </p>
-          <label className="block text-sm text-fg">
-            {t`Name`} *
+          <label className="block text-[12px] font-medium text-fg-muted">
+            {t`Ad`} *
             <input
               className={clsx(formFieldClassName, 'mt-0.5')}
               value={form.name}
@@ -313,8 +314,8 @@ function EquipmentPage() {
               required
             />
           </label>
-          <label className="block text-sm text-fg">
-            {t`Notes`}
+          <label className="block text-[12px] font-medium text-fg-muted">
+            {t`Notlar`}
             <textarea
               className={clsx(formFieldClassName, 'mt-0.5 min-h-[3rem]')}
               value={form.notes}
@@ -324,10 +325,10 @@ function EquipmentPage() {
           {formError ? <p className="text-sm text-harvest-600">{formError}</p> : null}
           <div className="flex flex-wrap justify-end gap-2 pt-1">
             <Button type={b.btn} variant={b.out} onClick={closeModal} disabled={saving}>
-              {t`Cancel`}
+              {t`İptal`}
             </Button>
             <Button type={b.sub} disabled={saving}>
-              {t`Save`}
+              {t`Kaydet`}
             </Button>
           </div>
         </form>

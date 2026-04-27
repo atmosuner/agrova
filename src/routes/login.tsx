@@ -1,12 +1,19 @@
-import { t } from '@lingui/macro'
+import { msg, t } from '@lingui/macro'
 import { useState } from 'react'
 import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
-import { Button } from '@/components/ui/button'
+import {
+  AuthErrorMessage,
+  AuthShell,
+  authInputClassName,
+  authInputErrorClassName,
+  authPrimaryButtonClassName,
+} from '@/components/layout/AuthShell'
 import { safePostAuthPath } from '@/features/auth/redirect'
 import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
 import { loginFormSchema, type LoginFormValues } from '@/features/auth/validation'
-import { formFieldClassName } from '@/lib/form-field-class'
+import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
+import { cn } from '@/lib/utils'
 
 /* eslint-disable lingui/no-unlocalized-strings -- map raw provider messages to Turkish for display */
 function mapAuthErrorToTr(message: string): string {
@@ -76,69 +83,79 @@ function LoginPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-dvh max-w-md flex-col justify-center gap-6 px-4 py-8">
-      <div>
-        <h1 className="text-2xl font-semibold text-fg">{t`Giriş`}</h1>
-        <p className="mt-1 text-sm text-fg-secondary">{t`İş e-postası ve şifre.`}</p>
-      </div>
-      <form onSubmit={onSubmit} className="flex flex-col gap-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-fg" htmlFor="lo-email">
-            {t`Email`}
+    <AuthShell
+      title={i18n._(msg`Giriş`)}
+      subtitle={i18n._(msg`İş e-postası ve şifre.`)}
+      footer={
+        <>
+          <p className="text-center text-[13px] text-fg-secondary">
+            {i18n._(msg`Hesabınız yok mu?`)}{' '}
+            <Link
+              to="/signup"
+              search={{ redirect: redirectTo }}
+              className="font-medium text-orchard-500 underline-offset-2 hover:underline"
+            >
+              {i18n._(msg`Kayıt olun`)}
+            </Link>
+          </p>
+          <Link to="/privacy" className="text-xs text-fg-faint underline-offset-2 hover:underline">
+            {i18n._(msg`Gizlilik`)}
+          </Link>
+        </>
+      }
+    >
+      <form onSubmit={onSubmit} className="flex flex-col gap-3.5">
+        <div className="flex flex-col gap-1.5">
+          <label className="text-[13px] font-medium text-fg" htmlFor="lo-email">
+            {i18n._(msg`E-posta`)}
           </label>
           <input
             id="lo-email"
             name="email"
             type="email"
             autoComplete="email"
-            className={formFieldClassName}
+            placeholder="kemal@ciftlik.com.tr"
+            className={authInputClassName}
             value={values.email}
             onChange={(e) => setValues((v) => ({ ...v, email: e.target.value }))}
             required
           />
         </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-fg" htmlFor="lo-pass">
-            {t`Password`}
-          </label>
+        <div className="flex flex-col gap-1.5">
+          <div className="flex items-baseline justify-between gap-3">
+            <label className="text-[13px] font-medium text-fg" htmlFor="lo-pass">
+              {i18n._(msg`Şifre`)}
+            </label>
+            <Link
+              to="/forgot-password"
+              className="text-xs font-medium text-orchard-500 underline-offset-2 hover:underline"
+            >
+              {i18n._(msg`Şifremi unuttum`)}
+            </Link>
+          </div>
           <input
             id="lo-pass"
             name="password"
             type="password"
             autoComplete="current-password"
-            className={formFieldClassName}
+            placeholder="••••••••"
+            className={cn(formError ? authInputErrorClassName : authInputClassName)}
             value={values.password}
             onChange={(e) => setValues((v) => ({ ...v, password: e.target.value }))}
             required
+            aria-invalid={formError ? true : undefined}
+            aria-describedby={formError ? 'lo-error' : undefined}
           />
         </div>
-        {formError ? <p className="text-sm text-harvest-500">{formError}</p> : null}
-        <Button type="submit" disabled={submitting} className="w-full">
-          {submitting ? t`Signing in…` : t`Sign in`}
-        </Button>
+        {formError ? (
+          <div id="lo-error">
+            <AuthErrorMessage>{formError}</AuthErrorMessage>
+          </div>
+        ) : null}
+        <button type="submit" className={cn(authPrimaryButtonClassName, 'mt-1')} disabled={submitting}>
+          {submitting ? t`Giriş yapılıyor…` : t`Giriş yap`}
+        </button>
       </form>
-      <p className="text-center text-sm text-fg-secondary">
-        <Link
-          to="/forgot-password"
-          className="font-medium text-orchard-500 underline-offset-2 hover:underline"
-        >
-          {t`Forgot password?`}
-        </Link>
-      </p>
-      <p className="text-center text-sm text-fg-secondary">
-        <Link
-          to="/signup"
-          search={{ redirect: redirectTo }}
-          className="font-medium text-orchard-500 underline-offset-2 hover:underline"
-        >
-          {t`Create an account`}
-        </Link>
-      </p>
-      <p className="mt-2 text-center text-xs text-fg-faint">
-        <Link to="/privacy" className="underline-offset-2 hover:underline">
-          {t`Privacy`}
-        </Link>
-      </p>
-    </div>
+    </AuthShell>
   )
 }

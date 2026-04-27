@@ -443,7 +443,7 @@ function PeoplePage() {
       </div>
       <dialog
         ref={dialogRef}
-        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface-0 p-0 shadow-lg backdrop:bg-black/50"
+        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
         aria-labelledby={titleId}
         aria-describedby={descId}
         onClose={() => setModalMode(null)}
@@ -579,7 +579,7 @@ function PeoplePage() {
       </dialog>
       <dialog
         ref={resetPwdRef}
-        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-lg border border-border bg-surface-0 p-0 shadow-lg backdrop:bg-black/50"
+        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
         aria-labelledby={resetPwdTitleId}
         aria-describedby={resetPwdDescId}
         onClose={() => {

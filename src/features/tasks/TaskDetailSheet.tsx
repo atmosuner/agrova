@@ -156,7 +156,7 @@ export function TaskDetailSheet({ taskId, onClose }: Props) {
 
   return (
     <div
-      className="fixed inset-y-0 right-0 z-40 flex w-[min(100vw,440px)] flex-col border-l border-border bg-surface-0 shadow-xl"
+      className="fixed inset-y-0 right-0 z-40 flex w-[min(100vw,440px)] flex-col border-l border-border bg-surface-0"
       role="dialog"
       aria-labelledby={titleId}
     >
@@ -261,7 +261,7 @@ export function TaskDetailSheet({ taskId, onClose }: Props) {
       {fieldDlg ? (
         <dialog
           open
-          className="fixed inset-0 z-50 m-auto w-[min(100vw-2rem,400px)] rounded-lg border border-border bg-surface-0 p-0 shadow-lg backdrop:bg-black/40"
+          className="fixed inset-0 z-50 m-auto w-[min(100vw-2rem,400px)] rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
         >
           <div className="p-3">
             <p className="mb-2 font-medium text-fg">{t`Kopyalanacak tarlalar`}</p>

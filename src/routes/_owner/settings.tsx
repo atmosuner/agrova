@@ -127,22 +127,22 @@ function SettingsPage() {
   if (bootLoading && !settings) {
     return (
       <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Settings`}</h1>
-        <p className="mt-2 text-fg-secondary">{t`Loading…`}</p>
+        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Ayarlar`}</h1>
+        <p className="mt-2 text-fg-secondary">{t`Yükleniyor…`}</p>
       </div>
     )
   }
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Settings`}</h1>
+      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Ayarlar`}</h1>
       <p className="mt-2 max-w-md text-fg-secondary">
-        {t`Operation name, weather city, and a fixed time zone. Use Turkish city names (e.g. Antalya).`}
+        {t`İşletme adı, hava durumu şehri ve sabit saat dilimi. Türkçe şehir adları kullanın (ör. Antalya).`}
       </p>
       <form onSubmit={onSubmit} className="mt-6 max-w-md space-y-4">
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-fg" htmlFor="st-op">
-            {t`Operation name`}
+            {t`İşletme adı`}
           </label>
           <input
             id="st-op"
@@ -157,7 +157,7 @@ function SettingsPage() {
         </div>
         <div className="flex flex-col gap-1">
           <label className="text-sm font-medium text-fg" htmlFor="st-city">
-            {t`Weather city`}
+            {t`Hava durumu şehri`}
           </label>
           <input
             id="st-city"
@@ -170,31 +170,31 @@ function SettingsPage() {
             required
           />
           <p className="text-xs text-fg-muted">
-            {t`Turkish name as you would say it; used for the forecast widget (later).`}
+            {t`Hava durumu widgetı için Türkçe şehir adı.`}
           </p>
         </div>
         <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-fg">{t`Time zone`}</span>
+          <span className="text-sm font-medium text-fg">{t`Saat dilimi`}</span>
           <p className="rounded-md border border-border bg-surface-1 px-3 py-2 text-fg-secondary">
             {LOCKED_APP_TIMEZONE}
-            <span className="ml-2 text-xs text-fg-muted">({t`locked`})</span>
+            <span className="ml-2 text-xs text-fg-muted">({t`sabit`})</span>
           </p>
         </div>
         {formError ? <p className="text-sm text-harvest-500">{formError}</p> : null}
-        {ok ? <p className="text-sm text-orchard-700">{t`Saved.`}</p> : null}
+        {ok ? <p className="text-sm text-orchard-700">{t`Kaydedildi.`}</p> : null}
         <Button type="submit" disabled={saving}>
-          {saving ? t`Saving…` : t`Save`}
+          {saving ? t`Kaydediliyor…` : t`Kaydet`}
         </Button>
       </form>
-      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Password`)}>
-        <h2 className="text-lg font-medium text-fg">{t`Change password`}</h2>
+      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Şifre`)}>
+        <h2 className="text-lg font-medium text-fg">{t`Şifre değiştir`}</h2>
         <p className="mt-1 text-sm text-fg-secondary">
-          {t`Use your current password, then a new one (8–72 characters).`}
+          {t`Mevcut şifrenizi, ardından yeni bir şifre girin (8–72 karakter).`}
         </p>
         <form onSubmit={onChangePassword} className="mt-4 space-y-3">
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-fg" htmlFor="st-pw0">
-              {t`Current password`}
+              {t`Mevcut şifre`}
             </label>
             <input
               id="st-pw0"
@@ -207,7 +207,7 @@ function SettingsPage() {
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-fg" htmlFor="st-pw1">
-              {t`New password`}
+              {t`Yeni şifre`}
             </label>
             <input
               id="st-pw1"
@@ -220,7 +220,7 @@ function SettingsPage() {
           </div>
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium text-fg" htmlFor="st-pw2">
-              {t`Confirm new password`}
+              {t`Yeni şifre (tekrar)`}
             </label>
             <input
               id="st-pw2"
@@ -232,13 +232,13 @@ function SettingsPage() {
             />
           </div>
           {pwErr ? <p className="text-sm text-harvest-500">{pwErr}</p> : null}
-          {pwOk ? <p className="text-sm text-orchard-700">{t`Password updated.`}</p> : null}
+          {pwOk ? <p className="text-sm text-orchard-700">{t`Şifre güncellendi.`}</p> : null}
           <Button type="submit" disabled={pwSaving}>
-            {pwSaving ? t`Saving…` : t`Update password`}
+            {pwSaving ? t`Kaydediliyor…` : t`Şifreyi güncelle`}
           </Button>
         </form>
       </section>
-      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Data export`)}>
+      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Veri dışa aktarma`)}>
         <h2 className="text-lg font-medium text-fg">{t`Tüm verilerimi indir`}</h2>
         <p className="mt-1 text-sm text-fg-secondary">
           {t`JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görüntüsü.`}
@@ -262,14 +262,17 @@ function SettingsPage() {
               })
           }}
         >
-          {exporting ? t`Preparing…` : t`İndir`}
+          {exporting ? t`Hazırlanıyor…` : t`İndir`}
         </Button>
       </section>
       <NotificationMuteSettings />
-      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Session`)}>
-        <h2 className="text-lg font-medium text-fg">{t`Log out`}</h2>
+      <section
+        className="mt-8 max-w-md rounded-xl border border-status-blocked/20 bg-status-blocked/5 p-5"
+        aria-label={i18n._(msg`Oturum`)}
+      >
+        <h2 className="text-lg font-medium text-fg">{t`Çıkış yap`}</h2>
         <p className="mt-1 text-sm text-fg-secondary">
-          {t`End this session on this device. You can sign in again with your work email and password.`}
+          {t`Bu cihazdaki oturumu sonlandırın. İş e-postanız ve şifrenizle tekrar giriş yapabilirsiniz.`}
         </p>
         {logoutError ? <p className="mt-2 text-sm text-harvest-600">{logoutError}</p> : null}
         <Button
@@ -282,7 +285,7 @@ function SettingsPage() {
             void onLogout()
           }}
         >
-          {loggingOut ? t`Logging out…` : t`Log out`}
+          {loggingOut ? t`Çıkış yapılıyor…` : t`Çıkış yap`}
         </Button>
       </section>
     </div>
