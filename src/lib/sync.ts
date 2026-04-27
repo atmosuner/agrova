@@ -327,7 +327,7 @@ export type DrainOutboxOptions = {
 }
 
 export async function drainOutbox(opts?: DrainOutboxOptions): Promise<void> {
-  if (typeof navigator !== 'undefined' && !navigator.onLine) {
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
     return
   }
   if (drainInFlight) {
