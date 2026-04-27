@@ -1,6 +1,6 @@
 /* eslint-disable lingui/no-unlocalized-strings -- Tailwind class strings, localStorage key, route paths */
 import { msg, t } from '@lingui/macro'
-import { defaultStringifySearch, Link, Outlet, createFileRoute, redirect, useRouterState } from '@tanstack/react-router'
+import { defaultStringifySearch, Link, Outlet, createFileRoute, redirect, useNavigate, useRouterState } from '@tanstack/react-router'
 import {
   BarChart3,
   ChevronLeft,
@@ -28,6 +28,7 @@ import { useOpenIssueCount } from '@/features/issues/use-open-issue-count'
 import { useMyPersonQuery } from '@/features/people/useMyPersonQuery'
 import { resolveAppShellForUser } from '@/features/auth/resolve-app-shell'
 import { i18n } from '@/lib/i18n'
+import { signOutAndClearLocalData } from '@/features/auth/logout'
 import { supabase } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
 
@@ -245,6 +246,7 @@ function SidebarFooter({
   collapsed: boolean
   onToggle: () => void
 }) {
+  const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   useOnClickOutside(menuRef, () => setMenuOpen(false))
@@ -317,8 +319,8 @@ function SidebarFooter({
                 type="button"
                 onClick={async () => {
                   setMenuOpen(false)
-                  await supabase.auth.signOut()
-                  window.location.href = '/login'
+                  await signOutAndClearLocalData()
+                  void navigate({ to: '/login', search: { redirect: undefined } })
                 }}
                 className="flex w-full items-center gap-2 px-3 py-2 text-left text-[13px] text-status-blocked hover:bg-status-blocked/[0.06]"
                 role="menuitem"
