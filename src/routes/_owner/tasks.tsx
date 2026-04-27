@@ -70,9 +70,9 @@ function TasksPage() {
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 id={headingId} className="text-2xl font-semibold tracking-tight text-fg">
-            {t`Tasks`}
+            {t`Görevler`}
           </h1>
-          <p className="mt-1 text-fg-secondary">{t`Plan and assign work across fields.`}</p>
+          <p className="mt-1 text-fg-secondary">{t`Tarlalar genelinde iş planla ve ata.`}</p>
         </div>
         <Button type="button" onClick={() => setCreateOpen(true)}>
           {t`Yeni görev`}

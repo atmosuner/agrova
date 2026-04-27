@@ -312,7 +312,7 @@ function FieldsPage() {
           ))}
         </ul>
         {editing ? (
-          <div className="space-y-2 rounded-md border border-orchard-200 bg-surface-0 p-3 shadow-sm">
+          <div className="space-y-2 rounded-md border border-border-strong bg-surface-0 p-3">
             <h3 className="text-sm font-medium text-fg">{selected == null ? t`New field` : t`Edit field`}</h3>
             <label className="block text-xs text-fg-secondary">
               {t`Name`}

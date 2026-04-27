@@ -56,7 +56,7 @@ export function SyncSheet({ onClose }: Props) {
     >
       <div
         className={cn(
-          'max-h-[70vh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-border bg-surface-0 p-4 shadow-lg sm:rounded-2xl',
+          'max-h-[70vh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-border-strong bg-surface-0 p-4 ring-[3px] ring-[rgba(12,18,16,0.04)] sm:rounded-2xl',
         )}
         onClick={(e) => e.stopPropagation()}
       >
