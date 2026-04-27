@@ -1,4 +1,3 @@
-/* eslint-disable lingui/no-unlocalized-strings -- Tailwind class strings */
 import { t } from '@lingui/macro'
 import { useEffect, useRef, useState } from 'react'
 import { X } from 'lucide-react'

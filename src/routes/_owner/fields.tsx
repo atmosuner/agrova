@@ -296,7 +296,9 @@ function FieldsPage() {
               onClick={() => downloadFieldsCsv(rows)}
               disabled={loading}
             >
+              {/* eslint-disable lingui/no-unlocalized-strings -- abbreviation */}
               CSV
+              {/* eslint-enable lingui/no-unlocalized-strings */}
             </Button>
             <Button
               type={b.btn}
@@ -331,6 +333,7 @@ function FieldsPage() {
             const isSelected = r.id === selectedId
             const metaParts: string[] = []
             if (r.variety) metaParts.push(r.variety)
+            // eslint-disable-next-line lingui/no-unlocalized-strings -- unit abbreviation
             if (r.area_hectares != null) metaParts.push(`${(Math.round(r.area_hectares * 100) / 100).toString()} ha`)
             if (r.planted_year != null) metaParts.push(String(r.planted_year))
 
@@ -351,7 +354,7 @@ function FieldsPage() {
                   <div className="min-w-0">
                     <p className="text-[13px] font-semibold text-fg">
                       {r.name}
-                      {r.crop ? <> — {r.crop}</> : null}
+                      {r.crop ? <>{' \u2014 '}{r.crop}</> : null}
                     </p>
                     {metaParts.length > 0 && (
                       <p className="mt-0.5 text-[11px] text-fg-muted">{metaParts.join(' · ')}</p>
@@ -486,10 +489,11 @@ function FieldsPage() {
                   <h3 className="text-[13px] font-semibold text-fg">{selected.name}</h3>
                   <p className="text-[12px] text-fg-secondary">
                     {selected.crop}
-                    {selected.variety ? <> — {selected.variety}</> : null}
+                    {selected.variety ? <>{' \u2014 '}{selected.variety}</> : null}
                   </p>
                   {selected.area_hectares != null ? (
                     <p className="text-[12px] text-fg-secondary">
+                      {/* eslint-disable-next-line lingui/no-unlocalized-strings -- unit abbreviation */}
                       {i18n._(msg`Alan`)}: {(Math.round(selected.area_hectares * 100) / 100).toString()} ha
                     </p>
                   ) : null}

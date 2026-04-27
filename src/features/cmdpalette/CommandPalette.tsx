@@ -60,6 +60,8 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     } else if (!open && el.open) {
       el.close()
     }
+    setQuery('')
+    setActiveIdx(0)
   }, [open])
 
   useEffect(() => {
@@ -69,11 +71,6 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     el.addEventListener('close', handleClose)
     return () => el.removeEventListener('close', handleClose)
   }, [onClose])
-
-  useEffect(() => {
-    setQuery('')
-    setActiveIdx(0)
-  }, [open])
 
   const results = useMemo(() => {
     const items: ResultItem[] = []
@@ -140,10 +137,6 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
     return items
   }, [query, fields, people, navigate])
 
-  useEffect(() => {
-    setActiveIdx(0)
-  }, [query])
-
   const selectItem = useCallback(
     (item: ResultItem) => {
       onClose()
@@ -194,7 +187,7 @@ export function CommandPalette({ open, onClose }: { open: boolean; onClose: () =
           ref={inputRef}
           type="text"
           value={query}
-          onChange={(e) => setQuery(e.target.value)}
+          onChange={(e) => { setQuery(e.target.value); setActiveIdx(0) }}
           placeholder={i18n._(msg`Sayfa, tarla veya kişi ara…`)}
           className="h-12 flex-1 bg-transparent text-[15px] text-fg outline-none placeholder:text-fg-faint"
           aria-label={i18n._(msg`Arama`)}

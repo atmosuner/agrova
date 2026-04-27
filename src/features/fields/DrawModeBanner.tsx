@@ -1,4 +1,3 @@
-/* eslint-disable lingui/no-unlocalized-strings -- Tailwind class strings */
 import { t } from '@lingui/macro'
 
 type Props = {

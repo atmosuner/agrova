@@ -51,16 +51,19 @@ function TodayPage() {
     [data?.activeFieldIds],
   )
 
+  /* eslint-disable lingui/no-unlocalized-strings -- internal direction tokens and numeric sign prefix */
   const buildDelta = useCallback(
     (current: number, yesterday: number, invertTone?: boolean): { dir: 'up' | 'down' | 'flat'; copy: string } => {
       const diff = current - yesterday
       if (diff === 0) return { dir: 'flat', copy: i18n._(msg`dünden aynı`) }
       const arrow: 'up' | 'down' = diff > 0 ? 'up' : 'down'
       const dir: 'up' | 'down' = invertTone ? (arrow === 'up' ? 'down' : 'up') : arrow
-      return { dir, copy: `${diff > 0 ? '+' : ''}${diff} ${i18n._(msg`dünden`)}` }
+      const sign = diff > 0 ? '+' : ''
+      return { dir, copy: i18n._(msg`${sign}${diff} dünden`) }
     },
     [],
   )
+  /* eslint-enable lingui/no-unlocalized-strings */
 
   const tasksDelta = useMemo(
     () => (!isLoading && data ? buildDelta(data.openTasksToday, data.yesterdayOpenTasks) : null),
