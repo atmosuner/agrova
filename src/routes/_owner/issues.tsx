@@ -1,5 +1,7 @@
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
+import { useState } from 'react'
+import { IssueDetailSheet } from '@/features/issues/IssueDetailSheet'
 import { IssuesFeed } from '@/features/issues/IssuesFeed'
 import { resolveIssue } from '@/features/issues/resolve-issue'
 import {
@@ -28,6 +30,10 @@ function IssuesPage() {
   const { data: me } = useMyPersonQuery()
   useIssuesRealtime()
   const { data, isLoading, error } = useIssuesListQuery()
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  const allRows = data ?? []
+  const selectedIssue = selectedId ? allRows.find((r) => r.id === selectedId) ?? null : null
 
   const onResolve =
     me?.role === 'OWNER'
@@ -56,15 +62,25 @@ function IssuesPage() {
       : undefined
 
   return (
-    <IssuesFeed
-      key={list}
-      rows={data ?? []}
-      loading={isLoading}
-      error={error instanceof Error ? error : null}
-      onResolve={onResolve}
-      highlightId={highlightId}
-      // eslint-disable-next-line lingui/no-unlocalized-strings -- internal filter keys
-      defaultResolved={list === 'open' ? 'open' : 'all'}
-    />
+    <>
+      <IssuesFeed
+        key={list}
+        rows={allRows}
+        loading={isLoading}
+        error={error instanceof Error ? error : null}
+        onResolve={onResolve}
+        highlightId={highlightId}
+        onRowClick={(id) => setSelectedId(id)}
+        // eslint-disable-next-line lingui/no-unlocalized-strings -- internal filter keys
+        defaultResolved={list === 'open' ? 'open' : 'all'}
+      />
+      {selectedIssue ? (
+        <IssueDetailSheet
+          issue={selectedIssue}
+          onClose={() => setSelectedId(null)}
+          onResolve={onResolve}
+        />
+      ) : null}
+    </>
   )
 }

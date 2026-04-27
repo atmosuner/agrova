@@ -77,9 +77,10 @@ msgstr "500+ tarla harita üzerinde"
 msgid "Acil"
 msgstr "Acil"
 
-#: src/features/issues/IssuesFeed.tsx:139
-#: src/features/issues/IssuesFeed.tsx:164
-#: src/features/issues/IssuesFeed.tsx:252
+#: src/features/issues/IssueDetailSheet.tsx:126
+#: src/features/issues/IssuesFeed.tsx:102
+#: src/features/issues/IssuesFeed.tsx:127
+#: src/features/issues/IssuesFeed.tsx:256
 msgid "Açık"
 msgstr "Açık"
 
@@ -92,6 +93,7 @@ msgstr "Açık görev (bugün)"
 msgid "Açık görev yok"
 msgstr "Açık görev yok"
 
+#: src/routes/_owner/reports.tsx:114
 #: src/routes/_owner/today.tsx:110
 #: src/routes/_owner/today.tsx:119
 msgid "Açık sorunlar"
@@ -203,7 +205,6 @@ msgid "Alan"
 msgstr "Alan"
 
 #: src/features/equipment/AttachSheet.mobile.tsx:83
-#: src/routes/_owner/reports.tsx:113
 #: src/routes/m/task.$id.tsx:139
 #: src/routes/m/task.$id.tsx:159
 msgid "Alet"
@@ -421,9 +422,9 @@ msgstr "bekliyor"
 msgid "Biçme"
 msgstr "Biçme"
 
-#: src/features/issues/IssuesFeed.tsx:208
-#~ msgid "Bildiren"
-#~ msgstr "Bildiren"
+#: src/features/issues/IssueDetailSheet.tsx:136
+msgid "Bildiren"
+msgstr "Bildiren"
 
 #: src/features/settings/notification-mute-settings.tsx:67
 msgid "Bildirim sessize alma"
@@ -524,8 +525,8 @@ msgid "Boş"
 msgstr "Boş"
 
 #: src/features/issues/CategoryGrid.tsx:10
+#: src/features/issues/issue-labels.ts:7
 #: src/features/issues/IssueConfirm.tsx:13
-#: src/features/issues/IssuesFeed.tsx:19
 #: src/features/tasks/TaskDetailMediaSection.tsx:13
 msgid "Bozuk alet"
 msgstr "Bozuk alet"
@@ -587,7 +588,6 @@ msgid "Bu tarla için kayıt yok."
 msgstr "Bu tarla için kayıt yok."
 
 #: src/features/tasks/activities.ts:26
-#: src/routes/_owner/reports.tsx:100
 msgid "Budama"
 msgstr "Budama"
 
@@ -616,6 +616,10 @@ msgstr "Bugünkü görev panosu"
 #: src/features/dashboard/TodaysBoard.tsx:33
 msgid "Bugünün Panosu"
 msgstr "Bugünün Panosu"
+
+#: src/routes/_owner/reports.tsx:139
+msgid "Çalışan verimliliği"
+msgstr "Çalışan verimliliği"
 
 #: src/routes/_owner/people.tsx:565
 #: src/routes/_owner/people.tsx:629
@@ -724,17 +728,26 @@ msgstr "Çıkış yapılıyor…"
 #~ msgid "Continue to Today"
 #~ msgstr "Bugüne devam et"
 
-#: src/features/issues/IssuesFeed.tsx:139
-#: src/features/issues/IssuesFeed.tsx:165
-#: src/features/issues/IssuesFeed.tsx:248
-#: src/features/issues/IssuesFeed.tsx:286
+#: src/features/issues/IssueDetailSheet.tsx:160
+msgid "Çözen"
+msgstr "Çözen"
+
+#: src/features/issues/IssueDetailSheet.tsx:121
+#: src/features/issues/IssuesFeed.tsx:102
+#: src/features/issues/IssuesFeed.tsx:128
+#: src/features/issues/IssuesFeed.tsx:252
+#: src/features/issues/IssuesFeed.tsx:289
 #: src/features/tasks/TaskDetailMediaSection.tsx:124
 msgid "Çözüldü"
 msgstr "Çözüldü"
 
-#: src/features/issues/IssuesFeed.tsx:236
-#~ msgid "Çözüldü olarak işaretle"
-#~ msgstr "Çözüldü olarak işaretle"
+#: src/features/issues/IssueDetailSheet.tsx:197
+msgid "Çözüldü olarak işaretle"
+msgstr "Çözüldü olarak işaretle"
+
+#: src/features/issues/IssueDetailSheet.tsx:154
+msgid "Çözülme tarihi"
+msgstr "Çözülme tarihi"
 
 #: src/features/equipment/csv.ts:14
 msgid "Crates"
@@ -777,7 +790,7 @@ msgstr "Kültür"
 msgid "CSV"
 msgstr "CSV"
 
-#: src/routes/_owner/reports.tsx:30
+#: src/routes/_owner/reports.tsx:93
 msgid "CSV indir"
 msgstr "CSV indir"
 
@@ -826,9 +839,12 @@ msgstr "Detay"
 #~ msgid "Device setup"
 #~ msgstr "Cihaz kurulumu"
 
+#: src/routes/_owner/reports.tsx:189
+msgid "diğer"
+msgstr "diğer"
+
 #: src/features/tasks/activities.ts:39
-#: src/routes/_owner/reports.tsx:102
-#: src/routes/_owner/reports.tsx:114
+#: src/routes/_owner/reports.tsx:203
 msgid "Diğer"
 msgstr "Diğer"
 
@@ -869,8 +885,8 @@ msgstr "dünden aynı"
 msgid "Durdur"
 msgstr "Durdur"
 
-#: src/features/issues/IssuesFeed.tsx:139
-#: src/features/issues/IssuesFeed.tsx:162
+#: src/features/issues/IssuesFeed.tsx:102
+#: src/features/issues/IssuesFeed.tsx:125
 #: src/features/tasks/FilterBar.tsx:43
 #: src/features/tasks/FilterBar.tsx:94
 #: src/features/tasks/TasksTable.tsx:143
@@ -982,8 +998,8 @@ msgid "Ekran görüntüleri: Yakında"
 msgstr "Ekran görüntüleri: Yakında"
 
 #: src/features/issues/CategoryGrid.tsx:15
+#: src/features/issues/issue-labels.ts:12
 #: src/features/issues/IssueConfirm.tsx:18
-#: src/features/issues/IssuesFeed.tsx:24
 #: src/features/tasks/TaskDetailMediaSection.tsx:18
 msgid "Eksik malzeme"
 msgstr "Eksik malzeme"
@@ -1007,6 +1023,10 @@ msgstr "En az bir tarla seçin."
 #: src/features/issues/VoiceRecorder.tsx:113
 msgid "En fazla 60 saniye."
 msgstr "En fazla 60 saniye."
+
+#: src/routes/_owner/reports.tsx:136
+msgid "En yoğun 5"
+msgstr "En yoğun 5"
 
 #: src/routes/_owner/settings.tsx:272
 #~ msgid "End this session on this device. You can sign in again with your work email and password."
@@ -1047,7 +1067,7 @@ msgstr "Fidan sayısı"
 #~ msgid "Fields"
 #~ msgstr "Tarlalar"
 
-#: src/features/issues/IssuesFeed.tsx:321
+#: src/features/issues/IssuesFeed.tsx:337
 #: src/features/tasks/FilterBar.tsx:173
 msgid "Filtreyi kaldır"
 msgstr "Filtreyi kaldır"
@@ -1090,7 +1110,7 @@ msgstr "Foto seç veya çek"
 msgid "Foto ve ses"
 msgstr "Foto ve ses"
 
-#: src/features/issues/IssuesFeed.tsx:237
+#: src/features/issues/IssuesFeed.tsx:316
 msgid "Foto yok"
 msgstr "Foto yok"
 
@@ -1114,7 +1134,12 @@ msgstr "Fotoğraf işlenemedi. Yeniden çekmeyi deneyin."
 msgid "Fotoğraf önizlemesi"
 msgstr "Fotoğraf önizlemesi"
 
-#: src/features/issues/IssuesFeed.tsx:231
+#: src/features/issues/IssueDetailSheet.tsx:106
+msgid "Fotoğraf yükleniyor…"
+msgstr "Fotoğraf yükleniyor…"
+
+#: src/features/issues/IssueDetailSheet.tsx:96
+#: src/features/issues/IssuesFeed.tsx:310
 msgid "Fotoğrafı büyüt"
 msgstr "Fotoğrafı büyüt"
 
@@ -1259,8 +1284,8 @@ msgid "Görev oluşturuldu"
 msgstr "Görev oluşturuldu"
 
 #: src/routes/_owner/reports.tsx:37
-msgid "Görev Tamamlama"
-msgstr "Görev Tamamlama"
+#~ msgid "Görev Tamamlama"
+#~ msgstr "Görev Tamamlama"
 
 #: src/features/tasks/TaskDetailSheet.tsx:240
 msgid "Görev yüklenemedi."
@@ -1334,7 +1359,7 @@ msgstr "Gösterilecek ekipman yok."
 msgid "Gösterilecek kişi yok."
 msgstr "Gösterilecek kişi yok."
 
-#: src/features/issues/IssuesFeed.tsx:295
+#: src/features/issues/IssuesFeed.tsx:189
 msgid "Gösterilecek sorun yok."
 msgstr "Gösterilecek sorun yok."
 
@@ -1350,14 +1375,22 @@ msgstr "Gübreleme"
 msgid "Güçlü bir şifre seçin."
 msgstr "Güçlü bir şifre seçin."
 
+#: src/routes/_owner/reports.tsx:123
+msgid "gün"
+msgstr "gün"
+
 #: src/routes/_owner/fields.tsx:306
 #: src/routes/_owner/fields.tsx:437
 #~ msgid "ha"
 #~ msgstr "ha"
 
 #: src/routes/_owner/reports.tsx:37
-msgid "Haftalık · aktiviteye göre"
-msgstr "Haftalık · aktiviteye göre"
+#~ msgid "Haftalık · aktiviteye göre"
+#~ msgstr "Haftalık · aktiviteye göre"
+
+#: src/routes/_owner/reports.tsx:130
+msgid "Haftalık görev durumu"
+msgstr "Haftalık görev durumu"
 
 #: src/features/dashboard/MiniFieldsMap.tsx:91
 #~ msgid "Harita — bugünkü tarlalar"
@@ -1376,8 +1409,8 @@ msgid "Hasat"
 msgstr "Hasat"
 
 #: src/routes/_owner/reports.tsx:110
-msgid "Hastalık"
-msgstr "Hastalık"
+#~ msgid "Hastalık"
+#~ msgstr "Hastalık"
 
 #: src/routes/setup.$token.tsx:296
 msgid "Hata: <0>{code}</0>"
@@ -1397,8 +1430,8 @@ msgid "Hava durumu widgetı için Türkçe şehir adı."
 msgstr "Hava durumu widgetı için Türkçe şehir adı."
 
 #: src/features/issues/CategoryGrid.tsx:13
+#: src/features/issues/issue-labels.ts:10
 #: src/features/issues/IssueConfirm.tsx:16
-#: src/features/issues/IssuesFeed.tsx:22
 #: src/features/tasks/TaskDetailMediaSection.tsx:16
 msgid "Hava hasarı"
 msgstr "Hava hasarı"
@@ -1446,8 +1479,8 @@ msgstr "Hesap oluştur"
 #~ msgstr "Geçmiş"
 
 #: src/features/issues/CategoryGrid.tsx:14
+#: src/features/issues/issue-labels.ts:11
 #: src/features/issues/IssueConfirm.tsx:17
-#: src/features/issues/IssuesFeed.tsx:23
 #: src/features/tasks/TaskDetailMediaSection.tsx:17
 msgid "Hırsızlık"
 msgstr "Hırsızlık"
@@ -1569,7 +1602,9 @@ msgstr "Kaldırılmış kullanıcı"
 #: src/features/equipment/AttachSheet.mobile.tsx:84
 #: src/features/equipment/EquipmentUsageSheet.tsx:50
 #: src/features/fields/DeleteFieldModal.tsx:48
-#: src/features/issues/IssuesFeed.tsx:304
+#: src/features/issues/IssueDetailSheet.tsx:82
+#: src/features/issues/IssueDetailSheet.tsx:210
+#: src/features/issues/IssuesFeed.tsx:198
 #: src/features/tasks/ReassignSheet.mobile.tsx:58
 #: src/features/tasks/TaskCreateModal.tsx:205
 #: src/features/tasks/TaskDetailSheet.tsx:231
@@ -1585,8 +1620,8 @@ msgid "Kasalar"
 msgstr "Kasalar"
 
 #: src/features/issues/IssueConfirm.tsx:44
-#: src/features/issues/IssuesFeed.tsx:145
-#: src/features/issues/IssuesFeed.tsx:172
+#: src/features/issues/IssuesFeed.tsx:108
+#: src/features/issues/IssuesFeed.tsx:135
 msgid "Kategori"
 msgstr "Kategori"
 
@@ -1606,7 +1641,7 @@ msgstr "Kategori seçince kamera açılır"
 msgid "kategorisi"
 msgstr "kategorisi"
 
-#: src/features/issues/IssuesFeed.tsx:203
+#: src/features/issues/IssuesFeed.tsx:166
 msgid "Kategoriye göre"
 msgstr "Kategoriye göre"
 
@@ -1618,7 +1653,8 @@ msgstr "Kayda başla"
 msgid "Kaydedildi."
 msgstr "Kaydedildi."
 
-#: src/features/issues/IssuesFeed.tsx:286
+#: src/features/issues/IssueDetailSheet.tsx:197
+#: src/features/issues/IssuesFeed.tsx:289
 #: src/features/tasks/CompletionFlow.tsx:120
 #: src/features/tasks/TaskCreateModal.tsx:423
 #: src/routes/_owner/equipment.tsx:424
@@ -1670,8 +1706,8 @@ msgid "Kime"
 msgstr "Kime"
 
 #: src/routes/_owner/reports.tsx:43
-msgid "Kimyasal Kullanımı"
-msgstr "Kimyasal Kullanımı"
+#~ msgid "Kimyasal Kullanımı"
+#~ msgstr "Kimyasal Kullanımı"
 
 #: src/features/fields/FieldChemicalLog.tsx:32
 msgid "Kimyasal uygulamalar"
@@ -1756,7 +1792,7 @@ msgstr "Link geçersiz veya süresi dolmuş. Sahibinizden yeni bir kurulum linki
 #~ msgid "List"
 #~ msgstr "Liste"
 
-#: src/features/issues/IssuesFeed.tsx:130
+#: src/features/issues/IssuesFeed.tsx:93
 msgid "Liste yüklenemedi."
 msgstr "Liste yüklenemedi."
 
@@ -1947,6 +1983,10 @@ msgstr "Open-Meteo verisi yok. Şehri Ayarlar’da kontrol edin."
 #: src/routes/_owner/people.tsx:724
 msgid "ornek@mail.com"
 msgstr "ornek@mail.com"
+
+#: src/routes/_owner/reports.tsx:120
+msgid "Ort. çözüm süresi"
+msgstr "Ort. çözüm süresi"
 
 #: src/routes/_owner/settings.tsx:287
 msgid "Oturum"
@@ -2171,7 +2211,7 @@ msgstr "Sayfa, tarla veya kişi ara…"
 msgid "Sayfalar"
 msgstr "Sayfalar"
 
-#: src/features/issues/IssuesFeed.tsx:360
+#: src/features/issues/IssuesFeed.tsx:376
 #: src/features/tasks/FilterBar.tsx:212
 msgid "Seçenek yok"
 msgstr "Seçenek yok"
@@ -2204,6 +2244,7 @@ msgstr "Ses yükleniyor…"
 msgid "Sesi sil"
 msgstr "Sesi sil"
 
+#: src/features/issues/IssueDetailSheet.tsx:174
 #: src/features/issues/VoiceRecorder.tsx:112
 msgid "Sesli not"
 msgstr "Sesli not"
@@ -2395,9 +2436,17 @@ msgstr "SMS kodu gönderilmeyecek, sadece iletişim için."
 msgid "Son"
 msgstr "Son"
 
+#: src/routes/_owner/reports.tsx:53
+#: src/routes/_owner/reports.tsx:130
+#: src/routes/_owner/reports.tsx:133
+msgid "Son {daysStr} gün"
+msgstr "Son {daysStr} gün"
+
+#: src/routes/_owner/reports.tsx:75
+msgid "Son {lbl} gün"
+msgstr "Son {lbl} gün"
+
 #: src/features/equipment/EquipmentUsageSheet.tsx:57
-#: src/routes/_owner/reports.tsx:21
-#: src/routes/_owner/reports.tsx:40
 msgid "Son 30 gün"
 msgstr "Son 30 gün"
 
@@ -2431,11 +2480,17 @@ msgstr "Sorun bildir"
 msgid "Sorun bildirimi · Fotoğraf + ses"
 msgstr "Sorun bildirimi · Fotoğraf + ses"
 
-#: src/features/issues/IssuesFeed.tsx:234
+#: src/features/issues/IssueDetailSheet.tsx:76
+msgid "Sorun detayı"
+msgstr "Sorun detayı"
+
+#: src/features/issues/IssueDetailSheet.tsx:100
+#: src/features/issues/IssuesFeed.tsx:313
 msgid "Sorun fotoğrafı"
 msgstr "Sorun fotoğrafı"
 
-#: src/features/issues/IssuesFeed.tsx:306
+#: src/features/issues/IssueDetailSheet.tsx:212
+#: src/features/issues/IssuesFeed.tsx:200
 msgid "Sorun fotoğrafı büyük"
 msgstr "Sorun fotoğrafı büyük"
 
@@ -2445,9 +2500,13 @@ msgstr "Sorun fotoğrafı büyük"
 msgid "Sorun kapatıldı"
 msgstr "Sorun kapatıldı"
 
+#: src/routes/_owner/reports.tsx:133
+msgid "Sorun kategorileri"
+msgstr "Sorun kategorileri"
+
 #: src/routes/_owner/reports.tsx:40
-msgid "Sorun Kategorileri"
-msgstr "Sorun Kategorileri"
+#~ msgid "Sorun Kategorileri"
+#~ msgstr "Sorun Kategorileri"
 
 #: src/features/dashboard/DashboardActivityFeed.tsx:14
 msgid "Sorun raporu"
@@ -2463,20 +2522,23 @@ msgid "Status"
 msgstr "Durum"
 
 #: src/routes/_owner/reports.tsx:112
-msgid "Su sorunu"
-msgstr "Su sorunu"
+#~ msgid "Su sorunu"
+#~ msgstr "Su sorunu"
 
 #: src/features/tasks/activities.ts:28
-#: src/routes/_owner/reports.tsx:101
 msgid "Sulama"
 msgstr "Sulama"
 
 #: src/features/issues/CategoryGrid.tsx:12
+#: src/features/issues/issue-labels.ts:9
 #: src/features/issues/IssueConfirm.tsx:15
-#: src/features/issues/IssuesFeed.tsx:21
 #: src/features/tasks/TaskDetailMediaSection.tsx:15
 msgid "Sulama sorunu"
 msgstr "Sulama sorunu"
+
+#: src/routes/_owner/reports.tsx:189
+msgid "sürüyor"
+msgstr "sürüyor"
 
 #: src/features/dashboard/TodaysBoard.tsx:15
 #: src/features/tasks/FilterBar.tsx:19
@@ -2484,12 +2546,17 @@ msgstr "Sulama sorunu"
 #: src/features/tasks/TaskDetailSheet.tsx:32
 #: src/features/tasks/TasksKanban.tsx:17
 #: src/features/tasks/TasksTable.tsx:25
+#: src/routes/_owner/reports.tsx:202
 msgid "Sürüyor"
 msgstr "Sürüyor"
 
 #: src/features/tasks/FilterBar.tsx:145
 msgid "Tablo"
 msgstr "Tablo"
+
+#: src/routes/_owner/reports.tsx:139
+msgid "Tamamlanan görev sayısı"
+msgstr "Tamamlanan görev sayısı"
 
 #: src/routes/m/history.tsx:82
 #~ msgid "Tamamlanan veya kapanan görev yok."
@@ -2499,9 +2566,18 @@ msgstr "Tablo"
 msgid "Tamamlananlar"
 msgstr "Tamamlananlar"
 
+#: src/routes/_owner/reports.tsx:189
+msgid "tamamlandı"
+msgstr "tamamlandı"
+
 #: src/features/tasks/TaskDetailSheet.tsx:71
+#: src/routes/_owner/reports.tsx:201
 msgid "Tamamlandı"
 msgstr "Tamamlandı"
+
+#: src/routes/_owner/reports.tsx:107
+msgid "Tamamlanma"
+msgstr "Tamamlanma"
 
 #: src/features/tasks/TaskDetailMediaSection.tsx:97
 msgid "Tamamlanma görüntüsü"
@@ -2511,6 +2587,7 @@ msgstr "Tamamlanma görüntüsü"
 msgid "Tamamlanma görüntüsü yükleniyor…"
 msgstr "Tamamlanma görüntüsü yükleniyor…"
 
+#: src/features/issues/IssueDetailSheet.tsx:149
 #: src/features/tasks/FilterBar.tsx:77
 #: src/features/tasks/FilterBar.tsx:251
 msgid "Tarih"
@@ -2524,7 +2601,7 @@ msgstr "Tarih"
 #~ msgid "Tarih aralığını kontrol edin."
 #~ msgstr "Tarih aralığını kontrol edin."
 
-#: src/features/issues/IssuesFeed.tsx:203
+#: src/features/issues/IssuesFeed.tsx:166
 #: src/routes/_owner/equipment.tsx:298
 msgid "Tarihe göre"
 msgstr "Tarihe göre"
@@ -2533,8 +2610,9 @@ msgstr "Tarihe göre"
 msgid "tarla"
 msgstr "tarla"
 
-#: src/features/issues/IssuesFeed.tsx:151
-#: src/features/issues/IssuesFeed.tsx:179
+#: src/features/issues/IssueDetailSheet.tsx:145
+#: src/features/issues/IssuesFeed.tsx:114
+#: src/features/issues/IssuesFeed.tsx:142
 #: src/features/tasks/FilterBar.tsx:51
 #: src/features/tasks/FilterBar.tsx:101
 #: src/features/tasks/TasksTable.tsx:139
@@ -2542,24 +2620,24 @@ msgid "Tarla"
 msgstr "Tarla"
 
 #: src/routes/_owner/reports.tsx:165
-msgid "Tarla 1 — Şeftali"
-msgstr "Tarla 1 — Şeftali"
+#~ msgid "Tarla 1 — Şeftali"
+#~ msgstr "Tarla 1 — Şeftali"
 
 #: src/routes/_owner/reports.tsx:163
-msgid "Tarla 12 — Elma"
-msgstr "Tarla 12 — Elma"
+#~ msgid "Tarla 12 — Elma"
+#~ msgstr "Tarla 12 — Elma"
 
 #: src/routes/_owner/reports.tsx:166
-msgid "Tarla 22 — Erik"
-msgstr "Tarla 22 — Erik"
+#~ msgid "Tarla 22 — Erik"
+#~ msgstr "Tarla 22 — Erik"
 
 #: src/routes/_owner/reports.tsx:167
-msgid "Tarla 3 — Vişne"
-msgstr "Tarla 3 — Vişne"
+#~ msgid "Tarla 3 — Vişne"
+#~ msgstr "Tarla 3 — Vişne"
 
 #: src/routes/_owner/reports.tsx:164
-msgid "Tarla 7 — Kiraz"
-msgstr "Tarla 7 — Kiraz"
+#~ msgid "Tarla 7 — Kiraz"
+#~ msgstr "Tarla 7 — Kiraz"
 
 #: src/routes/_owner/fields.tsx:356
 msgid "Tarla ara"
@@ -2569,9 +2647,13 @@ msgstr "Tarla ara"
 msgid "Tarla ara…"
 msgstr "Tarla ara…"
 
+#: src/routes/_owner/reports.tsx:136
+msgid "Tarla bazında görevler"
+msgstr "Tarla bazında görevler"
+
 #: src/routes/_owner/reports.tsx:43
-msgid "Tarla bazında, en yoğun 5"
-msgstr "Tarla bazında, en yoğun 5"
+#~ msgid "Tarla bazında, en yoğun 5"
+#~ msgstr "Tarla bazında, en yoğun 5"
 
 #: src/routes/_owner/fields.tsx:400
 msgid "Tarla bulunamadı."
@@ -2701,6 +2783,10 @@ msgstr "Aletler"
 msgid "Toplam"
 msgstr "Toplam"
 
+#: src/routes/_owner/reports.tsx:101
+msgid "Toplam görev"
+msgstr "Toplam görev"
+
 #: src/routes/_owner/people.tsx:319
 #~ msgid "TR mobile. Roles: foreman, agronomist, worker."
 #~ msgstr "Cep: +90. Roller: başçı, ziraat mühendisi, işçi."
@@ -2789,6 +2875,12 @@ msgstr "Araçlar"
 msgid "Veri dışa aktarma"
 msgstr "Veri dışa aktarma"
 
+#: src/routes/_owner/reports.tsx:169
+#: src/routes/_owner/reports.tsx:231
+#: src/routes/_owner/reports.tsx:304
+msgid "Veri yok"
+msgstr "Veri yok"
+
 #: src/routes/reset-password.tsx:80
 msgid "VITE_SITE_URL tanımlı değil."
 msgstr "VITE_SITE_URL tanımlı değil."
@@ -2854,8 +2946,8 @@ msgstr "Yapılandırma hatası: site adresi (VITE_SITE_URL) tanımlı değil."
 #~ msgstr "Yapılandırma hatası: VITE_SITE_URL tanımlı değil."
 
 #: src/features/issues/CategoryGrid.tsx:11
+#: src/features/issues/issue-labels.ts:8
 #: src/features/issues/IssueConfirm.tsx:14
-#: src/features/issues/IssuesFeed.tsx:20
 #: src/features/tasks/TaskDetailMediaSection.tsx:14
 msgid "Yaralanma"
 msgstr "Yaralanma"
@@ -2943,8 +3035,8 @@ msgstr "You can export field-level chemical logs as CSV; a full data export is p
 
 #: src/features/equipment/AttachSheet.mobile.tsx:107
 #: src/features/equipment/EquipmentUsageSheet.tsx:62
-#: src/features/issues/IssuesFeed.tsx:126
-#: src/features/issues/IssuesFeed.tsx:237
+#: src/features/issues/IssuesFeed.tsx:89
+#: src/features/issues/IssuesFeed.tsx:316
 #: src/features/notifications/NotificationsBell.tsx:77
 #: src/features/tasks/ReassignSheet.mobile.tsx:62
 #: src/features/tasks/TaskDetailSheet.tsx:237
@@ -2963,12 +3055,12 @@ msgid "Zaman çizelgesi"
 msgstr "Zaman çizelgesi"
 
 #: src/routes/_owner/reports.tsx:111
-msgid "Zararlı"
-msgstr "Zararlı"
+#~ msgid "Zararlı"
+#~ msgstr "Zararlı"
 
 #: src/features/issues/CategoryGrid.tsx:9
+#: src/features/issues/issue-labels.ts:6
 #: src/features/issues/IssueConfirm.tsx:12
-#: src/features/issues/IssuesFeed.tsx:18
 #: src/features/tasks/TaskDetailMediaSection.tsx:12
 msgid "Zararlı / hastalık"
 msgstr "Zararlı / hastalık"

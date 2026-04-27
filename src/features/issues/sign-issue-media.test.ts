@@ -1,5 +1,5 @@
 import { describe, expect, it, vi, beforeEach } from 'vitest'
-import { signIssueObjectUrl } from '@/features/issues/sign-issue-media'
+import { signIssueObjectUrl, useSignedUrl } from '@/features/issues/sign-issue-media'
 
 const createSignedUrl = vi.fn()
 
@@ -33,5 +33,9 @@ describe('signIssueObjectUrl', () => {
   it('returns null when storage errors', async () => {
     createSignedUrl.mockResolvedValueOnce({ data: null, error: { message: 'nope' } })
     await expect(signIssueObjectUrl('path')).resolves.toBeNull()
+  })
+
+  it('exports useSignedUrl hook', () => {
+    expect(typeof useSignedUrl).toBe('function')
   })
 })
