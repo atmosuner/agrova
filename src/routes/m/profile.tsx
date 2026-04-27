@@ -1,5 +1,5 @@
 import { msg, t } from '@lingui/macro'
-import { useState } from 'react'
+import { useState, useSyncExternalStore } from 'react'
 import { createFileRoute, useNavigate } from '@tanstack/react-router'
 import { ChevronRight, Lock, LogOut, Phone, Smartphone } from 'lucide-react'
 import { Button } from '@/components/ui/button'
@@ -32,8 +32,25 @@ function roleLabel(role: string): string {
   return map[role] ? i18n._(map[role]) : role
 }
 
+/* eslint-disable lingui/no-unlocalized-strings */
+const APP_VERSION = 'v0.1.0'
+/* eslint-enable lingui/no-unlocalized-strings */
+
+function subOnline(cb: () => void) {
+  globalThis.addEventListener('online', cb)
+  globalThis.addEventListener('offline', cb)
+  return () => {
+    globalThis.removeEventListener('online', cb)
+    globalThis.removeEventListener('offline', cb)
+  }
+}
+function getOnline() {
+  return typeof navigator !== 'undefined' ? navigator.onLine !== false : true
+}
+
 function ProfilePage() {
   const { data: me, isLoading } = useMyPersonQuery()
+  const isOnline = useSyncExternalStore(subOnline, getOnline)
   const [pwOpen, setPwOpen] = useState(false)
   const [pwCurrent, setPwCurrent] = useState('')
   const [pwNew, setPwNew] = useState('')
@@ -206,7 +223,7 @@ function ProfilePage() {
       </Section>
 
       <p className="px-4 pt-6 text-center text-[12px] text-fg-faint">
-        {t`Şifrenizi unuttuysanız işletme sahibinden (Ekip) yeni şifre isteyin.`}
+        Agrova {APP_VERSION} · {isOnline ? t`Çevrimiçi` : t`Çevrimdışı`}
       </p>
     </div>
   )

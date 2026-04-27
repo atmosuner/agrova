@@ -2,7 +2,7 @@
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { supabase } from '@/lib/supabase'
-import type { Tables } from '@/types/db'
+import type { FieldWithGeo } from '@/features/fields/boundary-geojson'
 
 export const allFieldsMapKey = ['fields', 'map', 'all'] as const
 
@@ -10,12 +10,12 @@ export function useAllFieldsForMap() {
   const qc = useQueryClient()
   const q = useQuery({
     queryKey: allFieldsMapKey,
-    queryFn: async (): Promise<Tables<'fields'>[]> => {
-      const { data, error } = await supabase.from('fields').select('*').order('name', { ascending: true })
+    queryFn: async (): Promise<FieldWithGeo[]> => {
+      const { data, error } = await supabase.from('fields').select('*, boundary_geojson').order('name', { ascending: true })
       if (error) {
         throw error
       }
-      return data ?? []
+      return (data ?? []) as unknown as FieldWithGeo[]
     },
   })
   useEffect(() => {

@@ -64,39 +64,39 @@ export function NotificationMuteSettings() {
   }
 
   return (
-    <section className="mt-10 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Bildirim sessize alma`)}>
-      <h2 className="text-lg font-medium text-fg">{t`Bildirimler (Web Push)`}</h2>
-      <p className="mt-1 text-sm text-fg-secondary">
+    <section className="rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`Bildirim sessize alma`)}>
+      <h2 className="text-sm font-semibold text-fg">{t`Bildirimler (Web Push)`}</h2>
+      <p className="mt-0.5 text-[12px] text-fg-secondary">
         {t`Aşağıdaki olaylar için itici bildirim gönderilmez. Yeni saha sorunu raporları (KPI) sessize alınamaz — tarayıcı / cihaz izinlerine de bağlıdır.`}
       </p>
-      <ul className="mt-4 space-y-3">
+      <ul className="mt-4 space-y-2.5">
         {MUTEABLE_OWNER_PUSH_ACTIONS.map((action) => (
-          <li key={action} className="flex items-start gap-3">
+          <li key={action} className="flex items-center gap-2.5">
             <input
               id={`mute-${action}`}
               type="checkbox"
-              className="mt-0.5 h-4 w-4"
+              className="h-3.5 w-3.5 rounded border-border accent-orchard-500"
               checked={muted.has(action)}
               disabled={saving}
               onChange={(e) => {
                 void toggle(action, e.target.checked)
               }}
             />
-            <label htmlFor={`mute-${action}`} className="text-sm text-fg">
+            <label htmlFor={`mute-${action}`} className="text-[13px] text-fg">
               {actionLabel(action)}
             </label>
           </li>
         ))}
-        <li className="flex items-start gap-3 opacity-60">
-          <input id="mute-issue-reported" type="checkbox" className="mt-0.5 h-4 w-4" checked disabled />
-          <label htmlFor="mute-issue-reported" className="text-sm text-fg">
+        <li className="flex items-center gap-2.5 opacity-50">
+          <input id="mute-issue-reported" type="checkbox" className="h-3.5 w-3.5 rounded border-border" checked disabled />
+          <label htmlFor="mute-issue-reported" className="text-[13px] text-fg">
             {i18n._(msg`Yeni saha sorunu (KPI)`)}
-            <span className="ml-1 text-xs text-fg-muted">({t`Zorunlu açık`})</span>
+            <span className="ml-1 text-[11px] text-fg-muted">({t`Zorunlu açık`})</span>
           </label>
         </li>
       </ul>
-      {err ? <p className="mt-2 text-sm text-harvest-600">{err}</p> : null}
-      <p className="mt-6 text-sm text-fg-secondary">
+      {err ? <p className="mt-2 text-[12px] text-harvest-600">{err}</p> : null}
+      <p className="mt-4 text-[12px] text-fg-secondary">
         <Link to="/privacy" className="font-medium text-orchard-600 hover:underline">
           {t`Gizlilik (KVKK) sayfası`}
         </Link>

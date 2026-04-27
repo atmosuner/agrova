@@ -4,8 +4,7 @@ import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
 import 'leaflet-draw/dist/leaflet.draw.css'
 import 'leaflet-draw'
-import { fieldBoundaryToGeometry, toGeoJsonFeature } from './boundary-geojson'
-import type { Tables } from '@/types/db'
+import { fieldBoundaryToGeometry, toGeoJsonFeature, type FieldWithGeo } from './boundary-geojson'
 
 // eslint-disable-next-line lingui/no-unlocalized-strings -- static Esri WMTS template URL, not translatable
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
@@ -22,7 +21,7 @@ type LWithDraw = typeof L & {
 
 const LD = L as LWithDraw
 
-type Field = Tables<'fields'>
+type Field = FieldWithGeo
 
 type Props = {
   center: { lat: number; lng: number; zoom: number }
@@ -85,7 +84,14 @@ export function FieldsMap({
     fieldGroupRef.current = fieldGroup
     mapRef.current = map
     setMapReady(true)
+
+    const ro = new ResizeObserver(() => {
+      map.invalidateSize()
+    })
+    ro.observe(mapEl.current)
+
     return () => {
+      ro.disconnect()
       setMapReady(false)
       fieldGroupRef.current = null
       try {
@@ -116,7 +122,7 @@ export function FieldsMap({
     }
     g.clearLayers()
     for (const row of fields) {
-      const geom = fieldBoundaryToGeometry(row.boundary)
+      const geom = fieldBoundaryToGeometry(row.boundary_geojson)
       if (geom == null) {
         continue
       }
@@ -124,9 +130,11 @@ export function FieldsMap({
       const isSel = row.id === selectedId
       const layer = L.geoJSON(feature, {
         style: {
-          color: isSel ? '#0f5132' : '#2d5a2d',
-          weight: isSel ? 3 : 2,
-          fillOpacity: 0.2,
+          color: isSel ? '#f97316' : '#4ade80',
+          weight: isSel ? 3.5 : 2,
+          fillColor: isSel ? '#f97316' : '#22c55e',
+          fillOpacity: isSel ? 0.3 : 0.15,
+          dashArray: isSel ? undefined : '6 4',
         },
         onEachFeature: (ft, lyr) => {
           const id = (ft.properties as { id?: string } | null)?.id
@@ -140,6 +148,12 @@ export function FieldsMap({
         },
       })
       g.addLayer(layer)
+      if (isSel && mapRef.current) {
+        const bounds = layer.getBounds()
+        if (bounds.isValid()) {
+          mapRef.current.fitBounds(bounds, { padding: [60, 60], maxZoom: 17 })
+        }
+      }
     }
   }, [fields, mapReady, selectedId])
 
@@ -171,7 +185,7 @@ export function FieldsMap({
   }, [wantsDraw, mapReady, onCreated])
 
   return (
-    <div className="relative h-full min-h-[280px] w-full grow overflow-hidden rounded-md border border-orchard-200 bg-orchard-50/40">
+    <div className="relative h-full min-h-[280px] w-full grow overflow-hidden">
       <div
         id={contId}
         ref={mapEl}

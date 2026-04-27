@@ -48,6 +48,19 @@ function shortDate(iso: string): string {
   }).format(d)
 }
 
+function timeOfDay(ts: string | null): string | null {
+  if (!ts) return null
+  try {
+    return new Intl.DateTimeFormat('tr-TR', {
+      hour: '2-digit',
+      minute: '2-digit',
+      timeZone: 'Europe/Istanbul',
+    }).format(new Date(ts))
+  } catch {
+    return null
+  }
+}
+
 function HistoryPage() {
   const { data, isLoading, loadOlder, isFetching, limit } = useMyTaskHistoryQuery()
   const rows = useMemo(() => data?.rows ?? [], [data?.rows])
@@ -84,7 +97,10 @@ function HistoryPage() {
                       </span>
                       <div className="min-w-0 flex-1">
                         <p className="truncate text-[15px] font-medium text-fg">{name}</p>
-                        <p className="truncate text-[13px] text-fg-muted">{task.fields?.name ?? '—'}</p>
+                        <p className="truncate text-[13px] text-fg-muted">
+                          {task.fields?.name ?? '—'}
+                          {timeOfDay(task.completed_at) ? ` · ${timeOfDay(task.completed_at)}` : ''}
+                        </p>
                       </div>
                       <span
                         className={

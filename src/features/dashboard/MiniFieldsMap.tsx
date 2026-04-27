@@ -3,13 +3,12 @@ import { msg } from '@lingui/macro'
 import { useLayoutEffect, useId, useRef, useState } from 'react'
 import L from 'leaflet'
 import 'leaflet/dist/leaflet.css'
-import { fieldBoundaryToGeometry, toGeoJsonFeature } from '@/features/fields/boundary-geojson'
+import { fieldBoundaryToGeometry, toGeoJsonFeature, type FieldWithGeo } from '@/features/fields/boundary-geojson'
 import { i18n } from '@/lib/i18n'
-import type { Tables } from '@/types/db'
 
 const ESRI = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}'
 
-type Field = Tables<'fields'>
+type Field = FieldWithGeo
 
 type Props = {
   center: { lat: number; lng: number; zoom: number }
@@ -40,7 +39,14 @@ export function MiniFieldsMap({ center, fields, activeFieldIds, onFieldClick }: 
     groupRef.current = g
     mapRef.current = map
     setReady(true)
+
+    const ro = new ResizeObserver(() => {
+      map.invalidateSize()
+    })
+    ro.observe(mapEl.current)
+
     return () => {
+      ro.disconnect()
       setReady(false)
       groupRef.current = null
       try {
@@ -60,18 +66,17 @@ export function MiniFieldsMap({ center, fields, activeFieldIds, onFieldClick }: 
     g.clearLayers()
     let b: L.LatLngBounds | null = null
     for (const f of fields) {
-      const geom = fieldBoundaryToGeometry(f.boundary)
+      const geom = fieldBoundaryToGeometry(f.boundary_geojson)
       if (!geom) {
         continue
       }
       const feature = toGeoJsonFeature(f.id, f.name, geom)
-      const active = activeFieldIds.has(f.id)
       const layer = L.geoJSON(feature as GeoJSON.GeoJsonObject, {
         style: {
-          color: active ? '#3F8B4E' : '#9ca3af',
+          color: '#f97316',
           weight: 2,
-          fillColor: active ? '#3F8B4E' : '#9ca3af',
-          fillOpacity: active ? 0.3 : 0.12,
+          fillColor: '#f97316',
+          fillOpacity: 0.25,
         },
         onEachFeature: (_feat, lay) => {
           lay.on('click', () => onFieldClickRef.current(f.id))
@@ -87,15 +92,12 @@ export function MiniFieldsMap({ center, fields, activeFieldIds, onFieldClick }: 
   }, [ready, fields, activeFieldIds])
 
   return (
-    <div className="flex flex-col">
-      <div className="mb-1 text-xs font-medium text-fg-secondary">{i18n._(msg`Harita — bugünkü tarlalar`)}</div>
-      <div
-        id={contId}
-        ref={mapEl}
-        className="h-56 w-full overflow-hidden rounded-lg border border-border"
-        role="img"
-        aria-label="Satellite map with field outlines"
-      />
-    </div>
+    <div
+      id={contId}
+      ref={mapEl}
+      className="h-48 w-full overflow-hidden rounded-lg border border-border"
+      role="img"
+      aria-label={i18n._(msg`Tarla haritası`)}
+    />
   )
 }

@@ -1,7 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings -- Tailwind class strings, search param keys */
 import { msg, t } from '@lingui/macro'
 import { useRef, useState } from 'react'
-import { X } from 'lucide-react'
+import { LayoutGrid, List, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { ACTIVITY_IDS, ACTIVITY_LABEL, activityDbValue } from '@/features/tasks/activities'
 import type { TasksSearchState, TasksViewMode } from '@/features/tasks/tasks-search'
@@ -31,9 +31,10 @@ type Props = {
   fieldOpts: FieldRow[]
   peopleOpts: PersonRow[]
   onPatch: (partial: Partial<TasksSearchState>) => void
+  onCreate?: () => void
 }
 
-export function FilterBar({ search, fieldOpts, peopleOpts, onPatch }: Props) {
+export function FilterBar({ search, fieldOpts, peopleOpts, onPatch, onCreate }: Props) {
   const activeChips: { key: string; label: string; onClear: () => void }[] = []
 
   if (search.status) {
@@ -90,28 +91,28 @@ export function FilterBar({ search, fieldOpts, peopleOpts, onPatch }: Props) {
 
       {!search.status && (
         <PopoverChip
-          label={i18n._(msg`Durum`)}
+          label={`+ ${i18n._(msg`Durum`)}`}
           items={STATUSES.map((s) => ({ id: s, label: statusTr(s) }))}
           onSelect={(id) => onPatch({ status: id as Enums<'task_status'>, page: 0 })}
         />
       )}
       {!search.field && (
         <PopoverChip
-          label={i18n._(msg`Tarla`)}
+          label={`+ ${i18n._(msg`Tarla`)}`}
           items={fieldOpts.map((f) => ({ id: f.id, label: f.name }))}
           onSelect={(id) => onPatch({ field: id, page: 0 })}
         />
       )}
       {!search.assignee && (
         <PopoverChip
-          label={i18n._(msg`Kime`)}
+          label={`+ ${i18n._(msg`Kime`)}`}
           items={peopleOpts.map((p) => ({ id: p.id, label: p.full_name ?? '—' }))}
           onSelect={(id) => onPatch({ assignee: id, page: 0 })}
         />
       )}
       {!search.activity && (
         <PopoverChip
-          label={i18n._(msg`Aktivite`)}
+          label={`+ ${i18n._(msg`Aktivite`)}`}
           items={ACTIVITY_IDS.map((id) => ({ id: activityDbValue(id), label: i18n._(ACTIVITY_LABEL[id]) }))}
           onSelect={(id) => onPatch({ activity: id, page: 0 })}
         />
@@ -120,17 +121,26 @@ export function FilterBar({ search, fieldOpts, peopleOpts, onPatch }: Props) {
         <DateChip onApply={(from, to) => onPatch({ dueFrom: from || null, dueTo: to || null, page: 0 })} />
       )}
 
-      <div className="ml-auto flex gap-1.5">
-        <ViewButton
-          active={search.view === 'table'}
-          label={i18n._(msg`Tablo`)}
-          onClick={() => onPatch({ view: 'table' as TasksViewMode })}
-        />
-        <ViewButton
-          active={search.view === 'kanban'}
-          label={i18n._(msg`Pano`)}
-          onClick={() => onPatch({ view: 'kanban' as TasksViewMode })}
-        />
+      <div className="ml-auto flex items-center gap-2">
+        <div className="flex gap-1">
+          <ViewIconButton
+            active={search.view === 'table'}
+            icon={<List className="h-4 w-4" strokeWidth={1.75} />}
+            label={i18n._(msg`Tablo`)}
+            onClick={() => onPatch({ view: 'table' as TasksViewMode })}
+          />
+          <ViewIconButton
+            active={search.view === 'kanban'}
+            icon={<LayoutGrid className="h-4 w-4" strokeWidth={1.75} />}
+            label={i18n._(msg`Pano`)}
+            onClick={() => onPatch({ view: 'kanban' as TasksViewMode })}
+          />
+        </div>
+        {onCreate ? (
+          <Button type="button" size="sm" onClick={onCreate}>
+            {t`Yeni görev`}
+          </Button>
+        ) : null}
       </div>
     </div>
   )
@@ -262,20 +272,21 @@ function DateChip({ onApply }: { onApply: (from: string, to: string) => void }) 
   )
 }
 
-function ViewButton({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
+function ViewIconButton({ active, icon, label, onClick }: { active: boolean; icon: React.ReactNode; label: string; onClick: () => void }) {
   return (
     <button
       type="button"
       onClick={onClick}
       className={cn(
-        'h-[30px] rounded-[7px] px-3 text-[12px] font-medium transition-colors',
+        'inline-flex h-[30px] w-[30px] items-center justify-center rounded-[7px] transition-colors',
         active
           ? 'bg-orchard-50 text-orchard-700 border border-orchard-500/30'
           : 'border border-border bg-surface-0 text-fg-secondary hover:border-border-strong hover:text-fg',
       )}
       aria-pressed={active}
+      aria-label={label}
     >
-      {label}
+      {icon}
     </button>
   )
 }

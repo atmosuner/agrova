@@ -86,30 +86,9 @@ function TodayPage() {
     })()
   }, [city])
 
-  const todayLabel = useMemo(() => {
-    /* eslint-disable lingui/no-unlocalized-strings -- Intl format args + IANA tz */
-    return new Intl.DateTimeFormat('tr-TR', {
-      weekday: 'long',
-      day: 'numeric',
-      month: 'long',
-      year: 'numeric',
-      timeZone: 'Europe/Istanbul',
-    }).format(new Date())
-    /* eslint-enable lingui/no-unlocalized-strings */
-  }, [])
-
   return (
-    <div>
-      <div className="flex items-end justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-fg">{t`Bugün`}</h1>
-          <p className="mt-0.5 text-[13px] text-fg-muted">
-            {i18n._(msg`Özet — görevler, sorunlar ve tarlalar`)} · <span className="capitalize">{todayLabel}</span>
-          </p>
-        </div>
-      </div>
-
-      <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+    <div className="space-y-6">
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label={i18n._(msg`Açık görev (bugün)`)}
           value={isLoading ? null : data?.openTasksToday ?? 0}
@@ -175,29 +154,39 @@ function TodayPage() {
         </StatCardShell>
       </div>
 
-      <div className="mt-8 grid gap-6 xl:grid-cols-[1fr,22rem]">
-        <TodaysBoard
-          onOpenTask={(id) => {
-            setDetailTask(id)
-          }}
-        />
-        <div className="space-y-4">
-          {fieldsLoading ? (
-            <div className="h-64 animate-pulse rounded-xl bg-surface-1" />
-          ) : (
-            <Suspense
-              fallback={<div className="h-64 animate-pulse rounded-xl border border-border bg-surface-1" />}
-            >
-              <MiniFieldsMap
-                center={mapCenter}
-                fields={allFields ?? []}
-                activeFieldIds={activeSet}
-                onFieldClick={() => {
-                  void navigate({ to: '/fields' })
-                }}
-              />
-            </Suspense>
-          )}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="sm:col-span-2 lg:col-span-3">
+          <TodaysBoard
+            onOpenTask={(id) => {
+              setDetailTask(id)
+            }}
+          />
+        </div>
+        <div className="flex flex-col gap-3 sm:col-span-2 lg:col-span-1">
+          <section className="rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`Tarla haritası`)}>
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-sm font-semibold text-fg">{i18n._(msg`Tarla Haritası`)}</h2>
+              <Link to="/fields" className="text-xs font-medium text-orchard-600 hover:underline">
+                {t`Haritaya git`} →
+              </Link>
+            </div>
+            {fieldsLoading ? (
+              <div className="h-48 animate-pulse rounded-lg bg-surface-1" />
+            ) : (
+              <Suspense
+                fallback={<div className="h-48 animate-pulse rounded-lg bg-surface-1" />}
+              >
+                <MiniFieldsMap
+                  center={mapCenter}
+                  fields={allFields ?? []}
+                  activeFieldIds={activeSet}
+                  onFieldClick={() => {
+                    void navigate({ to: '/fields' })
+                  }}
+                />
+              </Suspense>
+            )}
+          </section>
           <DashboardActivityFeed />
         </div>
       </div>

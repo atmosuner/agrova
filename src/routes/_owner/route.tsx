@@ -126,7 +126,7 @@ function OwnerLayoutInner() {
       {/* Sidebar */}
       <aside
         className={cn(
-          'flex flex-col border-r border-border bg-surface-0 transition-[width] duration-200 ease-out',
+          'sticky top-0 flex h-dvh flex-col border-r border-border bg-surface-0 transition-[width] duration-200 ease-out',
           sidebarCollapsed ? 'w-16' : 'w-60',
         )}
         aria-label={i18n._(msg`Sahip navigasyonu`)}
@@ -134,7 +134,7 @@ function OwnerLayoutInner() {
         {/* Header: logo + operation name */}
         <div
           className={cn(
-            'flex h-14 shrink-0 items-center border-b border-border',
+            'flex h-12 shrink-0 items-center border-b border-border',
             sidebarCollapsed ? 'justify-center px-2' : 'gap-2.5 px-3',
           )}
         >
@@ -199,7 +199,7 @@ function OwnerLayoutInner() {
       {/* Main area */}
       <div className="flex min-w-0 flex-1 flex-col bg-canvas">
         {/* Topbar */}
-        <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-surface-0/90 px-4 backdrop-blur supports-[backdrop-filter]:bg-surface-0/80">
+        <header className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-3 border-b border-border bg-surface-0/90 px-4 backdrop-blur supports-[backdrop-filter]:bg-surface-0/80">
           <p className="text-[13px] font-semibold text-fg">{pageLabel}</p>
 
           <button
@@ -224,7 +224,7 @@ function OwnerLayoutInner() {
           </div>
         </header>
 
-        <main className="min-h-0 flex-1 p-6">
+        <main className="isolate min-h-0 flex-1 overflow-y-auto p-6">
           <Outlet />
         </main>
       </div>

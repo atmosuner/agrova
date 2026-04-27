@@ -3,6 +3,7 @@ import type { MessageDescriptor } from '@lingui/core'
 import { msg, t } from '@lingui/macro'
 import { format } from 'date-fns'
 import { tr as dateFnsTr } from 'date-fns/locale'
+import { X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IssueCategoryIcon } from '@/components/icons/issues/IssueCategoryIcon'
 import { Button } from '@/components/ui/button'
@@ -10,6 +11,7 @@ import { ISSUE_CATEGORY_ORDER, type IssueCategory } from '@/features/issues/cate
 import { signIssueObjectUrl } from '@/features/issues/sign-issue-media'
 import type { IssueListRow } from '@/features/issues/useIssuesQuery'
 import { i18n } from '@/lib/i18n'
+import { useOnClickOutside } from '@/lib/use-on-click-outside'
 import { cn } from '@/lib/utils'
 
 const CATEGORY_LABEL: Record<IssueCategory, MessageDescriptor> = {
@@ -119,128 +121,149 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center gap-2">
-        <FilterTab active={resolved === 'open'} onClick={() => setResolved('open')} label={t`Açık`} />
-        <FilterTab active={resolved === 'all'} onClick={() => setResolved('all')} label={t`Tümü`} />
-        <FilterTab active={resolved === 'resolved'} onClick={() => setResolved('resolved')} label={t`Çözüldü`} />
+    <div className="space-y-4">
+      {/* Filter bar — same ActiveChip / PopoverChip pattern as Tasks */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
+        {resolved !== 'all' && (
+          <ActiveChip
+            label={`${i18n._(msg`Durum`)}: ${resolved === 'open' ? i18n._(msg`Açık`) : i18n._(msg`Çözüldü`)}`}
+            onClear={() => setResolved('all')}
+          />
+        )}
+        {category !== 'all' && (
+          <ActiveChip
+            label={`${i18n._(msg`Kategori`)}: ${i18n._(CATEGORY_LABEL[category])}`}
+            onClear={() => setCategory('all')}
+          />
+        )}
+        {fieldId !== 'all' && (
+          <ActiveChip
+            label={`${i18n._(msg`Tarla`)}: ${fieldOptions.find(([id]) => id === fieldId)?.[1] ?? fieldId}`}
+            onClear={() => setFieldId('all')}
+          />
+        )}
 
-        <div className="mx-1 h-5 w-px bg-border-strong" aria-hidden />
+        {(resolved !== 'all' || category !== 'all' || fieldId !== 'all') && (
+          <div className="mx-0.5 h-5 w-px bg-border-strong" aria-hidden />
+        )}
 
-        <select
-          className="h-[30px] rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary"
-          value={category}
-          onChange={(e) => setCategory(e.target.value as IssueCategory | 'all')}
-          aria-label={t`Kategori filtresi`}
-        >
-          <option value="all">{t`Tüm kategoriler`}</option>
-          {ISSUE_CATEGORY_ORDER.map((c) => (
-            <option key={c} value={c}>
-              {i18n._(CATEGORY_LABEL[c])}
-            </option>
-          ))}
-        </select>
-
-        {fieldOptions.length > 1 && (
-          <select
-            className="h-[30px] rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary"
-            value={fieldId}
-            onChange={(e) => setFieldId(e.target.value as string | 'all')}
-            aria-label={t`Tarla filtresi`}
-          >
-            <option value="all">{t`Tüm tarlalar`}</option>
-            {fieldOptions.map(([id, name]) => (
-              <option key={id} value={id}>
-                {name}
-              </option>
-            ))}
-          </select>
+        {resolved === 'all' && (
+          <PopoverChip
+            label={`+ ${i18n._(msg`Durum`)}`}
+            items={[
+              { id: 'open', label: i18n._(msg`Açık`) },
+              { id: 'resolved', label: i18n._(msg`Çözüldü`) },
+            ]}
+            onSelect={(id) => setResolved(id as ResolvedFilter)}
+          />
+        )}
+        {category === 'all' && (
+          <PopoverChip
+            label={`+ ${i18n._(msg`Kategori`)}`}
+            items={ISSUE_CATEGORY_ORDER.map((c) => ({ id: c, label: i18n._(CATEGORY_LABEL[c]) }))}
+            onSelect={(id) => setCategory(id as IssueCategory)}
+          />
+        )}
+        {fieldId === 'all' && fieldOptions.length > 0 && (
+          <PopoverChip
+            label={`+ ${i18n._(msg`Tarla`)}`}
+            items={fieldOptions.map(([id, name]) => ({ id, label: name }))}
+            onSelect={(id) => setFieldId(id)}
+          />
         )}
       </div>
 
-      <ul className="flex flex-col gap-3" aria-live="polite">
-        {filtered.map((r) => (
-          <li
-            key={r.id}
-            ref={r.id === highlightId ? highlightRef : undefined}
-            className={cn(
-              'rounded-xl border border-border bg-surface-0 p-4',
-              r.id === highlightId && 'ring-2 ring-orchard-500 ring-offset-2',
-            )}
-          >
-            <div className="flex flex-wrap items-start gap-3">
-              <button
-                type="button"
-                className={cn(
-                  'relative h-20 w-20 shrink-0 overflow-hidden rounded-lg bg-surface-1',
-                  thumbUrls[r.id] ? 'cursor-zoom-in' : 'cursor-default',
-                )}
-                onClick={() => {
-                  if (thumbUrls[r.id]) {
-                    setLightbox(thumbUrls[r.id]!)
-                  }
-                }}
-                aria-label={t`Fotoğrafı büyüt`}
-              >
-                {thumbUrls[r.id] ? (
-                  <img src={thumbUrls[r.id]} alt={t`Sorun fotoğrafı`} className="h-full w-full object-cover" />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center text-xs text-fg-muted">
-                    {r.photo_url ? t`Yükleniyor…` : t`Foto bekleniyor`}
-                  </div>
-                )}
-              </button>
-              <div className="min-w-0 flex-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <IssueCategoryIcon category={r.category} className="h-6 w-6 text-orchard-600" />
-                  <span className="font-medium text-fg">{i18n._(CATEGORY_LABEL[r.category])}</span>
-                  {r.resolved_at ? (
-                    <span className="rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-medium text-emerald-900 dark:bg-emerald-900/40 dark:text-emerald-100">
-                      {t`Çözüldü`}
-                    </span>
-                  ) : (
-                    <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-900 dark:bg-amber-900/40 dark:text-amber-100">
-                      {t`Açık`}
-                    </span>
+      {/* Issue cards inside a bordered container */}
+      <div className="overflow-hidden rounded-xl border border-border">
+        <ul className="divide-y divide-border" aria-live="polite">
+          {filtered.map((r) => (
+            <li
+              key={r.id}
+              ref={r.id === highlightId ? highlightRef : undefined}
+              className={cn(
+                'bg-surface-0 px-5 py-4',
+                r.id === highlightId && 'ring-2 ring-inset ring-orchard-500',
+              )}
+            >
+              <div className="flex items-start gap-4">
+                <button
+                  type="button"
+                  className={cn(
+                    'relative h-16 w-16 shrink-0 overflow-hidden rounded-lg bg-surface-1',
+                    thumbUrls[r.id] ? 'cursor-zoom-in' : 'cursor-default',
                   )}
+                  onClick={() => {
+                    if (thumbUrls[r.id]) {
+                      setLightbox(thumbUrls[r.id]!)
+                    }
+                  }}
+                  aria-label={t`Fotoğrafı büyüt`}
+                >
+                  {thumbUrls[r.id] ? (
+                    <img src={thumbUrls[r.id]} alt={t`Sorun fotoğrafı`} className="h-full w-full object-cover" />
+                  ) : (
+                    <div className="flex h-full w-full items-center justify-center text-[10px] text-fg-muted">
+                      {r.photo_url ? t`Yükleniyor…` : t`Foto yok`}
+                    </div>
+                  )}
+                </button>
+
+                <div className="min-w-0 flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <IssueCategoryIcon category={r.category} className="h-5 w-5 text-orchard-600" />
+                    <span className="text-[13px] font-medium text-fg">{i18n._(CATEGORY_LABEL[r.category])}</span>
+                    {r.resolved_at ? (
+                      <span className="inline-flex items-center rounded-full bg-status-done/10 px-2 py-0.5 text-[11px] font-medium text-status-done">
+                        {t`Çözüldü`}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center rounded-full bg-status-blocked/10 px-2 py-0.5 text-[11px] font-medium text-status-blocked">
+                        {t`Açık`}
+                      </span>
+                    )}
+                  </div>
+                  <div className="mt-1.5 flex flex-wrap items-center gap-x-4 gap-y-0.5 text-[12px] text-fg-secondary">
+                    <span>{r.reporter?.full_name ?? '\u2014'}</span>
+                    <span>{r.field?.name ?? '\u2014'}</span>
+                    <span className="tabular-nums text-fg-muted">
+                      {format(new Date(r.created_at), 'd MMM yyyy, HH:mm', { locale: dateFnsTr })}
+                    </span>
+                  </div>
+                  {voiceUrls[r.id] ? (
+                    <audio src={voiceUrls[r.id]} controls className="mt-2 h-8 w-full max-w-xs" />
+                  ) : null}
                 </div>
-                <p className="mt-1 text-sm text-fg-secondary">
-                  {t`Bildiren`}: {r.reporter?.full_name ?? '—'}
-                </p>
-                <p className="text-sm text-fg-secondary">
-                  {t`Tarla`}: {r.field?.name ?? '—'}
-                </p>
-                <p className="text-xs text-fg-muted">{format(new Date(r.created_at), 'PPp', { locale: dateFnsTr })}</p>
-                {voiceUrls[r.id] ? (
-                  <audio src={voiceUrls[r.id]} controls className="mt-2 w-full max-w-sm" />
+
+                {onResolve && !r.resolved_at ? (
+                  <Button
+                    type="button"
+                    variant="secondary"
+                    size="sm"
+                    className="shrink-0"
+                    disabled={resolvingId === r.id}
+                    onClick={() => {
+                      void (async () => {
+                        setResolvingId(r.id)
+                        try {
+                          await onResolve(r.id)
+                        } finally {
+                          setResolvingId((cur) => (cur === r.id ? null : cur))
+                        }
+                      })()
+                    }}
+                  >
+                    {resolvingId === r.id ? t`Kaydediliyor…` : t`Çözüldü`}
+                  </Button>
                 ) : null}
               </div>
-            </div>
-            {onResolve && !r.resolved_at ? (
-              <Button
-                type="button"
-                variant="secondary"
-                className="mt-3"
-                disabled={resolvingId === r.id}
-                onClick={() => {
-                  void (async () => {
-                    setResolvingId(r.id)
-                    try {
-                      await onResolve(r.id)
-                    } finally {
-                      setResolvingId((cur) => (cur === r.id ? null : cur))
-                    }
-                  })()
-                }}
-              >
-                {resolvingId === r.id ? t`Kaydediliyor…` : t`Çözüldü olarak işaretle`}
-              </Button>
-            ) : null}
-          </li>
-        ))}
-      </ul>
+            </li>
+          ))}
+        </ul>
 
-      {filtered.length === 0 ? <p className="text-sm text-fg-secondary">{t`Gösterilecek sorun yok.`}</p> : null}
+        {filtered.length === 0 ? (
+          <p className="px-5 py-8 text-center text-sm text-fg-secondary">{t`Gösterilecek sorun yok.`}</p>
+        ) : null}
+      </div>
 
       {lightbox ? (
         <button
@@ -256,20 +279,73 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
   )
 }
 
-function FilterTab({ active, label, onClick }: { active: boolean; label: string; onClick: () => void }) {
+function ActiveChip({ label, onClear }: { label: string; onClear: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={cn(
-        'h-[30px] rounded-[7px] px-3 text-[12px] font-medium transition-colors',
-        active
-          ? 'border border-border-strong bg-surface-1 text-fg'
-          : 'border border-transparent text-fg-secondary hover:text-fg',
+    <span className="inline-flex h-[30px] items-center gap-1 rounded-[7px] border border-orchard-500/30 bg-orchard-50 px-2.5 text-[12px] font-medium text-orchard-700">
+      <span className="truncate">{label}</span>
+      <button
+        type="button"
+        onClick={onClear}
+        className="ml-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded text-fg-muted hover:text-fg"
+        aria-label={t`Filtreyi kaldır`}
+      >
+        <X className="h-3 w-3" strokeWidth={2} />
+      </button>
+    </span>
+  )
+}
+
+function PopoverChip({
+  label,
+  items,
+  onSelect,
+}: {
+  label: string
+  items: { id: string; label: string }[]
+  onSelect: (id: string) => void
+}) {
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+  useOnClickOutside(ref, () => setOpen(false))
+
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        className="inline-flex h-[30px] items-center gap-1 rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary hover:border-border-strong hover:text-fg"
+        aria-expanded={open}
+        aria-haspopup="listbox"
+      >
+        {label}
+        <span className="text-fg-faint" aria-hidden>▾</span>
+      </button>
+      {open && (
+        <div
+          className="absolute left-0 z-50 mt-1 max-h-64 w-48 overflow-y-auto rounded-lg border border-border-strong bg-surface-0 py-1 ring-[3px] ring-[rgba(12,18,16,0.04)]"
+          role="listbox"
+        >
+          {items.length === 0 ? (
+            <p className="px-3 py-2 text-[12px] text-fg-muted">{i18n._(msg`Seçenek yok`)}</p>
+          ) : (
+            items.map((item) => (
+              <button
+                key={item.id}
+                type="button"
+                role="option"
+                aria-selected={false}
+                className="flex w-full items-center px-3 py-1.5 text-left text-[13px] text-fg hover:bg-surface-1"
+                onClick={() => {
+                  onSelect(item.id)
+                  setOpen(false)
+                }}
+              >
+                {item.label}
+              </button>
+            ))
+          )}
+        </div>
       )}
-      aria-pressed={active}
-    >
-      {label}
-    </button>
+    </div>
   )
 }

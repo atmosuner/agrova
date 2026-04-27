@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { fieldBoundaryToGeometry, fieldToPolygonFeature, toGeoJsonFeature } from './boundary-geojson'
-import type { Tables } from '@/types/db'
+import { fieldBoundaryToGeometry, fieldToPolygonFeature, toGeoJsonFeature, type FieldWithGeo } from './boundary-geojson'
 
 const poly: GeoJSON.Polygon = {
   type: 'Polygon',
@@ -71,16 +70,16 @@ describe('toGeoJsonFeature', () => {
 })
 
 describe('fieldToPolygonFeature', () => {
-  it('returns null when boundary is missing', () => {
-    const field = { boundary: null } as Tables<'fields'>
+  it('returns null when boundary_geojson is missing', () => {
+    const field = { boundary_geojson: null } as FieldWithGeo
     expect(fieldToPolygonFeature(field)).toBeNull()
   })
 
-  it('returns Feature when boundary is valid', () => {
+  it('returns Feature when boundary_geojson is valid', () => {
     const field = {
       id: 'f1',
-      boundary: poly,
-    } as Tables<'fields'>
+      boundary_geojson: poly as unknown as Record<string, unknown>,
+    } as FieldWithGeo
     const f = fieldToPolygonFeature(field)
     expect(f?.type).toBe('Feature')
     expect(f?.properties).toEqual({ id: 'f1' })

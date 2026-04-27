@@ -1,5 +1,7 @@
 import { msg, t } from '@lingui/macro'
 import { clsx } from 'clsx'
+import { cn } from '@/lib/utils'
+import { X } from 'lucide-react'
 import { useCallback, useEffect, useId, useRef, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -37,6 +39,15 @@ const emptyForm = (): EquipmentFormValues => ({
 const b = { sm: 'sm', out: 'outline', btn: 'button', def: 'default', sub: 'submit' } as const
 /* eslint-enable lingui/no-unlocalized-strings */
 
+/* eslint-disable lingui/no-unlocalized-strings -- Tailwind tokens + emoji */
+const CAT_ICON: Record<Category, { emoji: string; bg: string }> = {
+  VEHICLE: { emoji: '\uD83D\uDE9C', bg: 'bg-blue-100 dark:bg-blue-900/30' },
+  TOOL: { emoji: '\uD83D\uDD27', bg: 'bg-amber-100 dark:bg-amber-900/30' },
+  CHEMICAL: { emoji: '\uD83E\uDDEA', bg: 'bg-emerald-100 dark:bg-emerald-900/30' },
+  CRATE: { emoji: '\uD83D\uDCE6', bg: 'bg-purple-100 dark:bg-purple-900/30' },
+}
+/* eslint-enable lingui/no-unlocalized-strings */
+
 export const Route = createFileRoute('/_owner/equipment')({
   validateSearch: (search) => parseEquipmentSearch(search as Record<string, unknown>),
   component: EquipmentPage,
@@ -53,9 +64,12 @@ function EquipmentPage() {
   const [usageFor, setUsageFor] = useState<Row | null>(null)
   const [form, setForm] = useState<EquipmentFormValues>(emptyForm)
   const [formError, setFormError] = useState<string | null>(null)
+  const [archiveTarget, setArchiveTarget] = useState<Row | null>(null)
   const dialogRef = useRef<HTMLDialogElement>(null)
+  const archiveRef = useRef<HTMLDialogElement>(null)
   const titleId = useId()
   const descId = useId()
+  const archiveTitleId = useId()
   const cat: Category = catFromUrl
 
   const load = useCallback(async () => {
@@ -184,110 +198,128 @@ function EquipmentPage() {
     downloadEquipmentCsv(data ?? [])
   }
 
-  async function archiveRow(r: Row) {
-    if (!window.confirm(i18n._(msg`Bu öğeyi arşivlemek istediğinize emin misiniz?`))) {
-      return
-    }
+  function openArchiveEquip(r: Row) {
+    setArchiveTarget(r)
+    requestAnimationFrame(() => archiveRef.current?.showModal())
+  }
+
+  function closeArchiveEquip() {
+    archiveRef.current?.close()
+    setArchiveTarget(null)
+  }
+
+  async function confirmArchiveEquip() {
+    if (!archiveTarget) return
     setSaving(true)
     /* eslint-disable lingui/no-unlocalized-strings -- PostgREST */
-    const { error } = await supabase.from('equipment').update({ active: false }).eq('id', r.id)
+    const { error } = await supabase.from('equipment').update({ active: false }).eq('id', archiveTarget.id)
     /* eslint-enable lingui/no-unlocalized-strings */
     setSaving(false)
     if (error) {
       setErr(error.message)
       return
     }
+    closeArchiveEquip()
     await load()
   }
 
-  return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Ekipman`}</h1>
-      <p className="mt-1 text-fg-secondary">{t`Araçlar, aletler, kimyasallar ve kasalar.`}</p>
+  const catLabel = i18n._((TABS.find((x) => x.cat === cat) ?? TABS[0]!).label)
 
-      <div className="mt-4 flex gap-1 border-b border-border">
+  return (
+    <div className="space-y-4">
+      {/* Toolbar — matches Tasks FilterBar */}
+      <div className="mb-4 flex flex-wrap items-center gap-2">
         {TABS.map((tab) => (
           <Link
             key={tab.cat}
             to="/equipment"
             search={{ cat: tab.cat } as { cat: Category }}
             className={clsx(
-              'px-3 py-2 text-[13px] font-medium transition-colors',
+              'inline-flex h-[30px] items-center rounded-[7px] px-2.5 text-[12px] font-medium transition-colors',
               tab.cat === cat
-                ? 'border-b-2 border-orchard-500 text-fg'
-                : 'text-fg-muted hover:text-fg',
+                ? 'border border-orchard-500/30 bg-orchard-50 text-orchard-700'
+                : 'border border-border bg-surface-0 text-fg-secondary hover:border-border-strong hover:text-fg',
             )}
           >
             {i18n._(tab.label)}
           </Link>
         ))}
+
+        <div className="mx-0.5 h-5 w-px bg-border-strong" aria-hidden />
+
+        <button
+          type="button"
+          onClick={() => setShowArchived((v) => !v)}
+          className={cn(
+            'inline-flex h-[30px] items-center rounded-[7px] border px-2.5 text-[12px] font-medium transition-colors',
+            showArchived
+              ? 'border-orchard-500/30 bg-orchard-50 text-orchard-700 hover:bg-orchard-100'
+              : 'border-border bg-surface-0 text-fg-secondary hover:border-border-strong hover:text-fg',
+          )}
+        >
+          {t`Arşivlenenler`}
+          {showArchived && <X className="ml-1 h-3 w-3" />}
+        </button>
+
+        <div className="ml-auto flex items-center gap-2">
+          <Button type={b.btn} variant={b.out} size={b.sm} onClick={() => void exportAllEquipment()} disabled={saving || loading}>
+            {t`CSV`}
+          </Button>
+          <Button type={b.btn} size={b.sm} onClick={openAdd} disabled={saving || loading}>
+            {t`+ Ekle`}
+          </Button>
+        </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-3">
-        <Button type={b.btn} onClick={() => void exportAllEquipment()} disabled={saving || loading} variant={b.out}>
-          {t`CSV indir`}
-        </Button>
-        <Button type={b.btn} onClick={openAdd} disabled={saving || loading} variant={b.def}>
-          {t`Ekle`}
-        </Button>
-        <label className="inline-flex items-center gap-2 text-sm text-fg-secondary">
-          <input
-            type="checkbox"
-            className="rounded border-border"
-            checked={showArchived}
-            onChange={(e) => setShowArchived(e.target.checked)}
-          />
-          {t`Arşivlenenleri göster`}
-        </label>
+      {err ? <p className="text-sm text-harvest-600">{err}</p> : null}
+
+      {/* Equipment list */}
+      <div className="overflow-hidden rounded-xl border border-border">
+        {loading ? (
+          <p className="px-5 py-8 text-center text-sm text-fg-secondary">{t`Yükleniyor…`}</p>
+        ) : rows.length === 0 ? (
+          <p className="px-5 py-8 text-center text-sm text-fg-secondary">{t`Gösterilecek ekipman yok.`}</p>
+        ) : (
+          <ul className="divide-y divide-border">
+            {rows.map((r) => (
+              <li key={r.id} className="flex items-center gap-3 bg-surface-0 px-5 py-3.5 hover:bg-surface-1/50">
+                <span className={clsx('inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base', CAT_ICON[cat].bg)}>
+                  {CAT_ICON[cat].emoji}
+                </span>
+                <button
+                  type="button"
+                  className="min-w-0 flex-1 cursor-pointer text-left"
+                  onClick={() => setUsageFor(r)}
+                >
+                  <span className="text-[13px] font-medium text-fg">{r.name}</span>
+                  {r.notes ? <p className="text-[12px] text-fg-muted">{r.notes}</p> : null}
+                  {showArchived && !r.active ? (
+                    <span className="text-[11px] text-fg-muted">{t`Arşivlendi`}</span>
+                  ) : null}
+                </button>
+                {r.active ? (
+                  <span className="inline-flex items-center gap-1.5">
+                    <Button type={b.btn} size={b.sm} variant={b.out} onClick={() => setUsageFor(r)} disabled={saving}>
+                      {t`Kullanım`}
+                    </Button>
+                    <Button type={b.btn} size={b.sm} variant={b.out} onClick={() => openEdit(r)} disabled={saving}>
+                      {t`Düzenle`}
+                    </Button>
+                    <Button type={b.btn} size={b.sm} variant={b.out} onClick={() => openArchiveEquip(r)} disabled={saving}>
+                      {t`Arşivle`}
+                    </Button>
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
-      {err ? <p className="mt-2 text-sm text-harvest-600">{err}</p> : null}
-      {loading ? <p className="mt-2 text-sm text-fg-secondary">{t`Yükleniyor…`}</p> : null}
 
-      <ul className="mt-3 divide-y divide-border">
-        {rows.map((r) => (
-          <li key={r.id} className="flex flex-wrap items-baseline justify-between gap-2 py-2.5 text-sm">
-            <button
-              type="button"
-              className="min-w-0 flex-1 cursor-pointer rounded text-left"
-              onClick={() => setUsageFor(r)}
-            >
-              <span className="font-medium text-fg">{r.name}</span>
-              {r.notes ? <p className="text-[12px] text-fg-muted">{r.notes}</p> : null}
-              {showArchived && !r.active ? (
-                <span className="text-[11px] text-fg-muted">{t`arşivlenmiş`}</span>
-              ) : null}
-            </button>
-            <span className="inline-flex flex-wrap justify-end gap-2">
-              {r.active ? (
-                <>
-                  <Button
-                    type={b.btn}
-                    size={b.sm}
-                    variant={b.out}
-                    onClick={() => openEdit(r)}
-                    disabled={saving}
-                  >
-                    {t`Düzenle`}
-                  </Button>
-                  <Button
-                    type={b.btn}
-                    size={b.sm}
-                    variant={b.out}
-                    onClick={() => void archiveRow(r)}
-                    disabled={saving}
-                  >
-                    {t`Arşivle`}
-                  </Button>
-                </>
-              ) : null}
-            </span>
-          </li>
-        ))}
-      </ul>
-
+      {/* ── Add / Edit dialog ── */}
       <dialog
         ref={dialogRef}
-        className="m-auto max-w-md rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
+        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,28rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
         aria-labelledby={titleId}
         aria-describedby={descId}
         aria-modal="true"
@@ -296,43 +328,96 @@ function EquipmentPage() {
       >
         <form
           onSubmit={(e) => void onSubmit(e)}
-          className="space-y-3 p-6"
+          className="flex flex-col gap-4 p-5"
           onClick={(e) => e.stopPropagation()}
         >
-          <h2 id={titleId} className="text-[18px] font-semibold text-fg">
-            {modal?.type === 'add' ? t`Yeni ekipman` : t`Ekipmanı düzenle`}
-          </h2>
-          <p id={descId} className="text-[13px] text-fg-secondary">
-            {i18n._((TABS.find((x) => x.cat === cat) ?? TABS[0]!).label)}
-          </p>
-          <label className="block text-[12px] font-medium text-fg-muted">
-            {t`Ad`} *
+          <div className="flex items-start justify-between">
+            <div>
+              <h2 id={titleId} className="text-lg font-semibold text-fg">
+                {modal?.type === 'add' ? t`Yeni ekipman` : t`Ekipmanı düzenle`}
+              </h2>
+              <p id={descId} className="mt-0.5 text-[13px] text-fg-secondary">
+                {catLabel} {t`kategorisi`}
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={closeModal}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full text-fg-muted transition-colors hover:bg-surface-1 hover:text-fg"
+              aria-label={t`Kapat`}
+            >
+              <X className="h-4 w-4" strokeWidth={2} />
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-[13px] font-medium text-fg" htmlFor="eq-name">
+              {t`Ad`}
+            </label>
             <input
-              className={clsx(formFieldClassName, 'mt-0.5')}
+              id="eq-name"
+              className={formFieldClassName}
               value={form.name}
               onChange={(e) => setForm((f) => ({ ...f, name: e.target.value }))}
               required
+              autoFocus
             />
-          </label>
-          <label className="block text-[12px] font-medium text-fg-muted">
-            {t`Notlar`}
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-[13px] font-medium text-fg" htmlFor="eq-notes">
+              {t`Notlar`}
+            </label>
             <textarea
-              className={clsx(formFieldClassName, 'mt-0.5 min-h-[3rem]')}
+              id="eq-notes"
+              className={clsx(formFieldClassName, 'min-h-[3rem]')}
+              placeholder={i18n._(msg`İsteğe bağlı…`)}
               value={form.notes}
               onChange={(e) => setForm((f) => ({ ...f, notes: e.target.value }))}
             />
-          </label>
+          </div>
+
           {formError ? <p className="text-sm text-harvest-600">{formError}</p> : null}
-          <div className="flex flex-wrap justify-end gap-2 pt-1">
+
+          <div className="flex justify-end gap-2 border-t border-border pt-3">
             <Button type={b.btn} variant={b.out} onClick={closeModal} disabled={saving}>
               {t`İptal`}
             </Button>
             <Button type={b.sub} disabled={saving}>
-              {t`Kaydet`}
+              {saving ? t`Kaydediliyor…` : t`Kaydet`}
             </Button>
           </div>
         </form>
       </dialog>
+
+      {/* ── Archive confirmation dialog ── */}
+      <dialog
+        ref={archiveRef}
+        className="fixed left-1/2 top-1/2 w-[min(100%-2rem,26rem)] -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-surface-0 p-0 backdrop:bg-[rgba(12,18,16,0.55)]"
+        aria-labelledby={archiveTitleId}
+        onClose={() => setArchiveTarget(null)}
+      >
+        {archiveTarget ? (
+          <div className="flex flex-col gap-4 p-5">
+            <h2 id={archiveTitleId} className="text-lg font-semibold text-fg">
+              {t`Ekipmanı arşivle`}
+            </h2>
+            <p className="text-[13px] text-fg-secondary">
+              <strong className="font-medium text-fg">{archiveTarget.name}</strong>{' '}
+              {t`arşivlenecek. Kullanım kayıtları korunur. Arşivlenenleri göster seçeneğiyle tekrar görüntülenebilir.`}
+            </p>
+            <div className="flex justify-end gap-2 border-t border-border pt-3">
+              <Button type={b.btn} variant={b.out} onClick={closeArchiveEquip} disabled={saving}>
+                {t`İptal`}
+              </Button>
+              <Button type={b.btn} onClick={() => void confirmArchiveEquip()} disabled={saving}>
+                {saving ? t`Kaydediliyor…` : t`Arşivle`}
+              </Button>
+            </div>
+          </div>
+        ) : null}
+      </dialog>
+
       {usageFor ? <EquipmentUsageSheet equipment={usageFor} onClose={() => setUsageFor(null)} /> : null}
     </div>
   )

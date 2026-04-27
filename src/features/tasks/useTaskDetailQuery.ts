@@ -4,7 +4,7 @@ import { supabase } from '@/lib/supabase'
 import type { Enums, Tables } from '@/types/db'
 
 export type TaskDetail = Tables<'tasks'> & {
-  fields: { id: string; name: string } | null
+  fields: { id: string; name: string; crop: string } | null
   assignee: { id: string; full_name: string } | null
   task_equipment: TaskEquipmentRow[]
 }
@@ -31,7 +31,7 @@ export function useTaskDetailQuery(taskId: string | null) {
       const { data, error } = await supabase
         .from('tasks')
         .select(
-          `*, fields ( id, name ), assignee:people!tasks_assignee_id_fkey ( id, full_name ),
+          `*, fields ( id, name, crop ), assignee:people!tasks_assignee_id_fkey ( id, full_name ),
           task_equipment ( equipment_id, attached_at, equipment:equipment!task_equipment_equipment_id_fkey ( id, name, category, active ) )`,
         )
         .eq('id', taskId)

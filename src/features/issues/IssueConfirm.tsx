@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react'
 import { IssueCategoryIcon } from '@/components/icons/issues/IssueCategoryIcon'
 import type { IssueCategory } from '@/features/issues/categories'
 import { mapIssueSubmitError } from '@/features/issues/map-issue-submit-error'
-import { WorkerButton } from '@/components/ui/WorkerButton'
 import { Button } from '@/components/ui/button'
 import { compressImageToJpeg } from '@/lib/image-compress'
 import { i18n } from '@/lib/i18n'
@@ -55,9 +54,21 @@ export function IssueConfirm({ category, file, onRetake, onSubmit, voiceSlot }: 
 
       {voiceSlot}
 
-      <div className="flex flex-col gap-2">
-        <WorkerButton
+      <div className="flex gap-2">
+        <Button
+          type="button"
+          // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA variant token
+          variant="secondary"
+          className="h-14 flex-1 rounded-xl text-[15px] font-medium"
           disabled={busy}
+          onClick={onRetake}
+        >
+          {t`Tekrar Çek`}
+        </Button>
+        <button
+          type="button"
+          disabled={busy}
+          className="h-14 flex-[2] rounded-xl bg-orchard-500 text-base font-semibold text-white transition hover:bg-orchard-700 active:scale-[0.98] disabled:opacity-60"
           onClick={async () => {
             setErr(null)
             setBusy(true)
@@ -82,11 +93,7 @@ export function IssueConfirm({ category, file, onRetake, onSubmit, voiceSlot }: 
           }}
         >
           {busy ? t`Gönderiliyor…` : t`Gönder`}
-        </WorkerButton>
-        {/* eslint-disable-next-line lingui/no-unlocalized-strings -- CVA variant token, not user copy */}
-        <Button type="button" variant="secondary" className="h-12 w-full rounded-full" disabled={busy} onClick={onRetake}>
-          {t`Yeniden çek`}
-        </Button>
+        </button>
       </div>
     </div>
   )

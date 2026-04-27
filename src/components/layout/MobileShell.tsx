@@ -1,5 +1,6 @@
 /* eslint-disable lingui/no-unlocalized-strings -- Intl format args + IANA tz */
 import { msg, t } from '@lingui/macro'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { Link, Outlet, useRouterState } from '@tanstack/react-router'
 import { useEffect, useRef, useSyncExternalStore } from 'react'
 import { CheckCircle2, ClipboardList, User } from 'lucide-react'
@@ -7,6 +8,7 @@ import { InstallPrompt } from '@/components/InstallPrompt'
 import { SyncIndicator } from '@/components/SyncIndicator'
 import { bootstrapReadCachesForWorker } from '@/features/bootstrap/bootstrap-cache'
 import { firstNameFromFull, useMyPersonQuery } from '@/features/people/useMyPersonQuery'
+import { db } from '@/lib/db'
 import { drainOutbox } from '@/lib/sync'
 import { i18n } from '@/lib/i18n'
 import { applyThemeToDocument, getStoredAgrovaTheme } from '@/lib/theme'
@@ -43,6 +45,7 @@ export function MobileShell() {
   const { data: me, isSuccess } = useMyPersonQuery()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
   const isOnline = useSyncExternalStore(subscribeOnline, getOnline)
+  const pending = useLiveQuery(() => db.outbox.count(), [], 0) ?? 0
   const themeBeforeMobileRef = useRef<ReturnType<typeof getStoredAgrovaTheme> | null>(null)
 
   useEffect(() => {
@@ -86,11 +89,16 @@ export function MobileShell() {
       {/* Offline banner */}
       {!isOnline && (
         <div
-          className="border-b border-border bg-surface-2 px-4 py-2 text-[13px] text-fg-secondary"
+          className="flex items-center gap-2 border-b border-border bg-surface-2 px-4 py-2 text-[13px] text-fg-secondary"
           role="status"
           aria-live="polite"
         >
-          {t`Çevrimdışısınız. Değişiklikler bağlantı gelince gönderilecek.`}
+          <span className="flex-1">{t`Çevrimdışısınız — işiniz kaydediliyor`}</span>
+          {pending > 0 && (
+            <span className="inline-flex items-center rounded-full bg-surface-1 px-2 py-0.5 text-[11px] font-semibold text-fg-muted">
+              {pending} {t`bekliyor`}
+            </span>
+          )}
         </div>
       )}
 

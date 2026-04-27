@@ -2,7 +2,7 @@
 import { t } from '@lingui/macro'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { useEffect, useId, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { FilterBar } from '@/features/tasks/FilterBar'
 import { TaskCreateModal } from '@/features/tasks/TaskCreateModal'
@@ -24,7 +24,7 @@ function TasksPage() {
   const search = Route.useSearch() as TasksSearchState
   const navigate = Route.useNavigate()
   const [createOpen, setCreateOpen] = useState(false)
-  const headingId = useId()
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
 
   const { data: listData, isLoading, error: listError } = useTasksQuery({ search })
   const { data: fieldOpts = [] } = useFieldsQuery()
@@ -47,28 +47,18 @@ function TasksPage() {
   }, [listData, navigate, search, search.page])
 
   function patchSearch(partial: Partial<TasksSearchState>) {
+    setSelectedIds(new Set())
     void navigate({ to: '/tasks', search: { ...search, ...partial } })
   }
 
   return (
     <div>
-      <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <h1 id={headingId} className="text-2xl font-semibold tracking-tight text-fg">
-            {t`Görevler`}
-          </h1>
-          <p className="mt-1 text-fg-secondary">{t`Tarlalar genelinde iş planla ve ata.`}</p>
-        </div>
-        <Button type="button" onClick={() => setCreateOpen(true)}>
-          {t`Yeni görev`}
-        </Button>
-      </div>
-
       <FilterBar
         search={search}
         fieldOpts={fieldOpts}
         peopleOpts={peopleOpts}
         onPatch={patchSearch}
+        onCreate={() => setCreateOpen(true)}
       />
 
       {listError ? (
@@ -78,6 +68,8 @@ function TasksPage() {
       {!isLoading && !listError && search.view === 'table' ? (
         <TasksTable
           rows={listData?.rows ?? []}
+          selectedIds={selectedIds}
+          onSelectionChange={setSelectedIds}
           onRowClick={(id) => patchSearch({ task: id })}
         />
       ) : null}

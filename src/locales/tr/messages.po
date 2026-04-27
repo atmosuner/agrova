@@ -13,7 +13,6 @@ msgstr ""
 "Language-Team: \n"
 "Plural-Forms: \n"
 
-#: src/features/dashboard/TodaysBoard.tsx:32
 #: src/routes/_owner/fields.tsx:217
 msgid "—"
 msgstr "—"
@@ -167,7 +166,7 @@ msgstr "Aktarma başarısız."
 msgid "Aktif tarla (bugün)"
 msgstr "Aktif tarla (bugün)"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:29
+#: src/features/dashboard/DashboardActivityFeed.tsx:36
 #: src/features/tasks/FilterBar.tsx:66
 #: src/features/tasks/FilterBar.tsx:114
 #: src/features/tasks/TasksTable.tsx:33
@@ -451,8 +450,7 @@ msgstr "Bitiş tarihi geçmişte olamaz."
 msgid "Bitki sayısı"
 msgstr "Bitki sayısı"
 
-#: src/features/dashboard/TodaysBoard.tsx:19
-#: src/features/dashboard/TodaysBoard.tsx:28
+#: src/features/dashboard/TodaysBoard.tsx:16
 #: src/features/tasks/FilterBar.tsx:20
 #: src/features/tasks/TaskCard.mobile.tsx:20
 #: src/features/tasks/TaskDetailSheet.tsx:29
@@ -463,7 +461,6 @@ msgstr "Bitki sayısı"
 msgid "Bitti"
 msgstr "Bitti"
 
-#: src/features/dashboard/TodaysBoard.tsx:29
 #: src/features/tasks/FilterBar.tsx:21
 #: src/features/tasks/TaskDetailSheet.tsx:30
 #: src/features/tasks/TasksKanban.tsx:19
@@ -479,7 +476,7 @@ msgstr "Bloke edildi"
 msgid "Bloklu"
 msgstr "Bloklu"
 
-#: src/features/dashboard/TodaysBoard.tsx:67
+#: src/features/dashboard/TodaysBoard.tsx:60
 msgid "Boş"
 msgstr "Boş"
 
@@ -555,8 +552,8 @@ msgid "Bugün"
 msgstr "Bugün"
 
 #: src/features/dashboard/TodaysBoard.tsx:47
-msgid "Bugün — pano"
-msgstr "Bugün — pano"
+#~ msgid "Bugün — pano"
+#~ msgstr "Bugün — pano"
 
 #: src/routes/m/tasks.tsx:56
 msgid "Bugün daha"
@@ -566,9 +563,13 @@ msgstr "Bugün daha"
 #~ msgid "Bugün için görev yok"
 #~ msgstr "Bugün için görev yok"
 
-#: src/features/dashboard/TodaysBoard.tsx:45
+#: src/features/dashboard/TodaysBoard.tsx:31
 msgid "Bugünkü görev panosu"
 msgstr "Bugünkü görev panosu"
+
+#: src/features/dashboard/TodaysBoard.tsx:33
+msgid "Bugünün Panosu"
+msgstr "Bugünün Panosu"
 
 #: src/routes/_owner/people.tsx:565
 #: src/routes/_owner/people.tsx:629
@@ -1115,25 +1116,25 @@ msgstr "Gönderiliyor…"
 msgid "Görev"
 msgstr "Görev"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:10
+#: src/features/dashboard/DashboardActivityFeed.tsx:9
 #: src/features/notifications/NotificationsBell.tsx:17
 #: src/features/settings/notification-mute-settings.tsx:14
 msgid "Görev aktarıldı"
 msgstr "Görev aktarıldı"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:11
+#: src/features/dashboard/DashboardActivityFeed.tsx:10
 #: src/features/notifications/NotificationsBell.tsx:18
 #: src/features/settings/notification-mute-settings.tsx:15
 msgid "Görev başlatıldı"
 msgstr "Görev başlatıldı"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:12
+#: src/features/dashboard/DashboardActivityFeed.tsx:11
 #: src/features/notifications/NotificationsBell.tsx:19
 #: src/features/settings/notification-mute-settings.tsx:16
 msgid "Görev bitti"
 msgstr "Görev bitti"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:13
+#: src/features/dashboard/DashboardActivityFeed.tsx:12
 #: src/features/notifications/NotificationsBell.tsx:20
 #: src/features/settings/notification-mute-settings.tsx:17
 msgid "Görev bloke edildi"
@@ -1143,11 +1144,15 @@ msgstr "Görev bloke edildi"
 msgid "Görev bulunamadı."
 msgstr "Görev bulunamadı."
 
+#: src/features/dashboard/TodaysBoard.tsx:71
+msgid "görev daha"
+msgstr "görev daha"
+
 #: src/features/tasks/TaskDetailSheet.tsx:165
 msgid "Görev detayı"
 msgstr "Görev detayı"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:14
+#: src/features/dashboard/DashboardActivityFeed.tsx:13
 #: src/features/notifications/NotificationsBell.tsx:21
 #: src/features/settings/notification-mute-settings.tsx:18
 msgid "Görev kopyalandı"
@@ -1157,7 +1162,7 @@ msgstr "Görev kopyalandı"
 msgid "görev oluşturulacak"
 msgstr "görev oluşturulacak"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:9
+#: src/features/dashboard/DashboardActivityFeed.tsx:8
 #: src/features/notifications/NotificationsBell.tsx:16
 #: src/features/settings/notification-mute-settings.tsx:13
 #: src/features/tasks/TaskDetailSheet.tsx:38
@@ -1213,6 +1218,10 @@ msgstr "Görevler yükleniyor…"
 msgid "Görevlere dön"
 msgstr "Görevlere dön"
 
+#: src/features/dashboard/TodaysBoard.tsx:35
+msgid "Görevlere git"
+msgstr "Görevlere git"
+
 #: src/routes/setup.$token.tsx:260
 msgid "Görevlerime git"
 msgstr "Görevlerime git"
@@ -1262,6 +1271,10 @@ msgstr "Harita — bugünkü tarlalar"
 msgid "Haritada tarla sınırını çizin. Son noktaya tıklayarak kapatın."
 msgstr "Haritada tarla sınırını çizin. Son noktaya tıklayarak kapatın."
 
+#: src/routes/_owner/today.tsx:189
+msgid "Haritaya git"
+msgstr "Haritaya git"
+
 #: src/features/tasks/activities.ts:31
 msgid "Hasat"
 msgstr "Hasat"
@@ -1298,7 +1311,7 @@ msgstr "Hava hasarı"
 msgid "Hazırlanıyor…"
 msgstr "Hazırlanıyor…"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:37
+#: src/features/dashboard/DashboardActivityFeed.tsx:44
 #: src/features/tasks/TaskDetailSheet.tsx:245
 msgid "Henüz kayıt yok."
 msgstr "Henüz kayıt yok."
@@ -1371,7 +1384,6 @@ msgstr "iPhone (Safari)"
 msgid "iPhone: Safari’de Paylaş (□↑) → “Ana ekrana ekle” ile Agrova’yı aç ve ana ekrana ekle."
 msgstr "iPhone: Safari’de Paylaş (□↑) → “Ana ekrana ekle” ile Agrova’yı aç ve ana ekrana ekle."
 
-#: src/features/dashboard/TodaysBoard.tsx:30
 #: src/features/fields/DeleteFieldModal.tsx:85
 #: src/features/fields/DrawModeBanner.tsx:23
 #: src/features/tasks/CompletionFlow.tsx:123
@@ -1427,7 +1439,7 @@ msgstr "JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görünt�
 msgid "Kaldır"
 msgstr "Kaldır"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:42
+#: src/features/dashboard/DashboardActivityFeed.tsx:49
 msgid "Kaldırılmış kullanıcı"
 msgstr "Kaldırılmış kullanıcı"
 
@@ -2206,7 +2218,7 @@ msgstr "SMS kodu gönderilmeyecek, sadece iletişim için."
 msgid "Son 30 gün"
 msgstr "Son 30 gün"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:28
+#: src/features/dashboard/DashboardActivityFeed.tsx:35
 msgid "Son olaylar"
 msgstr "Son olaylar"
 
@@ -2239,7 +2251,7 @@ msgstr "Sorun fotoğrafı"
 msgid "Sorun fotoğrafı büyük"
 msgstr "Sorun fotoğrafı büyük"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:16
+#: src/features/dashboard/DashboardActivityFeed.tsx:15
 #: src/features/notifications/NotificationsBell.tsx:15
 #: src/features/settings/notification-mute-settings.tsx:19
 msgid "Sorun kapatıldı"
@@ -2249,7 +2261,7 @@ msgstr "Sorun kapatıldı"
 msgid "Sorun Kategorileri"
 msgstr "Sorun Kategorileri"
 
-#: src/features/dashboard/DashboardActivityFeed.tsx:15
+#: src/features/dashboard/DashboardActivityFeed.tsx:14
 msgid "Sorun raporu"
 msgstr "Sorun raporu"
 
@@ -2280,8 +2292,7 @@ msgstr "Sulama"
 msgid "Sulama sorunu"
 msgstr "Sulama sorunu"
 
-#: src/features/dashboard/TodaysBoard.tsx:18
-#: src/features/dashboard/TodaysBoard.tsx:27
+#: src/features/dashboard/TodaysBoard.tsx:15
 #: src/features/tasks/FilterBar.tsx:19
 #: src/features/tasks/TaskCard.mobile.tsx:16
 #: src/features/tasks/TaskDetailSheet.tsx:28
@@ -2381,6 +2392,14 @@ msgstr "Tarla düzenle"
 msgid "Tarla filtresi"
 msgstr "Tarla filtresi"
 
+#: src/routes/_owner/today.tsx:185
+msgid "Tarla haritası"
+msgstr "Tarla haritası"
+
+#: src/routes/_owner/today.tsx:187
+msgid "Tarla Haritası"
+msgstr "Tarla Haritası"
+
 #: src/features/tasks/TaskCreateModal.tsx:246
 msgid "Tarla veya ürün…"
 msgstr "Tarla veya ürün…"
@@ -2467,8 +2486,8 @@ msgstr "This page describes how Agrova processes personal and operational data. 
 #~ msgstr "Bugün"
 
 #: src/features/dashboard/TodaysBoard.tsx:26
-msgid "TODO"
-msgstr "TODO"
+#~ msgid "TODO"
+#~ msgstr "TODO"
 
 #: src/features/equipment/csv.ts:12
 msgid "Tools"
@@ -2500,8 +2519,8 @@ msgid "Tümü"
 msgstr "Tümü"
 
 #: src/features/dashboard/TodaysBoard.tsx:49
-msgid "Tümünü göster"
-msgstr "Tümünü göster"
+#~ msgid "Tümünü göster"
+#~ msgstr "Tümünü göster"
 
 #: src/routes/_owner/settings.tsx:173
 #~ msgid "Turkish name as you would say it; used for the forecast widget (later)."
@@ -2605,7 +2624,7 @@ msgstr "Worker password was updated. They sign in with the same device e-mail an
 #~ msgstr "İşçi PWA görev listesi — rol tabanlı yönlendirmeye kadar /m URL öneki."
 
 #: src/components/layout/MobileShell.tsx:16
-#: src/features/dashboard/TodaysBoard.tsx:17
+#: src/features/dashboard/TodaysBoard.tsx:14
 #: src/features/tasks/FilterBar.tsx:18
 #: src/features/tasks/TaskCard.mobile.tsx:12
 #: src/features/tasks/TaskDetailSheet.tsx:27

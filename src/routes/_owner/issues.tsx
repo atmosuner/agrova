@@ -1,4 +1,3 @@
-import { t } from '@lingui/macro'
 import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
 import { IssuesFeed } from '@/features/issues/IssuesFeed'
@@ -57,21 +56,15 @@ function IssuesPage() {
       : undefined
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Sorunlar`}</h1>
-      <p className="mt-1 text-sm text-fg-secondary">{t`Saha sorunları ve fotoğraflar.`}</p>
-      <div className="mt-6">
-        <IssuesFeed
-          key={list}
-          rows={data ?? []}
-          loading={isLoading}
-          error={error instanceof Error ? error : null}
-          onResolve={onResolve}
-          highlightId={highlightId}
-          // eslint-disable-next-line lingui/no-unlocalized-strings -- internal filter keys
-          defaultResolved={list === 'open' ? 'open' : 'all'}
-        />
-      </div>
-    </div>
+    <IssuesFeed
+      key={list}
+      rows={data ?? []}
+      loading={isLoading}
+      error={error instanceof Error ? error : null}
+      onResolve={onResolve}
+      highlightId={highlightId}
+      // eslint-disable-next-line lingui/no-unlocalized-strings -- internal filter keys
+      defaultResolved={list === 'open' ? 'open' : 'all'}
+    />
   )
 }

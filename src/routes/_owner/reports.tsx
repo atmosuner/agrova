@@ -1,5 +1,5 @@
 /* eslint-disable lingui/no-unlocalized-strings -- placeholder copy and chart legend labels */
-import { msg, t } from '@lingui/macro'
+import { msg } from '@lingui/macro'
 import { createFileRoute } from '@tanstack/react-router'
 import { Calendar, Download } from 'lucide-react'
 import { i18n } from '@/lib/i18n'
@@ -10,33 +10,30 @@ export const Route = createFileRoute('/_owner/reports')({
 
 function ReportsPage() {
   return (
-    <div>
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-fg">{t`Raporlar`}</h1>
-          <p className="mt-0.5 text-[13px] text-fg-muted">
-            {t`Tarih aralığı seçin, CSV indirin. Grafikler şu an örnek veri gösteriyor.`}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
+    <div className="space-y-4">
+      {/* Toolbar — matches filter bar pattern */}
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          type="button"
+          className="inline-flex h-[30px] items-center gap-1.5 rounded-[7px] border border-orchard-500/30 bg-orchard-50 px-2.5 text-[12px] font-medium text-orchard-700 transition-colors hover:bg-orchard-100"
+        >
+          <Calendar className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+          {i18n._(msg`Son 30 gün`)}
+        </button>
+
+        <div className="ml-auto">
           <button
             type="button"
-            className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-surface-0 px-3 text-[13px] font-medium text-fg transition hover:border-border-strong"
+            className="inline-flex h-[30px] items-center gap-1.5 rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary transition-colors hover:border-border-strong hover:text-fg"
           >
-            <Calendar className="h-3.5 w-3.5 text-fg-muted" strokeWidth={1.75} aria-hidden />
-            <span>{i18n._(msg`Son 30 gün`)}</span>
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-8 items-center gap-2 rounded-md border border-border bg-surface-0 px-3 text-[13px] font-medium text-fg transition hover:border-border-strong"
-          >
-            <Download className="h-3.5 w-3.5 text-fg-muted" strokeWidth={1.75} aria-hidden />
-            <span>{i18n._(msg`CSV indir`)}</span>
+            <Download className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+            {i18n._(msg`CSV indir`)}
           </button>
         </div>
       </div>
 
-      <div className="mt-6 grid gap-3 lg:grid-cols-3">
+      {/* Chart cards — fill remaining height */}
+      <div className="grid gap-4 lg:grid-cols-3">
         <ReportCard title={i18n._(msg`Görev Tamamlama`)} caption={i18n._(msg`Haftalık · aktiviteye göre`)}>
           <BarChartPlaceholder />
         </ReportCard>
@@ -47,10 +44,6 @@ function ReportsPage() {
           <UsageBars />
         </ReportCard>
       </div>
-
-      <p className="mt-6 text-[12px] text-fg-faint">
-        {t`Bu sayfa hızlı bir bakış için tasarlandı; detaylı raporlar yakında.`}
-      </p>
     </div>
   )
 }
@@ -66,11 +59,11 @@ function ReportCard({
 }) {
   return (
     <section className="rounded-xl border border-border bg-surface-0">
-      <header className="flex items-baseline justify-between gap-3 border-b border-border px-4 py-3">
-        <h2 className="text-[13px] font-semibold text-fg">{title}</h2>
+      <header className="flex items-baseline justify-between gap-3 border-b border-border px-5 py-3">
+        <h2 className="text-sm font-semibold text-fg">{title}</h2>
         {caption ? <span className="text-[11px] text-fg-muted">{caption}</span> : null}
       </header>
-      <div className="p-4">{children}</div>
+      <div className="p-5">{children}</div>
     </section>
   )
 }

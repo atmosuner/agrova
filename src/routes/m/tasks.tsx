@@ -1,9 +1,7 @@
 /* eslint-disable lingui/no-unlocalized-strings */
 import { msg, t } from '@lingui/macro'
-import { useQueryClient } from '@tanstack/react-query'
 import { createFileRoute } from '@tanstack/react-router'
-import { ClipboardList, RefreshCw } from 'lucide-react'
-import { Button } from '@/components/ui/button'
+import { ClipboardList } from 'lucide-react'
 import { useMyOpenTasksQuery } from '@/features/tasks/useMyOpenTasksQuery'
 import { FocusTaskCard, LaterTaskCard } from '@/features/tasks/TaskCard.mobile'
 import { i18n } from '@/lib/i18n'
@@ -13,30 +11,12 @@ export const Route = createFileRoute('/m/tasks')({
 })
 
 function MobileTasksPage() {
-  const { data, isLoading, isFetching, refetch } = useMyOpenTasksQuery()
-  const queryClient = useQueryClient()
+  const { data, isLoading } = useMyOpenTasksQuery()
   const rows = data?.rows ?? []
   const [focusTask, ...laterTasks] = rows
 
   return (
     <div className="pb-6">
-      <div className="flex items-center justify-between gap-2 px-4 pt-4">
-        <h1 className="text-xl font-semibold text-fg">{t`Yapılacak`}</h1>
-        <Button
-          type="button"
-          variant="outline"
-          size="icon-sm"
-          aria-label={t`Yenile`}
-          onClick={async () => {
-            await refetch()
-            void queryClient.invalidateQueries({ queryKey: ['me', 'person'] })
-          }}
-          disabled={isFetching}
-        >
-          <RefreshCw className={isFetching ? 'h-4 w-4 animate-spin' : 'h-4 w-4'} />
-        </Button>
-      </div>
-
       {isLoading ? <FocusSkeleton /> : null}
 
       {!isLoading && rows.length === 0 ? <EmptyState /> : null}

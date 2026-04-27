@@ -1,5 +1,6 @@
 import { t } from '@lingui/macro'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { ChevronLeft } from 'lucide-react'
 import { useCallback, useRef, useState } from 'react'
 import { CategoryGrid } from '@/features/issues/CategoryGrid'
 import type { IssueCategory } from '@/features/issues/categories'
@@ -43,20 +44,20 @@ function ReportIssuePage() {
   return (
     <div className="px-4 pb-6 pt-4">
       {taskId ? (
-        <Link to="/m/task/$id" params={{ id: taskId }} className="text-sm text-orchard-600">
-          ← {t`Göreve dön`}
+        <Link to="/m/task/$id" params={{ id: taskId }} className="inline-flex items-center gap-1 text-[14px] font-medium text-orchard-500">
+          <ChevronLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+          {t`Göreve dön`}
         </Link>
       ) : (
-        <Link to="/m/tasks" className="text-sm text-orchard-600">
-          ← {t`Görevler`}
+        <Link to="/m/tasks" className="inline-flex items-center gap-1 text-[14px] font-medium text-orchard-500">
+          <ChevronLeft className="h-4 w-4" strokeWidth={2} aria-hidden />
+          {t`Görevler`}
         </Link>
       )}
-      <h1 className="mt-3 text-xl font-semibold text-fg">{t`Sorun bildir`}</h1>
-      {taskId ? (
-        <p className="mt-1 text-sm text-fg-secondary">{t`Bu sorun seçili göreve bağlanır.`}</p>
-      ) : (
-        <p className="mt-1 text-sm text-fg-secondary">{t`Kategori seçince kamera açılır.`}</p>
-      )}
+      <h1 className="mt-2.5 text-[22px] font-semibold text-fg">{t`Sorun bildir`}</h1>
+      <p className="mt-1 text-[15px] text-fg-secondary">
+        {taskId ? t`Bu sorun seçili göreve bağlanır.` : t`Kategori seçince kamera açılır`}
+      </p>
       <input
         ref={inputRef}
         type="file"

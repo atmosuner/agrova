@@ -2,9 +2,9 @@ import { msg, t } from '@lingui/macro'
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { clsx } from 'clsx'
 import { createFileRoute } from '@tanstack/react-router'
-import { Search } from 'lucide-react'
+import { ChevronRight, Pencil, Search, Send, Trash2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { fieldToPolygonFeature } from '@/features/fields/boundary-geojson'
+import { fieldToPolygonFeature, type FieldWithGeo } from '@/features/fields/boundary-geojson'
 import { downloadFieldsCsv } from '@/features/fields/csv'
 import { DeleteFieldModal } from '@/features/fields/DeleteFieldModal'
 import { DrawModeBanner } from '@/features/fields/DrawModeBanner'
@@ -15,9 +15,9 @@ import { formFieldClassName } from '@/lib/form-field-class'
 import { openMeteoGeocodeCity, TURKEY_VIEW_CENTER } from '@/lib/open-meteo-geocoding'
 import { i18n } from '@/lib/i18n'
 import { supabase } from '@/lib/supabase'
-import type { Json, Tables } from '@/types/db'
+import type { Json } from '@/types/db'
 
-type Field = Tables<'fields'>
+type Field = FieldWithGeo
 
 const defaultZoom = 14
 
@@ -79,7 +79,7 @@ function FieldsPage() {
       // eslint-disable-next-line lingui/no-unlocalized-strings -- PostgREST column list, not UI
       supabase.from('operation_settings').select('weather_city').limit(1).maybeSingle(),
       // eslint-disable-next-line lingui/no-unlocalized-strings -- PostgREST select, not UI
-      supabase.from('fields').select('*').order('name', { ascending: true }),
+      supabase.from('fields').select('*, boundary_geojson').order('name', { ascending: true }),
     ])
     if (sErr) {
       setErr(sErr.message)
@@ -89,7 +89,7 @@ function FieldsPage() {
     }
     setLoading(false)
     if (list) {
-      setRows(list)
+      setRows(list as unknown as Field[])
     }
     const city = settings?.weather_city?.trim() ?? ''
     const c = city ? await openMeteoGeocodeCity(city) : null
@@ -122,18 +122,45 @@ function FieldsPage() {
 
   function onNewPolygon(feature: GeoJSON.Feature) {
     setDraftFeature(feature)
-    if (drawMode === 1) {
-      setForm({
-        name: '',
-        crop: '',
-        variety: '',
-        plantCount: '',
-        plantedYear: '',
-        notes: '',
-        address: '',
-      })
+    if (drawMode === 2 && selected) {
+      void saveRedraw(feature)
+      return
     }
+    setForm({
+      name: '',
+      crop: '',
+      variety: '',
+      plantCount: '',
+      plantedYear: '',
+      notes: '',
+      address: '',
+    })
     setEditing(true)
+  }
+
+  async function saveRedraw(feature: GeoJSON.Feature) {
+    if (!selected) return
+    setSaving(true)
+    setErr(null)
+    const { error } = await supabase.rpc(RPC_FIELD_UPSERT, {
+      p_id: selected.id,
+      p_name: selected.name,
+      p_crop: selected.crop,
+      p_variety: selected.variety || null,
+      p_plant_count: selected.plant_count,
+      p_planted_year: selected.planted_year,
+      p_notes: selected.notes || null,
+      p_address: selected.address || null,
+      p_polygon: feature as unknown as Json,
+    })
+    setSaving(false)
+    if (error) {
+      setErr(error.message)
+      return
+    }
+    setDraftFeature(null)
+    setDrawMode(null)
+    await load()
   }
 
   function startNewField() {
@@ -253,9 +280,9 @@ function FieldsPage() {
   }
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col lg:h-full lg:flex-row">
-      {/* Map area */}
-      <div className="flex min-h-[50vh] min-w-0 flex-1 flex-col">
+    <div className="grid h-[calc(100dvh-6rem)] gap-4 lg:grid-cols-4">
+      {/* Map area — 3/4 */}
+      <div className="flex min-h-[50vh] min-w-0 flex-col overflow-hidden rounded-xl border border-border lg:col-span-3">
         <DrawModeBanner visible={wantsDraw} onCancel={onDrawSettled} />
         {err ? <p className="px-4 py-2 text-sm text-harvest-600">{err}</p> : null}
         {loading ? (
@@ -275,10 +302,10 @@ function FieldsPage() {
         )}
       </div>
 
-      {/* Right panel */}
+      {/* Right panel — 1/4 */}
       <aside
         className={clsx(
-          'flex w-full shrink-0 flex-col border-border transition-opacity lg:w-[360px] lg:border-l',
+          'flex flex-col overflow-hidden rounded-xl border border-border bg-surface-0 transition-opacity lg:col-span-1',
           wantsDraw && 'pointer-events-none opacity-60',
         )}
       >
@@ -328,7 +355,7 @@ function FieldsPage() {
         </div>
 
         {/* Field list */}
-        <ul className="flex-1 space-y-0.5 overflow-y-auto px-2 py-1">
+        <ul className="min-h-0 flex-1 basis-1/2 space-y-0.5 overflow-y-auto px-2 py-1">
           {filteredRows.map((r) => {
             const isSelected = r.id === selectedId
             const metaParts: string[] = []
@@ -342,7 +369,7 @@ function FieldsPage() {
                 <button
                   type="button"
                   className={clsx(
-                    'flex w-full items-start gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors',
+                    'flex w-full items-center gap-2.5 rounded-lg px-3 py-2.5 text-left transition-colors',
                     isSelected
                       ? 'border-[1.5px] border-orchard-500 bg-orchard-50'
                       : 'border border-transparent hover:bg-surface-1',
@@ -350,8 +377,8 @@ function FieldsPage() {
                   onClick={() => onFieldClick(r.id)}
                   aria-current={isSelected ? 'true' : undefined}
                 >
-                  <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-border-strong" aria-hidden />
-                  <div className="min-w-0">
+                  <span className="h-2 w-2 shrink-0 rounded-full bg-orchard-500" aria-hidden />
+                  <div className="min-w-0 flex-1">
                     <p className="text-[13px] font-semibold text-fg">
                       {r.name}
                       {r.crop ? <>{' \u2014 '}{r.crop}</> : null}
@@ -360,6 +387,7 @@ function FieldsPage() {
                       <p className="mt-0.5 text-[11px] text-fg-muted">{metaParts.join(' · ')}</p>
                     )}
                   </div>
+                  {isSelected && <ChevronRight className="h-4 w-4 shrink-0 text-fg-muted" strokeWidth={1.75} aria-hidden />}
                 </button>
               </li>
             )
@@ -371,7 +399,7 @@ function FieldsPage() {
 
         {/* Detail / edit panel */}
         {editing ? (
-          <div className="shrink-0 space-y-2 border-t border-border bg-surface-0 p-4">
+          <div className="min-h-0 flex-1 basis-1/2 space-y-2 overflow-y-auto border-t border-border bg-surface-0 p-4">
             <h3 className="text-[13px] font-semibold text-fg">
               {selected == null ? t`Yeni tarla` : t`Tarla düzenle`}
             </h3>
@@ -454,7 +482,7 @@ function FieldsPage() {
           </div>
         ) : null}
         {selected && !editing ? (
-          <div className="shrink-0 border-t border-border bg-surface-0">
+          <div className="flex min-h-0 flex-1 basis-1/2 flex-col border-t border-border bg-surface-0">
             <div className="flex gap-1 border-b border-border px-4 pt-2">
               <button
                 type="button"
@@ -483,22 +511,43 @@ function FieldsPage() {
                 {i18n._(msg`Kimyasallar`)}
               </button>
             </div>
-            <div className="p-4">
+            <div className="min-h-0 flex-1 overflow-y-auto p-4">
               {fieldAsideTab === 'info' ? (
-                <div className="space-y-2 text-sm">
-                  <h3 className="text-[13px] font-semibold text-fg">{selected.name}</h3>
-                  <p className="text-[12px] text-fg-secondary">
-                    {selected.crop}
-                    {selected.variety ? <>{' \u2014 '}{selected.variety}</> : null}
-                  </p>
-                  {selected.area_hectares != null ? (
-                    <p className="text-[12px] text-fg-secondary">
-                      {/* eslint-disable-next-line lingui/no-unlocalized-strings -- unit abbreviation */}
-                      {i18n._(msg`Alan`)}: {(Math.round(selected.area_hectares * 100) / 100).toString()} ha
-                    </p>
+                <div className="space-y-3">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <p className="text-[10px] font-semibold uppercase text-fg-muted">{i18n._(msg`Ürün`)}</p>
+                      <p className="text-[13px] font-medium text-fg">
+                        {selected.crop}
+                        {selected.variety ? <>{' \u2014 '}{selected.variety}</> : null}
+                      </p>
+                    </div>
+                    {selected.area_hectares != null && (
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase text-fg-muted">{i18n._(msg`Alan`)}</p>
+                        {/* eslint-disable-next-line lingui/no-unlocalized-strings -- unit abbreviation */}
+                        <p className="text-[13px] font-medium text-fg">{(Math.round(selected.area_hectares * 100) / 100).toString()} ha</p>
+                      </div>
+                    )}
+                    {selected.plant_count != null && (
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase text-fg-muted">{i18n._(msg`Fidan sayısı`)}</p>
+                        <p className="text-[13px] font-medium tabular-nums text-fg">{selected.plant_count}</p>
+                      </div>
+                    )}
+                    {selected.planted_year != null && (
+                      <div>
+                        <p className="text-[10px] font-semibold uppercase text-fg-muted">{i18n._(msg`Dikim yılı`)}</p>
+                        <p className="text-[13px] font-medium tabular-nums text-fg">{selected.planted_year}</p>
+                      </div>
+                    )}
+                  </div>
+                  {selected.notes ? (
+                    <p className="rounded-lg bg-surface-1 px-3 py-2 text-[12px] text-fg-secondary">{selected.notes}</p>
                   ) : null}
-                  <div className="flex flex-wrap gap-2 pt-1">
-                    <Button type={b.btn} size={b.sm} variant={b.out} onClick={openEdit}>
+                  <div className="flex flex-wrap gap-2">
+                    <Button type={b.btn} size={b.sm} variant={b.out} onClick={openEdit} className="gap-1.5">
+                      <Pencil className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
                       {t`Düzenle`}
                     </Button>
                     <Button
@@ -507,19 +556,20 @@ function FieldsPage() {
                       variant={b.out}
                       onClick={startReplaceBoundary}
                       disabled={wantsDraw}
+                      className="gap-1.5"
                     >
-                      {t`Sınırı yeniden çiz`}
+                      <Send className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+                      {t`Sınırı Yeniden Çiz`}
                     </Button>
                   </div>
-                  <div className="mt-2 border-t border-border pt-2">
-                    <button
-                      type="button"
-                      className="text-[12px] font-medium text-fg-muted transition-colors hover:text-status-blocked"
-                      onClick={() => setDeleteModalOpen(true)}
-                    >
-                      {t`Tarlayı sil…`}
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-[12px] font-medium text-fg-muted transition-colors hover:text-status-blocked"
+                    onClick={() => setDeleteModalOpen(true)}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" strokeWidth={1.75} aria-hidden />
+                    {t`Tarlayı sil…`}
+                  </button>
                 </div>
               ) : (
                 <FieldChemicalLog fieldId={selected.id} fieldName={selected.name} />

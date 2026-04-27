@@ -1,7 +1,13 @@
 import type { Tables } from '@/types/db'
 
 /**
- * PostgREST returns PostGIS geography as GeoJSON-like objects; normalize to a GeoJSON geometry.
+ * Field row extended with the `boundary_geojson` PostgREST computed column.
+ * Use `select('*, boundary_geojson')` in Supabase queries to populate it.
+ */
+export type FieldWithGeo = Tables<'fields'> & { boundary_geojson: Record<string, unknown> | null }
+
+/**
+ * Normalize a GeoJSON-ish value (object or JSON string) to a typed GeoJSON geometry.
  */
 export function fieldBoundaryToGeometry(boundary: unknown): GeoJSON.Polygon | GeoJSON.MultiPolygon | null {
   if (boundary == null) {
@@ -48,8 +54,8 @@ export function toGeoJsonFeature(
 }
 
 /** GeoJSON Feature with polygon (or multi) for `field_upsert_from_geojson` */
-export function fieldToPolygonFeature(field: Tables<'fields'>): GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon> | null {
-  const g = fieldBoundaryToGeometry(field.boundary)
+export function fieldToPolygonFeature(field: FieldWithGeo): GeoJSON.Feature<GeoJSON.Polygon | GeoJSON.MultiPolygon> | null {
+  const g = fieldBoundaryToGeometry(field.boundary_geojson)
   if (g == null) {
     return null
   }

@@ -126,74 +126,80 @@ function SettingsPage() {
 
   if (bootLoading && !settings) {
     return (
-      <div>
-        <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Ayarlar`}</h1>
-        <p className="mt-2 text-fg-secondary">{t`Yükleniyor…`}</p>
+      <div className="space-y-4">
+        <div className="rounded-xl border border-border bg-surface-0 p-5">
+          <p className="text-sm text-fg-secondary">{t`Yükleniyor…`}</p>
+        </div>
       </div>
     )
   }
 
   return (
-    <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Ayarlar`}</h1>
-      <p className="mt-2 max-w-md text-fg-secondary">
-        {t`İşletme adı, hava durumu şehri ve sabit saat dilimi. Türkçe şehir adları kullanın (ör. Antalya).`}
-      </p>
-      <form onSubmit={onSubmit} className="mt-6 max-w-md space-y-4">
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-fg" htmlFor="st-op">
-            {t`İşletme adı`}
-          </label>
-          <input
-            id="st-op"
-            name="operationName"
-            type="text"
-            autoComplete="organization"
-            className={formFieldClassName}
-            value={values.operationName}
-            onChange={(e) => setField('operationName', e.target.value)}
-            required
-          />
-        </div>
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium text-fg" htmlFor="st-city">
-            {t`Hava durumu şehri`}
-          </label>
-          <input
-            id="st-city"
-            name="weatherCity"
-            type="text"
-            className={formFieldClassName}
-            placeholder="Antalya"
-            value={values.weatherCity}
-            onChange={(e) => setField('weatherCity', e.target.value)}
-            required
-          />
-          <p className="text-xs text-fg-muted">
-            {t`Hava durumu widgetı için Türkçe şehir adı.`}
-          </p>
-        </div>
-        <div className="flex flex-col gap-1">
-          <span className="text-sm font-medium text-fg">{t`Saat dilimi`}</span>
-          <p className="rounded-md border border-border bg-surface-1 px-3 py-2 text-fg-secondary">
-            {LOCKED_APP_TIMEZONE}
-            <span className="ml-2 text-xs text-fg-muted">({t`sabit`})</span>
-          </p>
-        </div>
-        {formError ? <p className="text-sm text-harvest-500">{formError}</p> : null}
-        {ok ? <p className="text-sm text-orchard-700">{t`Kaydedildi.`}</p> : null}
-        <Button type="submit" disabled={saving}>
-          {saving ? t`Kaydediliyor…` : t`Kaydet`}
-        </Button>
-      </form>
-      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Şifre`)}>
-        <h2 className="text-lg font-medium text-fg">{t`Şifre değiştir`}</h2>
-        <p className="mt-1 text-sm text-fg-secondary">
+    <div className="mx-auto max-w-2xl space-y-4">
+      {/* Operation settings */}
+      <section className="rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`İşletme ayarları`)}>
+        <h2 className="text-sm font-semibold text-fg">{t`İşletme ayarları`}</h2>
+        <p className="mt-0.5 text-[12px] text-fg-secondary">
+          {t`İşletme adı, hava durumu şehri ve sabit saat dilimi.`}
+        </p>
+        <form onSubmit={onSubmit} className="mt-4 space-y-3">
+          <div className="flex flex-col gap-1">
+            <label className="text-[12px] font-medium text-fg" htmlFor="st-op">
+              {t`İşletme adı`}
+            </label>
+            <input
+              id="st-op"
+              name="operationName"
+              type="text"
+              autoComplete="organization"
+              className={formFieldClassName}
+              value={values.operationName}
+              onChange={(e) => setField('operationName', e.target.value)}
+              required
+            />
+          </div>
+          <div className="flex flex-col gap-1">
+            <label className="text-[12px] font-medium text-fg" htmlFor="st-city">
+              {t`Hava durumu şehri`}
+            </label>
+            <input
+              id="st-city"
+              name="weatherCity"
+              type="text"
+              className={formFieldClassName}
+              placeholder="Antalya"
+              value={values.weatherCity}
+              onChange={(e) => setField('weatherCity', e.target.value)}
+              required
+            />
+            <p className="text-[11px] text-fg-muted">
+              {t`Hava durumu widgetı için Türkçe şehir adı.`}
+            </p>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[12px] font-medium text-fg">{t`Saat dilimi`}</span>
+            <p className="rounded-lg border border-border bg-surface-1 px-3 py-2 text-[13px] text-fg-secondary">
+              {LOCKED_APP_TIMEZONE}
+              <span className="ml-2 text-[11px] text-fg-muted">({t`sabit`})</span>
+            </p>
+          </div>
+          {formError ? <p className="text-[12px] text-harvest-500">{formError}</p> : null}
+          {ok ? <p className="text-[12px] text-orchard-700">{t`Kaydedildi.`}</p> : null}
+          <Button type="submit" size="sm" disabled={saving}>
+            {saving ? t`Kaydediliyor…` : t`Kaydet`}
+          </Button>
+        </form>
+      </section>
+
+      {/* Password */}
+      <section className="rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`Şifre`)}>
+        <h2 className="text-sm font-semibold text-fg">{t`Şifre değiştir`}</h2>
+        <p className="mt-0.5 text-[12px] text-fg-secondary">
           {t`Mevcut şifrenizi, ardından yeni bir şifre girin (8–72 karakter).`}
         </p>
         <form onSubmit={onChangePassword} className="mt-4 space-y-3">
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-fg" htmlFor="st-pw0">
+            <label className="text-[12px] font-medium text-fg" htmlFor="st-pw0">
               {t`Mevcut şifre`}
             </label>
             <input
@@ -206,7 +212,7 @@ function SettingsPage() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-fg" htmlFor="st-pw1">
+            <label className="text-[12px] font-medium text-fg" htmlFor="st-pw1">
               {t`Yeni şifre`}
             </label>
             <input
@@ -219,7 +225,7 @@ function SettingsPage() {
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label className="text-sm font-medium text-fg" htmlFor="st-pw2">
+            <label className="text-[12px] font-medium text-fg" htmlFor="st-pw2">
               {t`Yeni şifre (tekrar)`}
             </label>
             <input
@@ -231,23 +237,29 @@ function SettingsPage() {
               onChange={(e) => setPwNew2(e.target.value)}
             />
           </div>
-          {pwErr ? <p className="text-sm text-harvest-500">{pwErr}</p> : null}
-          {pwOk ? <p className="text-sm text-orchard-700">{t`Şifre güncellendi.`}</p> : null}
-          <Button type="submit" disabled={pwSaving}>
+          {pwErr ? <p className="text-[12px] text-harvest-500">{pwErr}</p> : null}
+          {pwOk ? <p className="text-[12px] text-orchard-700">{t`Şifre güncellendi.`}</p> : null}
+          <Button type="submit" size="sm" disabled={pwSaving}>
             {pwSaving ? t`Kaydediliyor…` : t`Şifreyi güncelle`}
           </Button>
         </form>
       </section>
-      <section className="mt-8 max-w-md border-t border-border pt-8" aria-label={i18n._(msg`Veri dışa aktarma`)}>
-        <h2 className="text-lg font-medium text-fg">{t`Tüm verilerimi indir`}</h2>
-        <p className="mt-1 text-sm text-fg-secondary">
+
+      {/* Notifications */}
+      <NotificationMuteSettings />
+
+      {/* Data export */}
+      <section className="rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`Veri dışa aktarma`)}>
+        <h2 className="text-sm font-semibold text-fg">{t`Tüm verilerimi indir`}</h2>
+        <p className="mt-0.5 text-[12px] text-fg-secondary">
           {t`JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görüntüsü.`}
         </p>
-        {exportErr ? <p className="mt-2 text-sm text-harvest-600">{exportErr}</p> : null}
+        {exportErr ? <p className="mt-2 text-[12px] text-harvest-600">{exportErr}</p> : null}
         <Button
           type="button"
           // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token
           variant="secondary"
+          size="sm"
           className="mt-3"
           disabled={exporting}
           onClick={() => {
@@ -265,20 +277,22 @@ function SettingsPage() {
           {exporting ? t`Hazırlanıyor…` : t`İndir`}
         </Button>
       </section>
-      <NotificationMuteSettings />
+
+      {/* Logout */}
       <section
-        className="mt-8 max-w-md rounded-xl border border-status-blocked/20 bg-status-blocked/5 p-5"
+        className="rounded-xl border border-status-blocked/20 bg-status-blocked/5 p-5"
         aria-label={i18n._(msg`Oturum`)}
       >
-        <h2 className="text-lg font-medium text-fg">{t`Çıkış yap`}</h2>
-        <p className="mt-1 text-sm text-fg-secondary">
+        <h2 className="text-sm font-semibold text-fg">{t`Çıkış yap`}</h2>
+        <p className="mt-0.5 text-[12px] text-fg-secondary">
           {t`Bu cihazdaki oturumu sonlandırın. İş e-postanız ve şifrenizle tekrar giriş yapabilirsiniz.`}
         </p>
-        {logoutError ? <p className="mt-2 text-sm text-harvest-600">{logoutError}</p> : null}
+        {logoutError ? <p className="mt-2 text-[12px] text-harvest-600">{logoutError}</p> : null}
         <Button
           type="button"
           // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token
           variant="destructive"
+          size="sm"
           className="mt-3"
           disabled={loggingOut}
           onClick={() => {
