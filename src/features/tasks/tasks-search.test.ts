@@ -42,6 +42,18 @@ describe('parseTasksSearch', () => {
     expect(s.dueTo).toBe('2026-12-31')
     expect(s.view).toBe('table')
   })
+
+  it('parses valid sortBy and sortDir', () => {
+    const s = parseTasksSearch({ sortBy: 'status', sortDir: 'desc' })
+    expect(s.sortBy).toBe('status')
+    expect(s.sortDir).toBe('desc')
+  })
+
+  it('defaults invalid sortBy and sortDir', () => {
+    const d = defaultTasksSearch()
+    expect(parseTasksSearch({ sortBy: 'INVALID' }).sortBy).toBe(d.sortBy)
+    expect(parseTasksSearch({ sortDir: 'INVALID' }).sortDir).toBe('asc')
+  })
 })
 
 describe('tasksSearchDueOn', () => {
