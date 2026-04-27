@@ -34,7 +34,6 @@ function roleLabel(role: string): string {
 
 /* eslint-disable lingui/no-unlocalized-strings */
 const APP_VERSION = 'v0.1.0'
-/* eslint-enable lingui/no-unlocalized-strings */
 
 function subOnline(cb: () => void) {
   globalThis.addEventListener('online', cb)
@@ -47,6 +46,7 @@ function subOnline(cb: () => void) {
 function getOnline() {
   return typeof navigator !== 'undefined' ? navigator.onLine !== false : true
 }
+/* eslint-enable lingui/no-unlocalized-strings */
 
 function ProfilePage() {
   const { data: me, isLoading } = useMyPersonQuery()
@@ -222,6 +222,7 @@ function ProfilePage() {
         </button>
       </Section>
 
+      {/* eslint-disable-next-line lingui/no-unlocalized-strings -- brand + version */}
       <p className="px-4 pt-6 text-center text-[12px] text-fg-faint">
         Agrova {APP_VERSION} · {isOnline ? t`Çevrimiçi` : t`Çevrimdışı`}
       </p>

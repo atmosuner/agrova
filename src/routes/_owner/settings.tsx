@@ -185,6 +185,7 @@ function SettingsPage() {
           </div>
           {formError ? <p className="text-[12px] text-harvest-500">{formError}</p> : null}
           {ok ? <p className="text-[12px] text-orchard-700">{t`Kaydedildi.`}</p> : null}
+          {/* eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token */}
           <Button type="submit" size="sm" disabled={saving}>
             {saving ? t`Kaydediliyor…` : t`Kaydet`}
           </Button>
@@ -239,6 +240,7 @@ function SettingsPage() {
           </div>
           {pwErr ? <p className="text-[12px] text-harvest-500">{pwErr}</p> : null}
           {pwOk ? <p className="text-[12px] text-orchard-700">{t`Şifre güncellendi.`}</p> : null}
+          {/* eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token */}
           <Button type="submit" size="sm" disabled={pwSaving}>
             {pwSaving ? t`Kaydediliyor…` : t`Şifreyi güncelle`}
           </Button>
@@ -255,9 +257,9 @@ function SettingsPage() {
           {t`JSON dışa aktarma (KVKK). Sahibi olan tabloların bir anlık görüntüsü.`}
         </p>
         {exportErr ? <p className="mt-2 text-[12px] text-harvest-600">{exportErr}</p> : null}
+        {/* eslint-disable lingui/no-unlocalized-strings -- CVA tokens */}
         <Button
           type="button"
-          // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token
           variant="secondary"
           size="sm"
           className="mt-3"
@@ -276,6 +278,7 @@ function SettingsPage() {
         >
           {exporting ? t`Hazırlanıyor…` : t`İndir`}
         </Button>
+        {/* eslint-enable lingui/no-unlocalized-strings */}
       </section>
 
       {/* Logout */}
@@ -288,9 +291,9 @@ function SettingsPage() {
           {t`Bu cihazdaki oturumu sonlandırın. İş e-postanız ve şifrenizle tekrar giriş yapabilirsiniz.`}
         </p>
         {logoutError ? <p className="mt-2 text-[12px] text-harvest-600">{logoutError}</p> : null}
+        {/* eslint-disable lingui/no-unlocalized-strings -- CVA tokens */}
         <Button
           type="button"
-          // eslint-disable-next-line lingui/no-unlocalized-strings -- CVA token
           variant="destructive"
           size="sm"
           className="mt-3"
@@ -301,6 +304,7 @@ function SettingsPage() {
         >
           {loggingOut ? t`Çıkış yapılıyor…` : t`Çıkış yap`}
         </Button>
+        {/* eslint-enable lingui/no-unlocalized-strings */}
       </section>
     </div>
   )
