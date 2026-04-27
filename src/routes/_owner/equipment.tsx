@@ -1,8 +1,8 @@
 import { msg, t } from '@lingui/macro'
 import { clsx } from 'clsx'
 import { cn } from '@/lib/utils'
-import { X } from 'lucide-react'
-import { useCallback, useEffect, useId, useRef, useState } from 'react'
+import { ArrowDownAZ, ArrowUpAZ, X } from 'lucide-react'
+import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createFileRoute, Link } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
 import { downloadEquipmentCsv } from '@/features/equipment/csv'
@@ -60,6 +60,12 @@ function EquipmentPage() {
   const [err, setErr] = useState<string | null>(null)
   const [saving, setSaving] = useState(false)
   const [showArchived, setShowArchived] = useState(false)
+  type EquipSortCol = 'name' | 'created_at'
+  type EquipSortDir = 'asc' | 'desc'
+  /* eslint-disable lingui/no-unlocalized-strings -- sort column/direction tokens */
+  const [eqSortCol, setEqSortCol] = useState<EquipSortCol>('name')
+  const [eqSortDir, setEqSortDir] = useState<EquipSortDir>('asc')
+  /* eslint-enable lingui/no-unlocalized-strings */
   const [modal, setModal] = useState<null | { type: 'add' } | { type: 'edit'; row: Row }>(null)
   const [usageFor, setUsageFor] = useState<Row | null>(null)
   const [form, setForm] = useState<EquipmentFormValues>(emptyForm)
@@ -223,6 +229,16 @@ function EquipmentPage() {
     await load()
   }
 
+  const sortedRows = useMemo(() => {
+    const list = [...rows]
+    const dir = eqSortDir === 'asc' ? 1 : -1
+    list.sort((a, b) => {
+      if (eqSortCol === 'name') return a.name.localeCompare(b.name, 'tr') * dir
+      return ((a.created_at ?? '').localeCompare(b.created_at ?? '')) * dir
+    })
+    return list
+  }, [rows, eqSortCol, eqSortDir])
+
   const catLabel = i18n._((TABS.find((x) => x.cat === cat) ?? TABS[0]!).label)
 
   return (
@@ -261,6 +277,27 @@ function EquipmentPage() {
           {showArchived && <X className="ml-1 h-3 w-3" />}
         </button>
 
+        <div className="mx-0.5 h-5 w-px bg-border-strong" aria-hidden />
+
+        <button
+          type="button"
+          onClick={() => {
+            if (eqSortCol === 'name' && eqSortDir === 'asc') {
+              setEqSortDir('desc')
+            } else if (eqSortCol === 'name' && eqSortDir === 'desc') {
+              setEqSortCol('created_at')
+              setEqSortDir('desc')
+            } else {
+              setEqSortCol('name')
+              setEqSortDir('asc')
+            }
+          }}
+          className="inline-flex h-[30px] items-center gap-1 rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary transition-colors hover:border-border-strong hover:text-fg"
+        >
+          {eqSortDir === 'asc' ? <ArrowDownAZ className="h-3.5 w-3.5" /> : <ArrowUpAZ className="h-3.5 w-3.5" />}
+          {eqSortCol === 'name' ? t`Ada göre` : t`Tarihe göre`}
+        </button>
+
         <div className="ml-auto flex items-center gap-2">
           <Button type={b.btn} variant={b.out} size={b.sm} onClick={() => void exportAllEquipment()} disabled={saving || loading}>
             {t`CSV`}
@@ -277,11 +314,11 @@ function EquipmentPage() {
       <div className="overflow-hidden rounded-xl border border-border">
         {loading ? (
           <p className="px-5 py-8 text-center text-sm text-fg-secondary">{t`Yükleniyor…`}</p>
-        ) : rows.length === 0 ? (
+        ) : sortedRows.length === 0 ? (
           <p className="px-5 py-8 text-center text-sm text-fg-secondary">{t`Gösterilecek ekipman yok.`}</p>
         ) : (
           <ul className="divide-y divide-border">
-            {rows.map((r) => (
+            {sortedRows.map((r) => (
               <li key={r.id} className="flex items-center gap-3 bg-surface-0 px-5 py-3.5 hover:bg-surface-1/50">
                 <span className={clsx('inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-base', CAT_ICON[cat].bg)}>
                   {CAT_ICON[cat].emoji}

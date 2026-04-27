@@ -8,7 +8,7 @@ import { FilterBar } from '@/features/tasks/FilterBar'
 import { TaskCreateModal } from '@/features/tasks/TaskCreateModal'
 import { TaskDetailSheet } from '@/features/tasks/TaskDetailSheet'
 import { TasksKanban } from '@/features/tasks/TasksKanban'
-import { parseTasksSearch, type TasksSearchState } from '@/features/tasks/tasks-search'
+import { parseTasksSearch, type TasksSearchState, type TasksSortColumn } from '@/features/tasks/tasks-search'
 import { TasksTable } from '@/features/tasks/TasksTable'
 import { TASKS_PAGE_SIZE, useTasksQuery } from '@/features/tasks/useTasksQuery'
 import { useAssignablePeopleQuery } from '@/features/tasks/useAssignablePeopleQuery'
@@ -71,6 +71,15 @@ function TasksPage() {
           selectedIds={selectedIds}
           onSelectionChange={setSelectedIds}
           onRowClick={(id) => patchSearch({ task: id })}
+          sortBy={search.sortBy}
+          sortDir={search.sortDir}
+          onSort={(col: TasksSortColumn) =>
+            patchSearch({
+              sortBy: col,
+              sortDir: search.sortBy === col && search.sortDir === 'asc' ? 'desc' : 'asc',
+              page: 0,
+            })
+          }
         />
       ) : null}
       {!isLoading && !listError && search.view === 'kanban' ? (

@@ -95,7 +95,7 @@ export function MiniFieldsMap({ center, fields, activeFieldIds, onFieldClick }: 
     <div
       id={contId}
       ref={mapEl}
-      className="h-48 w-full overflow-hidden rounded-lg border border-border"
+      className="relative z-0 h-48 w-full overflow-hidden rounded-lg border border-border"
       role="img"
       aria-label={i18n._(msg`Tarla haritası`)}
     />

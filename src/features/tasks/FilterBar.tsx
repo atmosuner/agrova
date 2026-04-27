@@ -121,6 +121,22 @@ export function FilterBar({ search, fieldOpts, peopleOpts, onPatch, onCreate }: 
         <DateChip onApply={(from, to) => onPatch({ dueFrom: from || null, dueTo: to || null, page: 0 })} />
       )}
 
+      <div className="mx-0.5 h-5 w-px bg-border-strong" aria-hidden />
+
+      <button
+        type="button"
+        onClick={() => onPatch({ showFinished: !search.showFinished, page: 0 })}
+        className={cn(
+          'inline-flex h-[30px] items-center rounded-[7px] border px-2.5 text-[12px] font-medium transition-colors',
+          search.showFinished
+            ? 'border-orchard-500/30 bg-orchard-50 text-orchard-700 hover:bg-orchard-100'
+            : 'border-border bg-surface-0 text-fg-secondary hover:border-border-strong hover:text-fg',
+        )}
+      >
+        {t`Tamamlananlar`}
+        {search.showFinished && <X className="ml-1 h-3 w-3" />}
+      </button>
+
       <div className="ml-auto flex items-center gap-2">
         <div className="flex gap-1">
           <ViewIconButton

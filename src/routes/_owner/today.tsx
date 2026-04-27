@@ -163,7 +163,7 @@ function TodayPage() {
           />
         </div>
         <div className="flex flex-col gap-3 sm:col-span-2 lg:col-span-1">
-          <section className="rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`Tarla haritası`)}>
+          <section className="overflow-hidden rounded-xl border border-border bg-surface-0 p-5" aria-label={i18n._(msg`Tarla haritası`)}>
             <div className="mb-3 flex items-center justify-between gap-2">
               <h2 className="text-sm font-semibold text-fg">{i18n._(msg`Tarla Haritası`)}</h2>
               <Link to="/fields" className="text-xs font-medium text-orchard-600 hover:underline">

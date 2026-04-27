@@ -89,7 +89,11 @@ function FieldsPage() {
     }
     setLoading(false)
     if (list) {
-      setRows(list as unknown as Field[])
+      const loaded = list as unknown as Field[]
+      setRows(loaded)
+      if (loaded.length > 0) {
+        setSelectedId((prev) => prev ?? loaded[0]!.id)
+      }
     }
     const city = settings?.weather_city?.trim() ?? ''
     const c = city ? await openMeteoGeocodeCity(city) : null

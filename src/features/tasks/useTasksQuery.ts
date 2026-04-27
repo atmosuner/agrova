@@ -8,7 +8,7 @@ const PAGE = 50
 
 export type TaskListRow = Pick<
   Tables<'tasks'>,
-  'id' | 'activity' | 'status' | 'priority' | 'due_date' | 'field_id' | 'assignee_id'
+  'id' | 'activity' | 'status' | 'priority' | 'due_date' | 'field_id' | 'assignee_id' | 'created_at'
 > & {
   fields: { name: string } | null
   assignee: { id: string; full_name: string } | null
@@ -19,23 +19,23 @@ type Args = { search: TasksSearchState }
 const KANBAN_CAP = 200
 
 export function useTasksQuery({ search }: Args) {
-  const { status, field, assignee, activity, dueFrom, dueTo, page } = search
+  const { status, field, assignee, activity, dueFrom, dueTo, page, showFinished, sortBy, sortDir } = search
   const { view } = search
 
   return useQuery({
     queryKey: [
       'tasks',
-      { status, field, assignee, activity, dueFrom, dueTo, page, view: search.view },
+      { status, field, assignee, activity, dueFrom, dueTo, page, view: search.view, showFinished, sortBy, sortDir },
     ],
     placeholderData: keepPreviousData,
     queryFn: async () => {
       let q = supabase
         .from('tasks')
         .select(
-          `id, activity, status, priority, due_date, field_id, assignee_id, fields ( name ), assignee:people!tasks_assignee_id_fkey ( id, full_name )`,
+          `id, activity, status, priority, due_date, field_id, assignee_id, created_at, fields ( name ), assignee:people!tasks_assignee_id_fkey ( id, full_name )`,
           { count: 'exact' },
         )
-        .order('due_date', { ascending: true })
+        .order(sortBy, { ascending: sortDir === 'asc' })
       if (view === 'kanban') {
         q = q.limit(KANBAN_CAP)
       } else {
@@ -45,6 +45,8 @@ export function useTasksQuery({ search }: Args) {
       }
       if (status) {
         q = q.eq('status', status)
+      } else if (!showFinished) {
+        q = q.in('status', ['TODO', 'IN_PROGRESS', 'BLOCKED'])
       }
       if (field) {
         q = q.eq('field_id', field)

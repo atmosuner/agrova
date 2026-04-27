@@ -47,14 +47,16 @@ export function FieldsMap({
   const mapRef = useRef<L.Map | null>(null)
   const fieldGroupRef = useRef<L.FeatureGroup | null>(null)
   const [mapReady, setMapReady] = useState(false)
+  const centerRef = useRef(center)
   const onNewPolygonRef = useRef(onNewPolygon)
   const onFieldClickRef = useRef(onFieldClick)
   const onDrawSettledRef = useRef(onDrawSettled)
   useLayoutEffect(() => {
+    centerRef.current = center
     onNewPolygonRef.current = onNewPolygon
     onFieldClickRef.current = onFieldClick
     onDrawSettledRef.current = onDrawSettled
-  }, [onNewPolygon, onFieldClick, onDrawSettled])
+  }, [center, onNewPolygon, onFieldClick, onDrawSettled])
 
   const onCreated = useCallback((e: L.LeafletEvent) => {
     const c = e as L.LeafletEvent & { layer: L.Polygon; layerType: string }
@@ -67,14 +69,12 @@ export function FieldsMap({
   }, [])
 
   useEffect(() => {
-    if (!mapEl.current) {
+    if (!mapEl.current || mapRef.current) {
       return
     }
-    if (mapRef.current) {
-      return
-    }
+    const c = centerRef.current
     const map = L.map(mapEl.current, { zoomControl: true })
-    map.setView([center.lat, center.lng], center.zoom)
+    map.setView([c.lat, c.lng], c.zoom)
     L.tileLayer(ESRI, {
       maxZoom: 20,
       // eslint-disable-next-line lingui/no-unlocalized-strings -- Esri ToU attribution, fixed English string
@@ -101,15 +101,14 @@ export function FieldsMap({
       }
       mapRef.current = null
     }
-  }, [center.lat, center.lng, center.zoom])
+  }, [])
 
   useEffect(() => {
     const map = mapRef.current
     if (!map) {
       return
     }
-    const z = map.getZoom()
-    map.setView([center.lat, center.lng], z)
+    map.setView([center.lat, center.lng], map.getZoom())
   }, [center.lat, center.lng])
 
   useEffect(() => {
@@ -121,6 +120,8 @@ export function FieldsMap({
       return
     }
     g.clearLayers()
+    let allBounds: L.LatLngBounds | null = null
+    let didFitSelected = false
     for (const row of fields) {
       const geom = fieldBoundaryToGeometry(row.boundary_geojson)
       if (geom == null) {
@@ -130,11 +131,10 @@ export function FieldsMap({
       const isSel = row.id === selectedId
       const layer = L.geoJSON(feature, {
         style: {
-          color: isSel ? '#f97316' : '#4ade80',
+          color: '#f97316',
           weight: isSel ? 3.5 : 2,
-          fillColor: isSel ? '#f97316' : '#22c55e',
-          fillOpacity: isSel ? 0.3 : 0.15,
-          dashArray: isSel ? undefined : '6 4',
+          fillColor: '#f97316',
+          fillOpacity: isSel ? 0.35 : 0.25,
         },
         onEachFeature: (ft, lyr) => {
           const id = (ft.properties as { id?: string } | null)?.id
@@ -148,12 +148,19 @@ export function FieldsMap({
         },
       })
       g.addLayer(layer)
+      const lb = layer.getBounds()
+      if (lb.isValid()) {
+        allBounds = allBounds ? allBounds.extend(lb) : lb
+      }
       if (isSel && mapRef.current) {
-        const bounds = layer.getBounds()
-        if (bounds.isValid()) {
-          mapRef.current.fitBounds(bounds, { padding: [60, 60], maxZoom: 17 })
+        if (lb.isValid()) {
+          mapRef.current.fitBounds(lb, { padding: [60, 60], maxZoom: 13 })
+          didFitSelected = true
         }
       }
+    }
+    if (!didFitSelected && allBounds && allBounds.isValid() && mapRef.current) {
+      mapRef.current.fitBounds(allBounds, { padding: [40, 40], maxZoom: 13 })
     }
   }, [fields, mapReady, selectedId])
 
@@ -189,7 +196,7 @@ export function FieldsMap({
       <div
         id={contId}
         ref={mapEl}
-        className="h-full min-h-[280px] w-full"
+        className="relative z-0 h-full min-h-[280px] w-full"
         aria-label={t`Map of fields`}
       />
     </div>

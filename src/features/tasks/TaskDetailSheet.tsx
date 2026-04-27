@@ -212,9 +212,9 @@ export function TaskDetailSheet({ taskId, onClose }: Props) {
   return (
     <>
     {/* Backdrop */}
-    <div className="fixed inset-0 z-[60] bg-[rgba(12,18,16,0.3)]" onClick={onClose} aria-hidden />
+    <div className="fixed inset-0 z-[1100] bg-[rgba(12,18,16,0.3)]" onClick={onClose} aria-hidden />
     <div
-      className="fixed inset-y-0 right-0 z-[70] flex w-[min(100vw,440px)] flex-col border-l border-border bg-surface-0 shadow-lg"
+      className="fixed inset-y-0 right-0 z-[1200] flex w-[min(100vw,440px)] flex-col border-l border-border bg-surface-0 shadow-lg"
       role="dialog"
       aria-labelledby={titleId}
     >

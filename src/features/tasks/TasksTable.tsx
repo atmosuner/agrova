@@ -1,7 +1,9 @@
 import { msg } from '@lingui/macro'
 import { format, parseISO } from 'date-fns'
 import { tr } from 'date-fns/locale'
+import { ChevronDown, ChevronUp, ChevronsUpDown } from 'lucide-react'
 import { activityIdFromDbValue, ACTIVITY_LABEL } from '@/features/tasks/activities'
+import type { SortDir, TasksSortColumn } from '@/features/tasks/tasks-search'
 import { i18n } from '@/lib/i18n'
 import { cn } from '@/lib/utils'
 import type { Enums } from '@/types/db'
@@ -12,6 +14,9 @@ type Props = {
   selectedIds: Set<string>
   onSelectionChange: (ids: Set<string>) => void
   onRowClick: (id: string) => void
+  sortBy: TasksSortColumn
+  sortDir: SortDir
+  onSort: (column: TasksSortColumn) => void
 }
 
 function statusLabel(s: Enums<'task_status'>): string {
@@ -78,7 +83,7 @@ function formatShortDate(iso: string | null | undefined): string {
   }
 }
 
-export function TasksTable({ rows, selectedIds, onSelectionChange, onRowClick }: Props) {
+export function TasksTable({ rows, selectedIds, onSelectionChange, onRowClick, sortBy, sortDir, onSort }: Props) {
   const allChecked = rows.length > 0 && rows.every((r) => selectedIds.has(r.id))
   const someChecked = rows.some((r) => selectedIds.has(r.id))
 
@@ -100,6 +105,16 @@ export function TasksTable({ rows, selectedIds, onSelectionChange, onRowClick }:
     onSelectionChange(next)
   }
 
+  function sortIcon(col: TasksSortColumn) {
+    if (sortBy !== col) return <ChevronsUpDown className="h-3 w-3 opacity-30" />
+    return sortDir === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+  }
+
+  /* eslint-disable lingui/no-unlocalized-strings -- Tailwind classes */
+  const thBase = 'px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary'
+  const thBtn = 'inline-flex items-center gap-1 hover:text-fg transition-colors cursor-pointer select-none'
+  /* eslint-enable lingui/no-unlocalized-strings */
+
   return (
     <div className="overflow-x-auto rounded-xl border border-border">
       <table className="w-full min-w-[720px] border-collapse text-left text-[13px]">
@@ -115,12 +130,30 @@ export function TasksTable({ rows, selectedIds, onSelectionChange, onRowClick }:
                 aria-label={i18n._(msg`Tümünü seç`)}
               />
             </th>
-            <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">{i18n._(msg`Görev`)}</th>
-            <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">{i18n._(msg`Tarla`)}</th>
-            <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">{i18n._(msg`Kime`)}</th>
-            <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">{i18n._(msg`Durum`)}</th>
-            <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">{i18n._(msg`Son tarih`)}</th>
-            <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">{i18n._(msg`Aktivite`)}</th>
+            {/* eslint-disable lingui/no-unlocalized-strings -- DB column names passed to sort handler */}
+            <th className={thBase}>
+              <button type="button" className={thBtn} onClick={() => onSort('activity')}>
+                {i18n._(msg`Görev`)} {sortIcon('activity')}
+              </button>
+            </th>
+            <th className={thBase}>{i18n._(msg`Tarla`)}</th>
+            <th className={thBase}>{i18n._(msg`Kime`)}</th>
+            <th className={thBase}>
+              <button type="button" className={thBtn} onClick={() => onSort('status')}>
+                {i18n._(msg`Durum`)} {sortIcon('status')}
+              </button>
+            </th>
+            <th className={thBase}>
+              <button type="button" className={thBtn} onClick={() => onSort('due_date')}>
+                {i18n._(msg`Son tarih`)} {sortIcon('due_date')}
+              </button>
+            </th>
+            <th className={thBase}>
+              <button type="button" className={thBtn} onClick={() => onSort('created_at')}>
+                {i18n._(msg`Oluşturulma`)} {sortIcon('created_at')}
+              </button>
+            </th>
+            {/* eslint-enable lingui/no-unlocalized-strings */}
           </tr>
         </thead>
         <tbody>
@@ -163,7 +196,7 @@ export function TasksTable({ rows, selectedIds, onSelectionChange, onRowClick }:
                   </span>
                 </td>
                 <td className="px-3 py-2.5 tabular-nums text-fg">{formatShortDate(row.due_date)}</td>
-                <td className="px-3 py-2.5 text-fg-secondary">{activityLabel}</td>
+                <td className="px-3 py-2.5 tabular-nums text-fg-secondary">{formatShortDate(row.created_at)}</td>
               </tr>
             )
           })}

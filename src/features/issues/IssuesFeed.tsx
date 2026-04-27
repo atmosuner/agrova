@@ -3,7 +3,7 @@ import type { MessageDescriptor } from '@lingui/core'
 import { msg, t } from '@lingui/macro'
 import { format } from 'date-fns'
 import { tr as dateFnsTr } from 'date-fns/locale'
-import { X } from 'lucide-react'
+import { ArrowDown, ArrowUp, X } from 'lucide-react'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { IssueCategoryIcon } from '@/components/icons/issues/IssueCategoryIcon'
 import { Button } from '@/components/ui/button'
@@ -45,6 +45,10 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
   const [voiceUrls, setVoiceUrls] = useState<Record<string, string>>({})
   const [lightbox, setLightbox] = useState<string | null>(null)
   const [resolvingId, setResolvingId] = useState<string | null>(null)
+  type IssueSortCol = 'created_at' | 'category'
+  type IssueSortDir = 'asc' | 'desc'
+  const [issueSortCol, setIssueSortCol] = useState<IssueSortCol>('created_at')
+  const [issueSortDir, setIssueSortDir] = useState<IssueSortDir>('desc')
 
   const fieldOptions = useMemo(() => {
     const m = new Map<string, string>()
@@ -59,7 +63,7 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
   const highlightRef = useRef<HTMLLIElement | null>(null)
 
   const filtered = useMemo(() => {
-    return rows.filter((r) => {
+    const list = rows.filter((r) => {
       if (category !== 'all' && r.category !== category) {
         return false
       }
@@ -74,7 +78,13 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
       }
       return true
     })
-  }, [rows, category, fieldId, resolved])
+    const dir = issueSortDir === 'asc' ? 1 : -1
+    list.sort((a, b) => {
+      if (issueSortCol === 'created_at') return a.created_at.localeCompare(b.created_at) * dir
+      return a.category.localeCompare(b.category) * dir
+    })
+    return list
+  }, [rows, category, fieldId, resolved, issueSortCol, issueSortDir])
 
   useEffect(() => {
     if (!highlightId || !highlightRef.current) {
@@ -171,6 +181,27 @@ export function IssuesFeed({ rows, loading, error, onResolve, highlightId, defau
             onSelect={(id) => setFieldId(id)}
           />
         )}
+
+        <div className="mx-0.5 h-5 w-px bg-border-strong" aria-hidden />
+
+        <button
+          type="button"
+          onClick={() => {
+            if (issueSortCol === 'created_at' && issueSortDir === 'desc') {
+              setIssueSortDir('asc')
+            } else if (issueSortCol === 'created_at' && issueSortDir === 'asc') {
+              setIssueSortCol('category')
+              setIssueSortDir('asc')
+            } else {
+              setIssueSortCol('created_at')
+              setIssueSortDir('desc')
+            }
+          }}
+          className="inline-flex h-[30px] items-center gap-1 rounded-[7px] border border-border bg-surface-0 px-2.5 text-[12px] font-medium text-fg-secondary transition-colors hover:border-border-strong hover:text-fg"
+        >
+          {issueSortDir === 'desc' ? <ArrowDown className="h-3.5 w-3.5" /> : <ArrowUp className="h-3.5 w-3.5" />}
+          {issueSortCol === 'created_at' ? t`Tarihe göre` : t`Kategoriye göre`}
+        </button>
       </div>
 
       {/* Issue cards inside a bordered container */}

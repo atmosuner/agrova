@@ -3,6 +3,9 @@ import type { Enums } from '@/types/db'
 
 export type TasksViewMode = 'table' | 'kanban'
 
+export type TasksSortColumn = 'due_date' | 'status' | 'activity' | 'created_at'
+export type SortDir = 'asc' | 'desc'
+
 export type TasksSearchState = {
   status: Enums<'task_status'> | null
   field: string | null
@@ -13,12 +16,20 @@ export type TasksSearchState = {
   page: number
   view: TasksViewMode
   task: string | null
+  showFinished: boolean
+  sortBy: TasksSortColumn
+  sortDir: SortDir
 }
 
 const STATUSES: Enums<'task_status'>[] = ['TODO', 'IN_PROGRESS', 'DONE', 'BLOCKED', 'CANCELLED']
+const SORT_COLUMNS: TasksSortColumn[] = ['due_date', 'status', 'activity', 'created_at']
 
 function isTaskStatus(s: string): s is Enums<'task_status'> {
   return (STATUSES as string[]).includes(s)
+}
+
+function isSortColumn(s: string): s is TasksSortColumn {
+  return (SORT_COLUMNS as string[]).includes(s)
 }
 
 export const defaultTasksSearch = (): TasksSearchState => ({
@@ -31,6 +42,9 @@ export const defaultTasksSearch = (): TasksSearchState => ({
   page: 0,
   view: 'table',
   task: null,
+  showFinished: false,
+  sortBy: 'due_date',
+  sortDir: 'asc',
 })
 
 /** Dashboard / deep links: tasks due on a single calendar day (Istanbul). */
@@ -49,6 +63,9 @@ export function parseTasksSearch(raw: Record<string, unknown>): TasksSearchState
   const page = typeof raw.page === 'string' && /^\d+$/.test(raw.page) ? Math.max(0, parseInt(raw.page, 10)) : d.page
   const view = raw.view === 'kanban' ? 'kanban' : 'table'
   const task = typeof raw.task === 'string' && raw.task.length > 0 ? raw.task : d.task
+  const showFinished = raw.showFinished === 'true' || raw.showFinished === true
+  const sortBy = typeof raw.sortBy === 'string' && isSortColumn(raw.sortBy) ? raw.sortBy : d.sortBy
+  const sortDir = raw.sortDir === 'desc' ? 'desc' : 'asc'
   return {
     status,
     field,
@@ -59,5 +76,8 @@ export function parseTasksSearch(raw: Record<string, unknown>): TasksSearchState
     page,
     view,
     task,
+    showFinished,
+    sortBy,
+    sortDir,
   }
 }

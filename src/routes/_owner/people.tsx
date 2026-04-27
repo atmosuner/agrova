@@ -1,5 +1,5 @@
 import { msg, t } from '@lingui/macro'
-import { X } from 'lucide-react'
+import { ChevronDown, ChevronUp, ChevronsUpDown, X } from 'lucide-react'
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { createFileRoute } from '@tanstack/react-router'
 import { Button } from '@/components/ui/button'
@@ -113,6 +113,10 @@ function PeoplePage() {
   const [roleOpen, setRoleOpen] = useState(false)
   const roleRef = useRef<HTMLDivElement>(null)
   useOnClickOutside(roleRef, () => setRoleOpen(false))
+  type PeopleSortCol = 'full_name' | 'phone' | 'role' | 'active'
+  type PeopleSortDir = 'asc' | 'desc'
+  const [sortCol, setSortCol] = useState<PeopleSortCol>('full_name')
+  const [sortDir, setSortDir] = useState<PeopleSortDir>('asc')
   const [modalMode, setModalMode] = useState<null | { type: 'add' } | { type: 'edit'; person: Person }>(null)
   const [form, setForm] = useState<CrewFormState>(emptyCrewForm)
   const [editEmailLoading, setEditEmailLoading] = useState(false)
@@ -161,6 +165,44 @@ function PeoplePage() {
     () => (roleFilter ? rows.filter((r) => r.role === roleFilter) : rows),
     [rows, roleFilter],
   )
+
+  const sortedRows = useMemo(() => {
+    const list = [...filteredRows]
+    const dir = sortDir === 'asc' ? 1 : -1
+    list.sort((a, b) => {
+      let cmp = 0
+      switch (sortCol) {
+        case 'full_name':
+          cmp = a.full_name.localeCompare(b.full_name, 'tr')
+          break
+        case 'phone':
+          cmp = (a.phone ?? '').localeCompare(b.phone ?? '', 'tr')
+          break
+        case 'role':
+          cmp = a.role.localeCompare(b.role, 'tr')
+          break
+        case 'active':
+          cmp = Number(b.active) - Number(a.active)
+          break
+      }
+      return cmp * dir
+    })
+    return list
+  }, [filteredRows, sortCol, sortDir])
+
+  function togglePeopleSort(col: PeopleSortCol) {
+    if (sortCol === col) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortCol(col)
+      setSortDir('asc')
+    }
+  }
+
+  function peopleSortIcon(col: PeopleSortCol) {
+    if (sortCol !== col) return <ChevronsUpDown className="h-3 w-3 opacity-30" />
+    return sortDir === 'asc' ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />
+  }
 
   useEffect(() => {
     if (modalMode?.type !== 'edit') {
@@ -457,7 +499,7 @@ function PeoplePage() {
         </button>
 
         <div className="ml-auto flex items-center gap-2">
-          <Button type="button" variant="outline" size="sm" onClick={() => downloadPeopleCsv(filteredRows)} disabled={loading}>
+          <Button type="button" variant="outline" size="sm" onClick={() => downloadPeopleCsv(sortedRows)} disabled={loading}>
             {t`CSV`}
           </Button>
           <Button type="button" size="sm" onClick={openAdd} disabled={saving || loading}>
@@ -482,29 +524,37 @@ function PeoplePage() {
             <thead>
               <tr className="border-b border-border bg-surface-1">
                 <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">
-                  {t`Ad Soyad`}
+                  <button type="button" className="inline-flex items-center gap-1 transition-colors hover:text-fg" onClick={() => togglePeopleSort('full_name')}>
+                    {t`Ad Soyad`} {peopleSortIcon('full_name')}
+                  </button>
                 </th>
                 <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">
-                  {t`Telefon`}
+                  <button type="button" className="inline-flex items-center gap-1 transition-colors hover:text-fg" onClick={() => togglePeopleSort('phone')}>
+                    {t`Telefon`} {peopleSortIcon('phone')}
+                  </button>
                 </th>
                 <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">
-                  {t`Rol`}
+                  <button type="button" className="inline-flex items-center gap-1 transition-colors hover:text-fg" onClick={() => togglePeopleSort('role')}>
+                    {t`Rol`} {peopleSortIcon('role')}
+                  </button>
                 </th>
                 <th className="px-3 py-2.5 text-[11px] font-semibold uppercase tracking-wide text-fg-secondary">
-                  {t`Durum`}
+                  <button type="button" className="inline-flex items-center gap-1 transition-colors hover:text-fg" onClick={() => togglePeopleSort('active')}>
+                    {t`Durum`} {peopleSortIcon('active')}
+                  </button>
                 </th>
                 <th className="w-px px-3 py-2.5" />
               </tr>
             </thead>
             <tbody>
-              {filteredRows.length === 0 ? (
+              {sortedRows.length === 0 ? (
                 <tr>
                   <td colSpan={5} className="px-5 py-8 text-center text-sm text-fg-secondary">
                     {t`Gösterilecek kişi yok.`}
                   </td>
                 </tr>
               ) : (
-                filteredRows.map((p) => {
+                sortedRows.map((p) => {
                   const isOwner = p.role === 'OWNER'
                   return (
                     <tr
