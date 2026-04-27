@@ -20,7 +20,7 @@ export function useTaskActivityLogQuery(taskId: string | null) {
         .select(`id, action, payload, created_at, actor:people!activity_log_actor_id_fkey ( full_name )`)
         .eq('subject_type', 'task')
         .eq('subject_id', taskId)
-        .order('created_at', { ascending: true })
+        .order('created_at', { ascending: false })
       if (error) {
         throw error
       }
