@@ -1,13 +1,14 @@
 import { msg, t } from '@lingui/macro'
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
-import { lazy, Suspense, useEffect, useMemo, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useMemo, useState } from 'react'
 import { TaskDetailSheet } from '@/features/tasks/TaskDetailSheet'
 import { DashboardActivityFeed } from '@/features/dashboard/DashboardActivityFeed'
+import { StatCard, StatCardShell } from '@/features/dashboard/StatCard'
 import { TodaysBoard } from '@/features/dashboard/TodaysBoard'
 import { useAllFieldsForMap } from '@/features/dashboard/use-all-fields-for-map'
 import { useDashboardStats } from '@/features/dashboard/use-dashboard-stats'
 import { useOperationSettings } from '@/features/settings/use-operation-settings'
-import { tasksSearchDueOn, type TasksSearchState } from '@/features/tasks/tasks-search'
+import { tasksSearchDueOn } from '@/features/tasks/tasks-search'
 import { useWeather, weatherCodeLabelTr, type WeatherData } from '@/features/weather/use-weather'
 import { todayISODateInIstanbul } from '@/lib/date-istanbul'
 import { i18n } from '@/lib/i18n'
@@ -26,12 +27,9 @@ export const Route = createFileRoute('/_owner/today')({
 function TodayWeatherBlock({ weather }: { weather: WeatherData }) {
   return (
     <div className="mt-2 text-fg">
-      <div className="text-2xl font-semibold tabular-nums">{Math.round(weather.currentTemp)}°C</div>
-      <p className="text-xs text-fg-secondary">
-        {weatherCodeLabelTr(weather.code)} · {i18n._(msg`Hissedilen`)} {Math.round(weather.feelsLike)}°C
-      </p>
-      <p className="text-xs text-fg-muted">
-        ↑ {Math.round(weather.high)}° ↓ {Math.round(weather.low)}°
+      <div className="text-[28px] font-semibold leading-none tabular-nums">{Math.round(weather.currentTemp)}°C</div>
+      <p className="mt-1 text-xs text-fg-secondary">
+        {weatherCodeLabelTr(weather.code)} · ↑{Math.round(weather.high)}° ↓{Math.round(weather.low)}°
       </p>
     </div>
   )
@@ -53,6 +51,26 @@ function TodayPage() {
     [data?.activeFieldIds],
   )
 
+  const buildDelta = useCallback(
+    (current: number, yesterday: number, invertTone?: boolean): { dir: 'up' | 'down' | 'flat'; copy: string } => {
+      const diff = current - yesterday
+      if (diff === 0) return { dir: 'flat', copy: i18n._(msg`dünden aynı`) }
+      const arrow: 'up' | 'down' = diff > 0 ? 'up' : 'down'
+      const dir: 'up' | 'down' = invertTone ? (arrow === 'up' ? 'down' : 'up') : arrow
+      return { dir, copy: `${diff > 0 ? '+' : ''}${diff} ${i18n._(msg`dünden`)}` }
+    },
+    [],
+  )
+
+  const tasksDelta = useMemo(
+    () => (!isLoading && data ? buildDelta(data.openTasksToday, data.yesterdayOpenTasks) : null),
+    [isLoading, data, buildDelta],
+  )
+  const issuesDelta = useMemo(
+    () => (!isLoading && data ? buildDelta(data.openIssues, data.yesterdayOpenIssues, true) : null),
+    [isLoading, data, buildDelta],
+  )
+
   useEffect(() => {
     if (!city) {
       return
@@ -65,50 +83,93 @@ function TodayPage() {
     })()
   }, [city])
 
+  const todayLabel = useMemo(() => {
+    /* eslint-disable lingui/no-unlocalized-strings -- Intl format args + IANA tz */
+    return new Intl.DateTimeFormat('tr-TR', {
+      weekday: 'long',
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+      timeZone: 'Europe/Istanbul',
+    }).format(new Date())
+    /* eslint-enable lingui/no-unlocalized-strings */
+  }, [])
+
   return (
     <div>
-      <h1 className="text-2xl font-semibold tracking-tight text-fg">{t`Today`}</h1>
-      <p className="mt-1 text-fg-secondary">{i18n._(msg`Özet — görevler, sorunlar ve tarlalar.`)}</p>
+      <div className="flex items-end justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-[-0.01em] text-fg">{t`Bugün`}</h1>
+          <p className="mt-0.5 text-[13px] text-fg-muted">
+            {i18n._(msg`Özet — görevler, sorunlar ve tarlalar`)} · <span className="capitalize">{todayLabel}</span>
+          </p>
+        </div>
+      </div>
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
-          title={i18n._(msg`Open tasks (today)`)}
+          label={i18n._(msg`Açık görev (bugün)`)}
           value={isLoading ? null : data?.openTasksToday ?? 0}
+          loading={isLoading}
+          delta={tasksDelta}
           sub={
             !isLoading && data != null
               ? `${String(data.activeFieldsToday)} ${i18n._(msg`tarlada dağılmış`)}`
               : null
           }
-          target={{ to: '/tasks', search: tasksSearchDueOn(today) }}
+          to={{ to: '/tasks', search: tasksSearchDueOn(today) }}
+          ariaLabel={
+            !isLoading && data
+              ? `${i18n._(msg`Açık görev (bugün)`)}: ${data.openTasksToday}`
+              : undefined
+          }
         />
         <StatCard
-          title={i18n._(msg`Open issues`)}
+          label={i18n._(msg`Açık sorunlar`)}
           value={isLoading ? null : data?.openIssues ?? 0}
-          target={{ to: '/issues', search: { list: 'open', highlight: undefined } }}
+          loading={isLoading}
+          delta={issuesDelta}
+          // eslint-disable-next-line lingui/no-unlocalized-strings -- StatTone enum literals, not copy
+          tone={!isLoading && (data?.openIssues ?? 0) > 0 ? 'bad' : 'neutral'}
+          to={{ to: '/issues', search: { list: 'open', highlight: undefined } }}
+          ariaLabel={
+            !isLoading && data
+              ? `${i18n._(msg`Açık sorunlar`)}: ${data.openIssues}`
+              : undefined
+          }
         />
         <StatCard
-          title={i18n._(msg`Active fields (today)`)}
+          label={i18n._(msg`Aktif tarla (bugün)`)}
           value={isLoading ? null : data?.activeFieldsToday ?? 0}
-          target={{ to: '/fields' }}
+          loading={isLoading}
+          to={{ to: '/fields' }}
+          ariaLabel={
+            !isLoading && data
+              ? `${i18n._(msg`Aktif tarla (bugün)`)}: ${data.activeFieldsToday}`
+              : undefined
+          }
         />
-        <div
-          className={cn(
-            'flex flex-col rounded-xl border border-border bg-surface-0 p-4 shadow-sm',
-            !city && 'opacity-80',
-          )}
+        <StatCardShell
+          label={
+            city
+              ? `${i18n._(msg`Hava`)} — ${city}`
+              : i18n._(msg`Hava`)
+          }
+          className={cn(!city && 'opacity-80')}
         >
-          <div className="text-xs font-medium text-fg-secondary">{i18n._(msg`Weather`)}</div>
           {wxLoading || !city ? (
             <div className="mt-2 h-10 animate-pulse rounded bg-surface-1" />
           ) : weather ? (
             <TodayWeatherBlock weather={weather} />
           ) : (
-            <p className="mt-2 text-sm text-fg-secondary">{t`Open-Meteo verisi yok. Şehri Ayarlar’da kontrol edin.`}</p>
+            <p className="mt-2 text-sm text-fg-secondary">
+              {t`Open-Meteo verisi yok. Şehri Ayarlar’da kontrol edin.`}
+            </p>
           )}
-          <Link to="/settings" className="mt-2 text-xs font-medium text-orchard-600 hover:underline">
-            {t`Settings → city`}
+          <Link to="/settings" className="mt-2 inline-block text-[11px] font-medium text-orchard-500 hover:underline">
+            {t`Ayarlar → şehir`}
           </Link>
-        </div>
+        </StatCardShell>
       </div>
 
       <div className="mt-8 grid gap-6 xl:grid-cols-[1fr,22rem]">
@@ -147,54 +208,3 @@ function TodayPage() {
   )
 }
 
-type StatTarget =
-  | { to: '/tasks'; search: TasksSearchState }
-  | { to: '/issues'; search: { list: 'open' | 'all'; highlight: string | undefined } }
-  | { to: '/fields' }
-
-function StatCard({
-  title,
-  value,
-  sub,
-  target,
-}: {
-  title: string
-  value: number | null
-  sub?: string | null
-  target: StatTarget
-}) {
-  const inner = (
-    <>
-      <div className="text-xs font-medium text-fg-secondary">{title}</div>
-      {value === null ? (
-        <div className="mt-2 h-9 w-20 animate-pulse rounded bg-surface-1" />
-      ) : (
-        <div className="mt-2 text-3xl font-semibold tabular-nums text-fg">{String(value)}</div>
-      )}
-      {sub ? <p className="mt-1 text-[11px] text-fg-muted">{sub}</p> : null}
-    </>
-  )
-  if (target.to === '/fields') {
-    return <Link to="/fields" className="block rounded-xl border border-border bg-surface-0 p-4 shadow-sm transition hover:bg-orchard-50/40">{inner}</Link>
-  }
-  if (target.to === '/issues') {
-    return (
-      <Link
-        to="/issues"
-        search={target.search}
-        className="block rounded-xl border border-border bg-surface-0 p-4 shadow-sm transition hover:bg-orchard-50/40"
-      >
-        {inner}
-      </Link>
-    )
-  }
-  return (
-    <Link
-      to="/tasks"
-      search={target.search}
-      className="block rounded-xl border border-border bg-surface-0 p-4 shadow-sm transition hover:bg-orchard-50/40"
-    >
-      {inner}
-    </Link>
-  )
-}
