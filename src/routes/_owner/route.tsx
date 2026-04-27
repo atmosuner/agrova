@@ -16,9 +16,10 @@ import {
   Users,
   Wrench,
 } from 'lucide-react'
-import { useCallback, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useOnClickOutside } from '@/lib/use-on-click-outside'
 import { AgrovaLogoMark } from '@/components/icons/AgrovaLogoMark'
+import { CommandPalette } from '@/features/cmdpalette/CommandPalette'
 import { NotificationsBell } from '@/features/notifications/NotificationsBell'
 import { RegisterOwnerWebPush } from '@/features/notifications/RegisterOwnerWebPush'
 import { OperationSettingsProvider } from '@/features/settings/operation-settings-context'
@@ -98,6 +99,18 @@ function OwnerLayoutInner() {
   const { data: me } = useMyPersonQuery()
   const [sidebarCollapsed, toggleSidebar] = useOwnerSidebarCollapsed()
   const pathname = useRouterState({ select: (s) => s.location.pathname })
+  const [paletteOpen, setPaletteOpen] = useState(false)
+
+  useEffect(() => {
+    function handleKey(e: KeyboardEvent) {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault()
+        setPaletteOpen((o) => !o)
+      }
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [])
 
   const operationName = !loading && settings?.operation_name?.trim() ? settings.operation_name.trim() : i18n._(msg`Agrova`)
 
@@ -108,6 +121,7 @@ function OwnerLayoutInner() {
   return (
     <div className="flex min-h-dvh">
       <RegisterOwnerWebPush />
+      <CommandPalette open={paletteOpen} onClose={() => setPaletteOpen(false)} />
 
       {/* Sidebar */}
       <aside
@@ -190,7 +204,8 @@ function OwnerLayoutInner() {
 
           <button
             type="button"
-            className="flex h-8 flex-1 items-center gap-2 rounded-[7px] border border-border bg-surface-1 px-3 text-left text-[13px] text-fg-muted transition hover:border-border-strong focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-orchard-500"
+            onClick={() => setPaletteOpen(true)}
+            className="flex h-8 flex-1 items-center gap-2 rounded-[7px] border border-border bg-surface-1 px-3 text-left text-[13px] text-fg-muted transition hover:border-border-strong focus-visible:ring-2 focus-visible:ring-orchard-500 focus-visible:ring-offset-2"
             aria-label={i18n._(msg`Ara veya komut girin`)}
           >
             <Search className="h-3.5 w-3.5 shrink-0" strokeWidth={2} aria-hidden />
