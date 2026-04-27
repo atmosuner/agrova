@@ -60,6 +60,7 @@ export default defineConfig(() => {
         'src/features/people/set-worker-password.ts',
         'src/features/people/team-person-email.ts',
         'src/features/people/device-login-email.ts',
+        'src/features/issues/use-open-issue-count.ts',
         'src/features/equipment/useActiveEquipmentQuery.ts',
         'src/features/equipment/useEquipmentUsage.ts',
         'src/features/fields/useFieldChemicalApplicationsQuery.ts',
